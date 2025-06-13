@@ -14,29 +14,20 @@
 # limitations under the License.
 
 import os
-import pickle
+import logging
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Union
-
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from typing import Union
 
 from nemoguardrails.library.jailbreak_detection.model_based.models import (
     JailbreakClassifier,
 )
 
-models_path = os.environ.get("EMBEDDING_CLASSIFIER_PATH")
-
-# When we add NIM support, will need to remove this check.
-if models_path is None:
-    raise EnvironmentError(
-        "Please set the EMBEDDING_CLASSIFIER_PATH environment variable to point to the Classifier model_based folder"
-    )
+logger = logging.getLogger(__name__)
 
 
 @lru_cache()
-def initialize_model(classifier_path: str = models_path) -> JailbreakClassifier:
+def initialize_model() -> Union[None, JailbreakClassifier]:
     """
     Initialize the global classifier model according to the configuration provided.
     Args
@@ -44,6 +35,15 @@ def initialize_model(classifier_path: str = models_path) -> JailbreakClassifier:
     Returns
         jailbreak_classifier: JailbreakClassifier object combining embedding model and NemoGuard JailbreakDetect RF
     """
+
+    classifier_path = os.environ.get("EMBEDDING_CLASSIFIER_PATH")
+
+    if classifier_path is None:
+        # Log a warning, but do not throw an exception
+        logger.warning(
+            "No embedding classifier path set. Server /model endpoint will not work."
+        )
+        return None
 
     jailbreak_classifier = JailbreakClassifier(
         str(Path(classifier_path).joinpath("snowflake.pkl"))

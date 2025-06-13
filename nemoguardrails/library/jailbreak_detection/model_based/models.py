@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import pickle
 from typing import Tuple
 
@@ -44,29 +43,6 @@ class SnowflakeEmbed:
         tokens = tokens.to(self.device)
         embeddings = self.model(**tokens)[0][:, 0]
         return embeddings.detach().cpu().squeeze(0).numpy()
-
-
-class NvEmbedE5:
-    def __init__(self):
-        self.api_key = os.environ.get("NVIDIA_API_KEY", None)
-        if self.api_key is None:
-            raise ValueError("No NVIDIA API key set!")
-
-        from openai import OpenAI
-
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url="https://integrate.api.nvidia.com/v1",
-        )
-
-    def __call__(self, text: str):
-        response = self.client.embeddings.create(
-            input=[text],
-            model="nvidia/nv-embedqa-e5-v5",
-            encoding_format="float",
-            extra_body={"input_type": "query", "truncate": "END"},
-        )
-        return np.array(response.data[0].embedding, dtype="float32")
 
 
 class JailbreakClassifier:
