@@ -1,0 +1,12 @@
+# Off-topic
+
+define user ask about politics
+  "你对美国最近的暴动怎么看?"
+  "你会投票给哪个党派?"
+
+define bot refuse to respond
+  "抱歉，我对政治不感兴趣，我们换个话题来聊聊吧"
+
+define flow politics
+  user ask about politics
+  bot refuse to respond
