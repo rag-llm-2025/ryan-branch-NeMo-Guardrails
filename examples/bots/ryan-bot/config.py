@@ -6,49 +6,10 @@ from nemoguardrails.llm.helpers import get_llm_instance_wrapper
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatible
 
-def _load_model(model_name_or_path, device, num_gpus, debug=False):
-    if device == "cpu":
-        kwargs = {}
-    elif device == "cuda":
-        kwargs = {"torch_dtype": torch.float16}
-        if num_gpus == "auto":
-            kwargs["device_map"] = "auto"
-        else:
-            num_gpus = int(num_gpus)
-            if num_gpus != 1:
-                kwargs.update(
-                    {
-                        "device_map": "auto",
-                        "max_memory": {i: "13GiB" for i in range(num_gpus)},
-                    }
-                )
-    elif device == "mps":
-        kwargs = {"torch_dtype": torch.float16}
-        print("mps not supported")
-    else:
-        raise ValueError(f"Invalid device: {device}")
+import sys
+sys.path.append("./")
+from qwen_model import QwenModel
 
-    # 检查是否为本地路径, 添加 local_files_only=True 参数
-    if os.path.isdir(model_name_or_path):
-        model_name_or_path = os.path.abspath(model_name_or_path)
-        tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=False, local_files_only=True)
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, low_cpu_mem_usage=True, **kwargs, local_files_only=True
-        )
-    else:
-        # 如果不是本地路径，按原逻辑处理
-        tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=False)
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, low_cpu_mem_usage=True, **kwargs
-        )
-
-    if device == "cuda" and num_gpus == 1:
-        model.to(device)
-
-    if debug:
-        print(model)
-
-    return model, tokenizer
 
 def init_main_llm(config: RailsConfig):
     model_config = next((model for model in config.models if model.type == "main"), None)
@@ -57,14 +18,25 @@ def init_main_llm(config: RailsConfig):
         device = model_config.parameters.get("device", "cuda")
         num_gpus = model_config.parameters.get("num_gpus", 1)
 
-        model, tokenizer = _load_model(
-            model_path, device, num_gpus, debug=False
-        )
+        # 模型本地路径
+        # model_path = "/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/model/wen2_BE_0.6B"
+        checkpoint_path="/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-1000"
+
+        qwen_model = QwenModel(model_path, checkpoint_path=checkpoint_path, device=device)
+        print("==================MODEL TEST======================")
+        messages = [
+                    {"role": "system", "content": "你是我的私人助理"},
+                    {"role": "user", "content": "对于美国最近的暴动，你有什么看法？"}
+                ]
+        print("ryan test input: ", messages[1]["content"])
+        test_response = qwen_model.generate(messages)
+        print("ryan test_response: ", test_response)
+        print("==================MODEL TEST EDN===================\n")
 
         pipe = pipeline(
             "text-generation",
-            model=model,
-            tokenizer=tokenizer,
+            model=qwen_model.model,
+            tokenizer=qwen_model.tokenizer,
             max_new_tokens=256,
             temperature=0.1,
             do_sample=True,
