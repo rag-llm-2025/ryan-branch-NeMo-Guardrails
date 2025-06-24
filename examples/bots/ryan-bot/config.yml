@@ -1,8 +1,8 @@
 models:
   - type: main
-    engine: hf_pipeline_local
-    model: "/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/model/wen2_BE_0.6B"
+    engine: ryan_local_engine
+    model: Qwen2_BE_0.6B
     parameters:
-      path: "/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/model/wen2_BE_0.6B"  # 替换为本地模型的实际路径
+      path: "/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/model/Qwen2_BE_0.6B"  # 替换为本地模型的实际路径
       device: "cpu"  # 可以根据需要选择 "cpu" 或 "cuda"
       # num_gpus: 1  # 如果使用 GPU，可以指定使用的 GPU 数量

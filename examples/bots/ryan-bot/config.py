@@ -44,9 +44,9 @@ def init_main_llm(config: RailsConfig):
 
         hf_llm = HuggingFacePipelineCompatible(pipeline=pipe)
         provider = get_llm_instance_wrapper(
-            llm_instance=hf_llm, llm_type="hf_pipeline_local"
+            llm_instance=hf_llm, llm_type="ryan_local_engine"
         )
-        register_llm_provider("hf_pipeline_local", provider)
+        register_llm_provider("ryan_local_engine", provider)
 
 def init(llm_rails: LLMRails):
     config = llm_rails.config
