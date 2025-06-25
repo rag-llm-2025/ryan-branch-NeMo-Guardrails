@@ -27,7 +27,8 @@ class RyanBotClient:
         try:
             response = requests.post(
                 f"{self.base_url}/v1/chat/completions",
-                json=payload
+                json=payload,
+                # timeout=10
             )
             response.raise_for_status()
 
@@ -46,7 +47,17 @@ class RyanBotClient:
         except Exception as e:
             return f"Error: {str(e)}"
 
-# demo
-client = RyanBotClient()
-reply = client.chat("Hello")
-print(reply)
+def interactive_demo():
+    client = RyanBotClient()
+    print("对话开始(输入'quit'退出)")
+
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'quit':
+            break
+
+        reply = client.chat(user_input)
+        print("AI:", reply)
+
+if __name__ == "__main__":
+    interactive_demo()

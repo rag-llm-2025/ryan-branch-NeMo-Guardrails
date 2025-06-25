@@ -26,11 +26,13 @@ nemoguardrails server --config=./config
 
 - If you disable chat-ui, you can use the following command:
 ```
-# 确保使用正确的config目录路径启动服务器
+# 启动服务器(确保使用正确的config目录路径)
 nemoguardrails server --config=./config --disable-chat-ui --default-config-id=default
 
+# 启动client
 cd ryan-bot/ryan-client
-python client.py
+python ryan_dmeo_client.py
+or
 python restful_api_client.py
 ```
 
