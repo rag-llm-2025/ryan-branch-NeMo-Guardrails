@@ -5,11 +5,6 @@ from nemoguardrails.llm.helpers import get_llm_instance_wrapper
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatible
 
-# import os
-# import sys
-# # 添加项目根目录到Python路径
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-# print(sys.path)  # 查看当前Python路径
 from model_rails.qwen2.qwen_model import QwenModel
 
 def initialize_rails(config: RailsConfig):

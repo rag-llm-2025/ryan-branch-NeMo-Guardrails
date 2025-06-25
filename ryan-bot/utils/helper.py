@@ -1,8 +1,5 @@
-import argparse
 from ruamel.yaml import YAML
 from pathlib import Path
-import torch
-import os
 
 def yml_config_update(config_path, model_name, model_path, device, checkpoint_path):
     """更新config.yml文件中的模型配置，保持原有格式和结构"""
