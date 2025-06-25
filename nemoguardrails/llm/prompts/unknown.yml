@@ -26,7 +26,7 @@ prompts:
           # This is how the user talks:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(unknown.yml): This is the current conversation between the user and the bot:
           # Choose intent from this list: {{ potential_user_intents }}
           {{ sample_conversation | first_turns(2) }}
           {{ history | colang }}
@@ -46,7 +46,7 @@ prompts:
           # This is how the bot thinks:
           {{ examples | remove_text_messages}}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(unknown.yml): This is the current conversation between the user and the bot:
           {{ sample_conversation | first_turns(2) | remove_text_messages}}
           {{ history | colang | remove_text_messages}}
 
@@ -72,7 +72,7 @@ prompts:
           # This is how the bot talks:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(unknown.yml): This is the current conversation between the user and the bot:
           {{ sample_conversation | first_turns(2) }}
           {{ history | colang }}
 
@@ -92,7 +92,7 @@ prompts:
           # These are some examples how the bot thinks:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(unknown.yml): This is the current conversation between the user and the bot:
           {{ sample_conversation | first_turns(2) }}
           {{ history | colang }}
 
@@ -111,7 +111,7 @@ prompts:
           # This is how the bot thinks:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(unknown.yml): This is the current conversation between the user and the bot:
           {{ sample_conversation | first_turns(2) }}
           {{ history | colang }}
           # {{ instructions }}

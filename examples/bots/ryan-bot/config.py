@@ -23,15 +23,15 @@ def init_main_llm(config: RailsConfig):
         checkpoint_path="/home/ubuntu/workspace/llm/ryan-qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-1000"
 
         qwen_model = QwenModel(model_path, checkpoint_path=checkpoint_path, device=device)
-        print("==================MODEL TEST======================")
-        messages = [
-                    {"role": "system", "content": "你是我的私人助理"},
-                    {"role": "user", "content": "对于美国最近的暴动，你有什么看法？"}
-                ]
-        print("ryan test input: ", messages[1]["content"])
-        test_response = qwen_model.generate(messages)
-        print("ryan test_response: ", test_response)
-        print("==================MODEL TEST EDN===================\n")
+        # print("==================MODEL TEST======================")
+        # messages = [
+        #             {"role": "system", "content": "你是我的私人助理"},
+        #             {"role": "user", "content": "对于美国最近的暴动，你有什么看法？"}
+        #         ]
+        # print("ryan test input: ", messages[1]["content"])
+        # test_response = qwen_model.generate(messages)
+        # print("ryan test_response: ", test_response)
+        # print("==================MODEL TEST EDN===================\n")
 
         pipe = pipeline(
             "text-generation",
