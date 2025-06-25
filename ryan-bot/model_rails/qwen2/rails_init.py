@@ -7,14 +7,36 @@ from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatib
 
 from model_rails.qwen2.qwen_model import QwenModel
 
+class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
+    def __call__(self, prompt: str, **kwargs) -> str:
+        try:
+            result = super().__call__(prompt, **kwargs)
+
+            # 处理不同格式的返回结果
+            if isinstance(result, list):
+                output = result[0].get("generated_text", "")
+            else:
+                output = result.get("generated_text", "")
+
+            # 确保返回有效内容
+            if not output.strip():
+                return "[RYAN_DEBUG] I don't have an answer for that."
+
+            return output
+
+        except Exception as e:
+            print(f"[RYAN_DEBUG]Error generating response: {str(e)}")
+            return "[RYAN_DEBUG] Sorry, I encountered an error while processing your request."
+
 def initialize_rails(config: RailsConfig):
     model_config = next((model for model in config.models if model.type == "main"), None)
     if model_config:
         model_path = model_config.parameters.get("model_path")
         checkpoint_path = model_config.parameters.get("checkpoint_path")
-        device =  model_config.parameters.get("device", "cuda")
+        device = model_config.parameters.get("device", "cuda")
         num_gpus = model_config.parameters.get("num_gpus", 1)
 
+        # 初始化Qwen模型
         qwen_model = QwenModel(model_path, checkpoint_path=checkpoint_path, device=device)
         # print("==================MODEL TEST======================")
         # messages = [
@@ -26,6 +48,8 @@ def initialize_rails(config: RailsConfig):
         # print("ryan test_response: ", test_response)
         # print("==================MODEL TEST EDN===================\n")
 
+
+        # 配置pipeline参数
         pipe = pipeline(
             "text-generation",
             model=qwen_model.model,
@@ -33,10 +57,16 @@ def initialize_rails(config: RailsConfig):
             max_new_tokens=256,
             temperature=0.1,
             do_sample=True,
+            return_full_text=False,
+            pad_token_id=qwen_model.tokenizer.eos_token_id  # 添加结束符处理
         )
 
-        hf_llm = HuggingFacePipelineCompatible(pipeline=pipe)
+        # 使用自定义wrapper封装
+        hf_llm = Qwen2PipelineWrapper(pipeline=pipe)
+
+        # 注册LLM provider
         provider = get_llm_instance_wrapper(
-            llm_instance=hf_llm, llm_type="ryan_local_engine"
+            llm_instance=hf_llm,
+            llm_type="ryan_local_engine"
         )
         register_llm_provider("ryan_local_engine", provider)
