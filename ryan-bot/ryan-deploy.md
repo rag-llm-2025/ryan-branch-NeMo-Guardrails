@@ -18,7 +18,7 @@ cd nemo-guardrails
 pip install -e .
 
 ## 6. launch nemoguardrails server
-cd examples/bots/ryan-bot
+cd ./ryan-bot
 nemoguardrails server --config=.
 
 ## 7. login to nemoguardrails server
