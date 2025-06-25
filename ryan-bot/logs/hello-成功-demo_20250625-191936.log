@@ -1,0 +1,134 @@
+INFO:     Started server process [1470]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:nemoguardrails.server.api:Got request for config config
+Entered verbose mode.
+19:19:52.554 | Registered Actions ['ClavataCheckAction', 'GetAttentionPercentageAction', 'GetCurrentDateTimeAction', 'UpdateAttentionMaterializedViewAction', 'alignscore request', 'alignscore_check_facts', 
+'autoalign_factcheck_output_api', 'autoalign_groundedness_output_api', 'autoalign_input_api', 'autoalign_output_api', 'call cleanlab api', 'call fiddler faithfulness', 'call fiddler safety on bot message', 
+'call fiddler safety on user message', 'call gcpnlp api', 'call_activefence_api', 'content_safety_check_input', 'content_safety_check_output', 'create_event', 'detect_pii', 'detect_sensitive_data', 
+'injection_detection', 'jailbreak_detection_heuristics', 'jailbreak_detection_model', 'llama_guard_check_input', 'llama_guard_check_output', 'mask_pii', 'mask_sensitive_data', 'patronus_api_check_output', 
+'patronus_lynx_check_output_hallucination', 'protect_text', 'retrieve_relevant_chunks', 'self_check_facts', 'self_check_hallucination', 'self_check_input', 'self_check_output', 'summarize_document', 
+'topic_safety_check_input', 'wolfram alpha request']
+Device set to use cpu
+================== 初始化配置 ==================
+model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B, checkpoint_path: /home/ubuntu/workspace/llm/src/qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-8000, device: cpu
+[LOG] Loading model and tokenizer...
+[LOG] Model and tokenizer loaded successfully.
+================== 配置初始化完成 ==================
+19:19:56.179 | Event UtteranceUserActionFinished | {'final_transcript': 'hello'}
+19:19:56.180 | Event StartInternalSystemAction | {'uid': 'd4c8...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None, 
+'action_uid': '234a...', 'is_system_action': True}
+19:19:56.181 | Executing action create_event
+19:19:56.182 | Event UserMessage | {'uid': '41bb...', 'text': 'hello'}
+19:19:56.183 | Event StartInternalSystemAction | {'uid': 'ffd4...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': '3d79...', 'is_system_action': True}
+19:19:56.184 | Executing action generate_user_intent
+19:19:56.185 | Phase 1 Generating user intent
+19:19:56.199 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (7ffc8..) - generate_user_intent
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "Tell me a bit about the history of NVIDIA."                                                                                                                                                       
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, 
+Chris Malachowsky, and Curtis Priem."                                                                                                                                                                            
+User message: "tell me more"                                                                                                                                                                                     
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major 
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial 
+intelligence."                                                                                                                                                                                                   
+User message: "thanks"                                                                                                                                                                                           
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."                                                                     
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the user talks:                                                                                                                                                                                    
+User message: "Bad"                                                                                                                                                                                              
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "I'm feeling good"                                                                                                                                                                                 
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Good"                                                                                                                                                                                             
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Hi"                                                                                                                                                                                               
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User message: "Hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+# Choose intent from this list: express feeling bad, express feeling good, express greeting                                                                                                                      
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "hello"                                                                                                                                                                                            
+                                                                                                                                                                                                                 
+
+
+LLM Completion (7ffc8..)
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I 
+assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I
+assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I
+assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I
+assist you today? Hello! How can I assist you today? Hello! How can I assist you today? Hello! How can I assist                                                                                                  
+
+19:20:51.931 | Output Stats None
+19:20:51.933 | LLM call took 55.71 seconds
+19:20:51.934 | Event UserIntent | {'uid': '9178...', 'intent': 'express greeting'}
+19:20:51.936 | Event BotIntent | {'uid': 'bdea...', 'intent': 'express greeting'}
+19:20:51.938 | Event StartInternalSystemAction | {'uid': 'bf52...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '67c7...', 'is_system_action': True}
+19:20:51.938 | Executing action retrieve_relevant_chunks
+19:20:51.939 | Event InternalSystemActionFinished | {'uid': '61ae...', 'action_uid': '67c7...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n', 'events': None, 'is_system_action': True}
+19:20:51.941 | Event StartInternalSystemAction | {'uid': '5e68...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '79d3...', 'is_system_action': True}
+19:20:51.948 | Executing action generate_bot_message
+19:20:51.949 | Phase 3 Generating bot message ...
+19:20:51.951 | Event BotMessage | {'uid': '3de9...', 'text': 'Hello world!'}
+19:20:51.954 | Event StartInternalSystemAction | {'uid': '1a01...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': '7b9b...', 'is_system_action': True}
+19:20:51.955 | Executing action create_event
+19:20:51.956 | Event StartUtteranceBotAction | {'uid': '98f2...', 'script': 'Hello world!', 'action_uid': '5bd2...'}
+19:20:51.957 | Event BotIntent | {'uid': '0031...', 'intent': 'ask how are you'}
+19:20:51.959 | Event StartInternalSystemAction | {'uid': '28dc...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '88ec...', 'is_system_action': True}
+19:20:51.960 | Executing action retrieve_relevant_chunks
+19:20:51.964 | Event InternalSystemActionFinished | {'uid': 'a6f2...', 'action_uid': '88ec...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n\n', 'events': None, 'is_system_action': True}
+19:20:51.967 | Event StartInternalSystemAction | {'uid': '5431...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '85f2...', 'is_system_action': True}
+19:20:51.967 | Executing action generate_bot_message
+19:20:51.968 | Phase 3 Generating bot message ...
+19:20:51.970 | Event BotMessage | {'uid': 'a110...', 'text': 'How are you doing?'}
+19:20:51.972 | Event StartInternalSystemAction | {'uid': '7fce...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': 'e3d9...', 'is_system_action': True}
+19:20:51.973 | Executing action create_event
+19:20:51.974 | Event StartUtteranceBotAction | {'uid': '218a...', 'script': 'How are you doing?', 'action_uid': '8462...'}
+19:20:51.976 | Total processing took 55.80 seconds. LLM Stats: 1 total calls, 55.71 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [55.71] as latencies
+INFO:     127.0.0.1:34644 - "POST /v1/chat/completions HTTP/1.1" 200 OK

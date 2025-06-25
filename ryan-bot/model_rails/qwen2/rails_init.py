@@ -9,6 +9,11 @@ from model_rails.qwen2.qwen_model import QwenModel
 
 class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
     def __call__(self, prompt: str, **kwargs) -> str:
+        print("==============================")
+        print("[RYAN_DEBUG] Qwen2PipelineWrapper is called with prompt:", prompt)
+        print("[RYAN_DEBUG] Qwen2PipelineWrapper is called with kwargs:", kwargs)
+        print("==============================")
+
         try:
             result = super().__call__(prompt, **kwargs)
 
@@ -31,10 +36,12 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
 def initialize_rails(config: RailsConfig):
     model_config = next((model for model in config.models if model.type == "main"), None)
     if model_config:
+        model_name = model_config.model
         model_path = model_config.parameters.get("model_path")
         checkpoint_path = model_config.parameters.get("checkpoint_path")
         device = model_config.parameters.get("device", "cuda")
         num_gpus = model_config.parameters.get("num_gpus", 1)
+        print(f"[RYAN_DEBUG] In config.yml: model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
         # 初始化Qwen模型
         qwen_model = QwenModel(model_path, checkpoint_path=checkpoint_path, device=device)
@@ -58,7 +65,9 @@ def initialize_rails(config: RailsConfig):
             temperature=0.1,
             do_sample=True,
             return_full_text=False,
-            pad_token_id=qwen_model.tokenizer.eos_token_id  # 添加结束符处理
+            pad_token_id=qwen_model.tokenizer.eos_token_id,
+            # repetition_penalty=1.2,  # 添加重复惩罚
+            # no_repeat_ngram_size=3   # 防止3-gram重复
         )
 
         # 使用自定义wrapper封装
@@ -70,3 +79,4 @@ def initialize_rails(config: RailsConfig):
             llm_type="ryan_local_engine"
         )
         register_llm_provider("ryan_local_engine", provider)
+        print(f"[RYAN_DEBUG] LLM Provider registered: {provider}")
