@@ -18,8 +18,21 @@ cd nemo-guardrails
 pip install -e .
 
 ## 6. launch nemoguardrails server
+- If you enable chat-ui, you can use the following command:
+```
 cd ./ryan-bot
 nemoguardrails server --config=./config
+```
+
+- If you disable chat-ui, you can use the following command:
+```
+# 确保使用正确的config目录路径启动服务器
+nemoguardrails server --config=./config --disable-chat-ui --default-config-id=default
+
+cd ryan-bot/ryan-client
+python client.py
+python restful_api_client.py
+```
 
 ## 7. login to nemoguardrails server
 http://localhost:8000

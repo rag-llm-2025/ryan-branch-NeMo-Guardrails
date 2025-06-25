@@ -17,6 +17,11 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
         try:
             result = super().__call__(prompt, **kwargs)
 
+            # 调试日志
+            with open("llm_debug.log", "a") as f:
+                f.write(f"[RYAN_DEBUG] Prompt: {prompt}\n")
+                f.write(f"[RYAN_DEBUG] Response: {result}\n\n")
+
             # 处理不同格式的返回结果
             if isinstance(result, list):
                 output = result[0].get("generated_text", "")
