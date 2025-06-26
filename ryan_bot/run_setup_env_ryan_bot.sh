@@ -27,7 +27,7 @@ read -p "请输入当前环境的llm文件夹路径 [默认: $LLM_DIR]: " curren
 
 export MODEL_NAME="Qwen2_BE_0.6B"
 export MODEL_PATH="$LLM_DIR/models/$MODEL_NAME"
-export CHECKPOINT_PATH="/home/ubuntu/workspace/llm/src/qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-8000"
+export CHECKPOINT_PATH=""
 export DEVICE="cpu"  # 默认值，会被下面的检查覆盖
 export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
 

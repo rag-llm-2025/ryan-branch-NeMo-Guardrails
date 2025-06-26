@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
+import os
 
 
 def log(message):
@@ -9,7 +10,13 @@ def log(message):
 def load_model(model_path, checkpoint_path):
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-    model = PeftModel.from_pretrained(model, model_id=checkpoint_path).to("cpu").eval()
+    print("checkpont_path: ", checkpoint_path)
+    # 只有当checkpoint_path非空且有效时才加载PeftModel
+    if checkpoint_path and os.path.exists(checkpoint_path):
+        model = PeftModel.from_pretrained(model, model_id=checkpoint_path).to("cpu").eval()
+    else:
+        log(f"未提供有效checkpoint_path，仅加载基础模型: {model_path}")
+        model = model.to("cpu").eval()
     return tokenizer, model
 
 class QwenModel:
