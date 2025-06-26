@@ -4,9 +4,9 @@ from nemoguardrails import RailsConfig
 from nemoguardrails.llm.helpers import get_llm_instance_wrapper
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatible
+from utils.helper import print_prompt_loading
 
 from model_rails.qwen2.qwen_model import QwenModel
-
 class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
     def __call__(self, prompt: str, **kwargs) -> str:
         print("==============================")
@@ -39,6 +39,8 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
             return "[RYAN_DEBUG] Sorry, I encountered an error while processing your request."
 
 def initialize_rails(config: RailsConfig):
+    print_prompt_loading(config)
+
     model_config = next((model for model in config.models if model.type == "main"), None)
     if model_config:
         model_name = model_config.model

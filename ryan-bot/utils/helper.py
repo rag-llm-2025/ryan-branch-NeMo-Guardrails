@@ -25,3 +25,19 @@ def yml_config_update(config_path, model_name, model_path, device, checkpoint_pa
     # 写回文件，保持原有格式
     with open(config_file, 'w') as f:
         yaml.dump(config, f)
+
+def print_prompt_loading(config):
+    print("[RYAN_DEBUG] print_prompt_loading...")
+    # 优化后的调试输出
+    if config.prompts:
+        matched_prompts = [
+            (p.task, p.models)
+            for p in config.prompts
+            if p.models and 'ryan_local_engine' in [m.lower() for m in p.models]
+        ]
+        print("[RYAN_DEBUG] ===== 匹配的提示模板 =====")
+        for i, (task, models) in enumerate(matched_prompts, 1):
+            print(f"{i}. Task: {task} | Models: {models}")
+        print(f"共匹配 {len(matched_prompts)} 个模板")
+    else:
+        print("[RYAN_DEBUG] 警告: 未加载任何提示模板")
