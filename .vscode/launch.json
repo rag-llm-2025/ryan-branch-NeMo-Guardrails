@@ -66,6 +66,39 @@
             "program": "",
             "console": "integratedTerminal",
             "preLaunchTask": "Run mypy"
+        },
+        {
+            "name": "Debug Ryan Bot Server",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nemoguardrails",
+            "args": [
+                "server",
+                "--config=./ryan-bot/config",
+                "--disable-chat-ui",
+                "--default-config-id=default",
+                "--verbose"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}",
+                "PROMPTS_DIR": "./ryan-bot/config/prompts"
+            }
+        },
+        {
+            "name": "Debug Ryan Bot Chat",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nemoguardrails",
+            "args": [
+                "chat",
+                "--config=./ryan-bot/config",
+                "--streaming"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
         }
     ]
 }

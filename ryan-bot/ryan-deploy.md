@@ -51,10 +51,17 @@ or
 python restful_api_client.py
 ```
 
-## 7. login to nemoguardrails server
+## 7. connect to server via chat-ui client
 ```
 http://localhost:8000
+```
 
-## Caution
-Pay attentation to the path of current module, if you are not in the root directory of NeMo-Guardrails, you should use the absolute path in config.yml
+## 8. VScode Debug in Docker
+```
+cd nemo-guardrails
+select and start debug configuration -> Debug Ryan Bot Server
+F5 -> launch server
+
+cd nemo-guardrails/ryan-bot
+python ryan_dmeo_client.py  # launch client to start the conversation
 ```
