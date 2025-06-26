@@ -3,9 +3,7 @@ import sys
 
 from nemoguardrails import LLMRails, RailsConfig
 
-# Add the parent directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from model_rails.qwen2.rails_init import initialize_rails
+from ryan_bot.model_rails.qwen2 import initialize_rails  # 使用绝对导入
 
 def init(llm_rails: LLMRails):
     print("================== 初始化配置 ==================")

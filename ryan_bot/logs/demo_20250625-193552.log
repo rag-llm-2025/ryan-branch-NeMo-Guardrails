@@ -1,0 +1,755 @@
+INFO:     Started server process [1661]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:nemoguardrails.server.api:Got request for config config
+Entered verbose mode.
+19:36:05.793 | Registered Actions ['ClavataCheckAction', 'GetAttentionPercentageAction', 'GetCurrentDateTimeAction', 'UpdateAttentionMaterializedViewAction', 'alignscore request', 'alignscore_check_facts', 
+'autoalign_factcheck_output_api', 'autoalign_groundedness_output_api', 'autoalign_input_api', 'autoalign_output_api', 'call cleanlab api', 'call fiddler faithfulness', 'call fiddler safety on bot message', 
+'call fiddler safety on user message', 'call gcpnlp api', 'call_activefence_api', 'content_safety_check_input', 'content_safety_check_output', 'create_event', 'detect_pii', 'detect_sensitive_data', 
+'injection_detection', 'jailbreak_detection_heuristics', 'jailbreak_detection_model', 'llama_guard_check_input', 'llama_guard_check_output', 'mask_pii', 'mask_sensitive_data', 'patronus_api_check_output', 
+'patronus_lynx_check_output_hallucination', 'protect_text', 'retrieve_relevant_chunks', 'self_check_facts', 'self_check_hallucination', 'self_check_input', 'self_check_output', 'summarize_document', 
+'topic_safety_check_input', 'wolfram alpha request']
+Device set to use cpu
+================== 初始化配置 ==================
+model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B, checkpoint_path: /home/ubuntu/workspace/llm/src/qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-8000, device: cpu
+[LOG] Loading model and tokenizer...
+[LOG] Model and tokenizer loaded successfully.
+================== 配置初始化完成 ==================
+19:36:09.087 | Event UtteranceUserActionFinished | {'final_transcript': 'hello'}
+19:36:09.089 | Event StartInternalSystemAction | {'uid': '0a67...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None, 
+'action_uid': 'eee1...', 'is_system_action': True}
+19:36:09.090 | Executing action create_event
+19:36:09.091 | Event UserMessage | {'uid': 'cc99...', 'text': 'hello'}
+19:36:09.092 | Event StartInternalSystemAction | {'uid': '2651...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': 'd856...', 'is_system_action': True}
+19:36:09.093 | Executing action generate_user_intent
+19:36:09.094 | Phase 1 Generating user intent
+19:36:09.110 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (2c92f..) - generate_user_intent
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "Tell me a bit about the history of NVIDIA."                                                                                                                                                       
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, 
+Chris Malachowsky, and Curtis Priem."                                                                                                                                                                            
+User message: "tell me more"                                                                                                                                                                                     
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major 
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial 
+intelligence."                                                                                                                                                                                                   
+User message: "thanks"                                                                                                                                                                                           
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."                                                                     
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the user talks:                                                                                                                                                                                    
+User message: "Bad"                                                                                                                                                                                              
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "I'm feeling good"                                                                                                                                                                                 
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Good"                                                                                                                                                                                             
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Hi"                                                                                                                                                                                               
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User message: "Hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+# Choose intent from this list: express feeling bad, express feeling good, express greeting                                                                                                                      
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "hello"                                                                                                                                                                                            
+                                                                                                                                                                                                                 
+
+
+LLM Completion (2c92f..)
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you
+today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How 
+can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist 
+you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? 
+How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today?                                                                      
+
+19:37:05.185 | Output Stats None
+19:37:05.186 | LLM call took 56.05 seconds
+19:37:05.188 | Event UserIntent | {'uid': 'fdf5...', 'intent': 'express greeting'}
+19:37:05.190 | Event BotIntent | {'uid': '48e0...', 'intent': 'express greeting'}
+19:37:05.191 | Event StartInternalSystemAction | {'uid': 'dedc...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '7656...', 'is_system_action': True}
+19:37:05.192 | Executing action retrieve_relevant_chunks
+19:37:05.193 | Event InternalSystemActionFinished | {'uid': '08e9...', 'action_uid': '7656...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n', 'events': None, 'is_system_action': True}
+19:37:05.196 | Event StartInternalSystemAction | {'uid': '6b62...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '816b...', 'is_system_action': True}
+19:37:05.200 | Executing action generate_bot_message
+19:37:05.201 | Phase 3 Generating bot message ...
+19:37:05.203 | Event BotMessage | {'uid': '4430...', 'text': 'Hello world!'}
+19:37:05.204 | Event StartInternalSystemAction | {'uid': 'b501...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': '11d0...', 'is_system_action': True}
+19:37:05.205 | Executing action create_event
+19:37:05.206 | Event StartUtteranceBotAction | {'uid': '2f92...', 'script': 'Hello world!', 'action_uid': 'cb07...'}
+19:37:05.208 | Event BotIntent | {'uid': 'fa07...', 'intent': 'ask how are you'}
+19:37:05.209 | Event StartInternalSystemAction | {'uid': '0a85...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '2ad4...', 'is_system_action': True}
+19:37:05.210 | Executing action retrieve_relevant_chunks
+19:37:05.211 | Event InternalSystemActionFinished | {'uid': '6f4e...', 'action_uid': '2ad4...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n\n', 'events': None, 'is_system_action': True}
+19:37:05.215 | Event StartInternalSystemAction | {'uid': 'bbaf...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '4ff9...', 'is_system_action': True}
+19:37:05.216 | Executing action generate_bot_message
+19:37:05.217 | Phase 3 Generating bot message ...
+19:37:05.219 | Event BotMessage | {'uid': 'e376...', 'text': 'How are you feeling today?'}
+19:37:05.221 | Event StartInternalSystemAction | {'uid': 'e42b...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': '841f...', 'is_system_action': True}
+19:37:05.222 | Executing action create_event
+19:37:05.222 | Event StartUtteranceBotAction | {'uid': 'a709...', 'script': 'How are you feeling today?', 'action_uid': '8641...'}
+19:37:05.224 | Total processing took 56.14 seconds. LLM Stats: 1 total calls, 56.05 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [56.05] as latencies
+INFO:     127.0.0.1:51200 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+19:37:23.737 | Event UtteranceUserActionFinished | {'final_transcript': "I'm feeling good"}
+19:37:23.740 | Event StartInternalSystemAction | {'uid': 'c2dc...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None, 
+'action_uid': '8bbf...', 'is_system_action': True}
+19:37:23.741 | Executing action create_event
+19:37:23.742 | Event UserMessage | {'uid': '8783...', 'text': "I'm feeling good"}
+19:37:23.744 | Event StartInternalSystemAction | {'uid': '7cac...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': '9c87...', 'is_system_action': True}
+19:37:23.744 | Executing action generate_user_intent
+19:37:23.745 | Phase 1 Generating user intent
+19:37:23.757 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (a7bb7..) - generate_user_intent
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "Tell me a bit about the history of NVIDIA."                                                                                                                                                       
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, 
+Chris Malachowsky, and Curtis Priem."                                                                                                                                                                            
+User message: "tell me more"                                                                                                                                                                                     
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major 
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial 
+intelligence."                                                                                                                                                                                                   
+User message: "thanks"                                                                                                                                                                                           
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."                                                                     
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the user talks:                                                                                                                                                                                    
+User message: "Bad"                                                                                                                                                                                              
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "Not so good"                                                                                                                                                                                      
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "Hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User message: "Good"                                                                                                                                                                                             
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "I'm feeling good"                                                                                                                                                                                 
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+# Choose intent from this list: express feeling bad, express greeting, express feeling good                                                                                                                      
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+Bot intent: ask how are you                                                                                                                                                                                      
+Bot message: "How are you feeling today?"                                                                                                                                                                        
+User message: "I'm feeling good"                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+
+
+LLM Completion (a7bb7..)
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello, how are you feeling today?"                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is the conversation between the user and the bot:                                                                                                                                                         
+# Choose intent from this list: express greeting                                                                                                                                                                 
+User message: "Hello, how are you feeling today?"                                                                                                                                                                
+User intent: express greeting                                                                                                                                                                                    
+Bot message: "Hello, how are you feeling today?"                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is the conversation between the user and the bot:                                                                                                                                                         
+# Choose intent from this list: express greeting                                                                                                                                                                 
+User message: "Hello, how are you feeling today?"                                                                                                                                                                
+User intent: express greeting                                                                                                                                                                                    
+Bot message: "Hello, how are you feeling today?"                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is the conversation between the user and the bot:                                                                                                                                                         
+# Choose intent from this list: express greeting                                                                                                                                                                 
+User message: "Hello, how are you feeling today?"                                                                                                                                                                
+User intent: express greeting                                                                                                                                                                                    
+Bot message: "Hello, how are you feeling today?"                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is the conversation between the user and the bot:                                                                                                                                                         
+# Choose intent from this list: express greeting                                                                                                                                                                 
+User message: "Hello, how are you feeling today?"                                                                                                                                                                
+User intent: express greeting                                                                                                                                                                                    
+Bot message: "Hello, how are you feeling today?"                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is the conversation between the user and the bot:                                                                                                                                                         
+# Choose intent from this list:                                                                                                                                                                                  
+
+19:38:16.101 | Output Stats None
+19:38:16.102 | LLM call took 52.32 seconds
+19:38:16.103 | Event UserIntent | {'uid': 'deb5...', 'intent': 'express greeting'}
+19:38:16.107 | Event StartInternalSystemAction | {'uid': 'd105...', 'action_name': 'generate_next_step', 'action_params': {}, 'action_result_key': None, 'action_uid': '10cb...', 'is_system_action': True}
+19:38:16.107 | Executing action generate_next_step
+19:38:16.108 | Phase 2 Generating next step ...
+19:38:16.120 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (8ca37..) - generate_next_steps
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the bot thinks:                                                                                                                                                                                    
+User intent: ask about stock market                                                                                                                                                                              
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: ask about politics                                                                                                                                                                                  
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+when user express feeling good                                                                                                                                                                                   
+  bot express positive emotion                                                                                                                                                                                   
+else when user express feeling bad                                                                                                                                                                               
+  bot express empathy                                                                                                                                                                                            
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+
+
+LLM Completion (8ca37..)
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask about politics                                                                                                                                                                                   
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help.                                                                                                                                                      
+
+19:38:25.228 | Output Stats None
+19:38:25.229 | LLM call took 9.09 seconds
+19:38:25.230 | Event BotIntent | {'uid': '31f8...', 'intent': 'express greeting'}
+19:38:25.232 | Event StartInternalSystemAction | {'uid': 'e52e...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '05fb...', 'is_system_action': True}
+19:38:25.233 | Executing action retrieve_relevant_chunks
+19:38:25.234 | Event InternalSystemActionFinished | {'uid': '672b...', 'action_uid': '05fb...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n\n\n', 'events': None, 'is_system_action': True}
+19:38:25.239 | Event StartInternalSystemAction | {'uid': 'b772...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '0d71...', 'is_system_action': True}
+19:38:25.240 | Executing action generate_bot_message
+19:38:25.241 | Phase 3 Generating bot message ...
+19:38:25.242 | Event BotMessage | {'uid': '7519...', 'text': 'Hello world!'}
+19:38:25.245 | Event StartInternalSystemAction | {'uid': 'd71d...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': '49a5...', 'is_system_action': True}
+19:38:25.246 | Executing action create_event
+19:38:25.247 | Event StartUtteranceBotAction | {'uid': '0d80...', 'script': 'Hello world!', 'action_uid': '43a7...'}
+19:38:25.250 | Total processing took 61.51 seconds. LLM Stats: 2 total calls, 61.4 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [52.32, 9.09] as latencies
+INFO:     127.0.0.1:47988 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+19:40:02.757 | Event UtteranceUserActionFinished | {'final_transcript': 'What do you think about the government?'}
+19:40:02.761 | Event StartInternalSystemAction | {'uid': 'd0f3...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None, 
+'action_uid': '3fa3...', 'is_system_action': True}
+19:40:02.762 | Executing action create_event
+19:40:02.763 | Event UserMessage | {'uid': 'c923...', 'text': 'What do you think about the government?'}
+19:40:02.767 | Event StartInternalSystemAction | {'uid': '2058...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': 'bbd2...', 'is_system_action': True}
+19:40:02.769 | Executing action generate_user_intent
+19:40:02.769 | Phase 1 Generating user intent
+19:40:02.781 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (6ece2..) - generate_user_intent
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "Tell me a bit about the history of NVIDIA."                                                                                                                                                       
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, 
+Chris Malachowsky, and Curtis Priem."                                                                                                                                                                            
+User message: "tell me more"                                                                                                                                                                                     
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major 
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial 
+intelligence."                                                                                                                                                                                                   
+User message: "thanks"                                                                                                                                                                                           
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."                                                                     
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the user talks:                                                                                                                                                                                    
+User message: "Which party should I vote for?"                                                                                                                                                                   
+User intent: ask about politics                                                                                                                                                                                  
+                                                                                                                                                                                                                 
+User message: "Not so good"                                                                                                                                                                                      
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "Good"                                                                                                                                                                                             
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Bad"                                                                                                                                                                                              
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "What do you think about the government?"                                                                                                                                                          
+User intent: ask about politics                                                                                                                                                                                  
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+# Choose intent from this list: ask about politics, express feeling bad, express feeling good                                                                                                                    
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+Bot intent: ask how are you                                                                                                                                                                                      
+Bot message: "How are you feeling today?"                                                                                                                                                                        
+User message: "I'm feeling good"                                                                                                                                                                                 
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+User message: "What do you think about the government?"                                                                                                                                                          
+                                                                                                                                                                                                                 
+
+
+LLM Completion (6ece2..)
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"from ryan_test.general.yml import *                                                                                                                                                   
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from ryan_test.general.yml import *                                                                                                                                                                              
+from r                                                                                                                                                                                                           
+
+19:40:55.230 | Output Stats None
+19:40:55.231 | LLM call took 52.42 seconds
+19:40:55.232 | Event UserIntent | {'uid': '66b7...', 'intent': 'express greeting'}
+19:40:55.239 | Event StartInternalSystemAction | {'uid': '6adf...', 'action_name': 'generate_next_step', 'action_params': {}, 'action_result_key': None, 'action_uid': 'adab...', 'is_system_action': True}
+19:40:55.240 | Executing action generate_next_step
+19:40:55.240 | Phase 2 Generating next step ...
+19:40:55.249 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (f8701..) - generate_next_steps
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the bot thinks:                                                                                                                                                                                    
+User intent: ask about stock market                                                                                                                                                                              
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: ask about politics                                                                                                                                                                                  
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+when user express feeling good                                                                                                                                                                                   
+  bot express positive emotion                                                                                                                                                                                   
+else when user express feeling bad                                                                                                                                                                               
+  bot express empathy                                                                                                                                                                                            
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+
+
+LLM Completion (f8701..)
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help.                                                                                                                                                      
+
+19:41:04.746 | Output Stats None
+19:41:04.747 | LLM call took 9.47 seconds
+19:41:04.748 | Event BotIntent | {'uid': 'f38f...', 'intent': 'express greeting'}
+19:41:04.752 | Event StartInternalSystemAction | {'uid': '3c5d...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': 'a8bf...', 'is_system_action': True}
+19:41:04.752 | Executing action retrieve_relevant_chunks
+19:41:04.753 | Event InternalSystemActionFinished | {'uid': 'bfaa...', 'action_uid': 'a8bf...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n\n\n\n', 'events': None, 'is_system_action': True}
+19:41:04.756 | Event StartInternalSystemAction | {'uid': 'd93d...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '2620...', 'is_system_action': True}
+19:41:04.757 | Executing action generate_bot_message
+19:41:04.758 | Phase 3 Generating bot message ...
+19:41:04.761 | Event BotMessage | {'uid': '8375...', 'text': 'Hello world!'}
+19:41:04.767 | Event StartInternalSystemAction | {'uid': '1bb6...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': '2865...', 'is_system_action': True}
+19:41:04.768 | Executing action create_event
+19:41:04.769 | Event StartUtteranceBotAction | {'uid': 'ffd0...', 'script': 'Hello world!', 'action_uid': '21f1...'}
+19:41:04.772 | Total processing took 62.01 seconds. LLM Stats: 2 total calls, 61.89 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [52.42, 9.47] as latencies
+INFO:     127.0.0.1:35362 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+19:42:16.916 | Event UtteranceUserActionFinished | {'final_transcript': 'What do you think about the government?'}
+19:42:16.922 | Event StartInternalSystemAction | {'uid': 'fd27...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None, 
+'action_uid': 'b8e3...', 'is_system_action': True}
+19:42:16.923 | Executing action create_event
+19:42:16.924 | Event UserMessage | {'uid': '3b42...', 'text': 'What do you think about the government?'}
+19:42:16.930 | Event StartInternalSystemAction | {'uid': '7cce...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': '13e9...', 'is_system_action': True}
+19:42:16.931 | Executing action generate_user_intent
+19:42:16.931 | Phase 1 Generating user intent
+19:42:16.943 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (22225..) - generate_user_intent
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "Tell me a bit about the history of NVIDIA."                                                                                                                                                       
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, 
+Chris Malachowsky, and Curtis Priem."                                                                                                                                                                            
+User message: "tell me more"                                                                                                                                                                                     
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major 
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial 
+intelligence."                                                                                                                                                                                                   
+User message: "thanks"                                                                                                                                                                                           
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."                                                                     
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the user talks:                                                                                                                                                                                    
+User message: "Which party should I vote for?"                                                                                                                                                                   
+User intent: ask about politics                                                                                                                                                                                  
+                                                                                                                                                                                                                 
+User message: "Not so good"                                                                                                                                                                                      
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "Good"                                                                                                                                                                                             
+User intent: express feeling good                                                                                                                                                                                
+                                                                                                                                                                                                                 
+User message: "Bad"                                                                                                                                                                                              
+User intent: express feeling bad                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+User message: "What do you think about the government?"                                                                                                                                                          
+User intent: ask about politics                                                                                                                                                                                  
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+# Choose intent from this list: ask about politics, express feeling bad, express feeling good                                                                                                                    
+User message: "Hello there!"                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello! How can I assist you today?"                                                                                                                                                                
+User message: "What can you do for me?"                                                                                                                                                                          
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your 
+preferences."                                                                                                                                                                                                    
+User message: "hello"                                                                                                                                                                                            
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+Bot intent: ask how are you                                                                                                                                                                                      
+Bot message: "How are you feeling today?"                                                                                                                                                                        
+User message: "I'm feeling good"                                                                                                                                                                                 
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+User message: "What do you think about the government?"                                                                                                                                                          
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+User message: "What do you think about the government?"                                                                                                                                                          
+                                                                                                                                                                                                                 
+
+
+LLM Completion (22225..)
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot message: "Hello world!"                                                                                                                                                                                      
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the conversation ends:                                                                                                                                                                             
+User message: "I think the government is good." User intent: express greeting                                                                                                                                    
+Bot message: "I think the government is good too." Bot intent: express greeting                                                                                                                                  
+Bot message: "Hello, good to hear that. What do you think about the government? How are you feeling about it? How are you? What do you think about it? How are you? What do you think about it? How are you? How 
+are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How 
+are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How are you? How 
+are you? How are you? How are you? How                                                                                                                                                                           
+
+19:43:06.568 | Output Stats None
+19:43:06.569 | LLM call took 49.60 seconds
+19:43:06.570 | Event UserIntent | {'uid': 'ecaf...', 'intent': 'express greeting'}
+19:43:06.579 | Event StartInternalSystemAction | {'uid': '0a45...', 'action_name': 'generate_next_step', 'action_params': {}, 'action_result_key': None, 'action_uid': 'cf16...', 'is_system_action': True}
+19:43:06.580 | Executing action generate_next_step
+19:43:06.580 | Phase 2 Generating next step ...
+19:43:06.589 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (e0442..) - generate_next_steps
+"""                                                                                                                                                                                                              
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific 
+details. If the bot does not know the answer to a question, it truthfully says it does not know.                                                                                                                 
+"""                                                                                                                                                                                                              
+                                                                                                                                                                                                                 
+# This is how a conversation between a user and the bot can go:                                                                                                                                                  
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: ask general question                                                                                                                                                                                
+Bot intent: response for general question                                                                                                                                                                        
+User intent: request more information                                                                                                                                                                            
+Bot intent: provide more information                                                                                                                                                                             
+User intent: express appreciation                                                                                                                                                                                
+Bot intent: express appreciation and offer additional help                                                                                                                                                       
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# This is how the bot thinks:                                                                                                                                                                                    
+User intent: ask about stock market                                                                                                                                                                              
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: ask about politics                                                                                                                                                                                  
+Bot intent: refuse to respond                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+when user express feeling good                                                                                                                                                                                   
+  bot express positive emotion                                                                                                                                                                                   
+else when user express feeling bad                                                                                                                                                                               
+  bot express empathy                                                                                                                                                                                            
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+                                                                                                                                                                                                                 
+# ryan-test(general.yml): This is the current conversation between the user and the bot:                                                                                                                         
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: ask about capabilities                                                                                                                                                                              
+Bot intent: respond about capabilities                                                                                                                                                                           
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+Bot intent: ask how are you                                                                                                                                                                                      
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+                                                                                                                                                                                                                 
+
+
+LLM Completion (e0442..)
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express greeting                                                                                                                                                                                     
+User intent: express greeting                                                                                                                                                                                    
+Bot intent: express                                                                                                                                                                                              
+
+19:43:51.906 | Output Stats None
+19:43:51.907 | LLM call took 45.28 seconds
+19:43:51.909 | Event BotIntent | {'uid': '46bf...', 'intent': 'express greeting'}
+19:43:51.914 | Event StartInternalSystemAction | {'uid': 'd937...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '49a7...', 'is_system_action': True}
+19:43:51.915 | Executing action retrieve_relevant_chunks
+19:43:51.917 | Event InternalSystemActionFinished | {'uid': 'c6e5...', 'action_uid': '49a7...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success', 
+'is_success': True, 'return_value': '\n\n\n\n\n', 'events': None, 'is_system_action': True}
+19:43:51.923 | Event StartInternalSystemAction | {'uid': '9c9e...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': 'fef1...', 'is_system_action': True}
+19:43:51.926 | Executing action generate_bot_message
+19:43:51.927 | Phase 3 Generating bot message ...
+19:43:51.929 | Event BotMessage | {'uid': '312c...', 'text': 'Hello world!'}
+19:43:51.934 | Event StartInternalSystemAction | {'uid': 'a1aa...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}}, 
+'action_result_key': None, 'action_uid': 'bb6e...', 'is_system_action': True}
+19:43:51.935 | Executing action create_event
+19:43:51.936 | Event StartUtteranceBotAction | {'uid': 'ce49...', 'script': 'Hello world!', 'action_uid': '82c7...'}
+19:43:51.944 | Total processing took 95.03 seconds. LLM Stats: 2 total calls, 94.88 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [49.6, 45.28] as latencies
+INFO:     127.0.0.1:37028 - "POST /v1/chat/completions HTTP/1.1" 200 OK

@@ -14,7 +14,7 @@ import requests
 }
 """
 class RyanBotClient:
-    def __init__(self, base_url="http://localhost:8000", config_id="config"):  # set default config_id
+    def __init__(self, base_url="http://localhost:8000", config_id="qwen_model"):  # set default config_id
         self.base_url = base_url
         self.config_id = config_id
 

@@ -4,7 +4,7 @@ try:
     response = requests.post(
         "http://localhost:8000/v1/chat/completions",
         json={
-            "config_id": "config",  # add config_id parameter
+            "config_id": "qwen_model",  # add config_id parameter
             "messages": [{
                 "role": "user",
                 "content": "who are you?"

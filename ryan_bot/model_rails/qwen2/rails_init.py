@@ -4,9 +4,9 @@ from nemoguardrails import RailsConfig
 from nemoguardrails.llm.helpers import get_llm_instance_wrapper
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatible
-from utils.helper import print_prompt_loading
+from ryan_bot.utils.helper import print_prompt_loading
 
-from model_rails.qwen2.qwen_model import QwenModel
+from ryan_bot.model_rails.qwen2.qwen_model import QwenModel
 class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
     def __call__(self, prompt: str, **kwargs) -> str:
         print("==============================")

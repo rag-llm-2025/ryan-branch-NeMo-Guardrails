@@ -74,9 +74,9 @@
             "module": "nemoguardrails",
             "args": [
                 "server",
-                "--config=./ryan-bot/config",
+                "--config=./ryan_bot/config",
                 "--disable-chat-ui",
-                "--default-config-id=default",
+                "--default-config-id=qwen_model",
                 "--verbose"
             ],
             "cwd": "${workspaceFolder}",
@@ -84,7 +84,7 @@
             "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}",
-                "PROMPTS_DIR": "./ryan-bot/config/prompts"
+                "PROMPTS_DIR": "./ryan_bot/config/prompts"
             }
         },
         {
@@ -94,7 +94,8 @@
             "module": "nemoguardrails",
             "args": [
                 "chat",
-                "--config=./ryan-bot/config",
+                "--config=./ryan_bot/config",
+                "--default-config-id=qwen_model",
                 "--streaming"
             ],
             "cwd": "${workspaceFolder}",

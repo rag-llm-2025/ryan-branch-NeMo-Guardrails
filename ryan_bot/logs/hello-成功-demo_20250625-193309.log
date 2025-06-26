@@ -1,0 +1,134 @@
+INFO:     Started server process [1598]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:nemoguardrails.server.api:Got request for config config
+Entered verbose mode.
+19:33:21.681 | Registered Actions ['ClavataCheckAction', 'GetAttentionPercentageAction', 'GetCurrentDateTimeAction', 'UpdateAttentionMaterializedViewAction', 'alignscore request', 'alignscore_check_facts',
+'autoalign_factcheck_output_api', 'autoalign_groundedness_output_api', 'autoalign_input_api', 'autoalign_output_api', 'call cleanlab api', 'call fiddler faithfulness', 'call fiddler safety on bot message',
+'call fiddler safety on user message', 'call gcpnlp api', 'call_activefence_api', 'content_safety_check_input', 'content_safety_check_output', 'create_event', 'detect_pii', 'detect_sensitive_data',
+'injection_detection', 'jailbreak_detection_heuristics', 'jailbreak_detection_model', 'llama_guard_check_input', 'llama_guard_check_output', 'mask_pii', 'mask_sensitive_data', 'patronus_api_check_output',
+'patronus_lynx_check_output_hallucination', 'protect_text', 'retrieve_relevant_chunks', 'self_check_facts', 'self_check_hallucination', 'self_check_input', 'self_check_output', 'summarize_document',
+'topic_safety_check_input', 'wolfram alpha request']
+Device set to use cpu
+================== 初始化配置 ==================
+model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B, checkpoint_path: /home/ubuntu/workspace/llm/src/qwen2-fine-tuning/qwen2/output/hotel_qwen2-ryan-test-20250611/checkpoint-8000, device: cpu
+[LOG] Loading model and tokenizer...
+[LOG] Model and tokenizer loaded successfully.
+================== 配置初始化完成 ==================
+19:33:25.257 | Event UtteranceUserActionFinished | {'final_transcript': 'hello'}
+19:33:25.258 | Event StartInternalSystemAction | {'uid': '61e0...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'UserMessage', 'text': '$user_message'}}, 'action_result_key': None,
+'action_uid': '6082...', 'is_system_action': True}
+19:33:25.259 | Executing action create_event
+19:33:25.260 | Event UserMessage | {'uid': '9fc7...', 'text': 'hello'}
+19:33:25.261 | Event StartInternalSystemAction | {'uid': '47fa...', 'action_name': 'generate_user_intent', 'action_params': {}, 'action_result_key': None, 'action_uid': '78cc...', 'is_system_action': True}
+19:33:25.261 | Executing action generate_user_intent
+19:33:25.262 | Phase 1 Generating user intent
+19:33:25.275 | Invocation Params {'_type': 'ryan_local_engine', 'stop': None}
+
+LLM Prompt (c169d..) - generate_user_intent
+"""
+Below is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific
+details. If the bot does not know the answer to a question, it truthfully says it does not know.
+"""
+
+# This is how a conversation between a user and the bot can go:
+User message: "Hello there!"
+User intent: express greeting
+Bot intent: express greeting
+Bot message: "Hello! How can I assist you today?"
+User message: "What can you do for me?"
+User intent: ask about capabilities
+Bot intent: respond about capabilities
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your
+preferences."
+User message: "Tell me a bit about the history of NVIDIA."
+User intent: ask general question
+Bot intent: response for general question
+Bot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang,
+Chris Malachowsky, and Curtis Priem."
+User message: "tell me more"
+User intent: request more information
+Bot intent: provide more information
+Bot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world's first GPU, which was a major
+breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial
+intelligence."
+User message: "thanks"
+User intent: express appreciation
+Bot intent: express appreciation and offer additional help
+Bot message: "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."
+
+
+# This is how the user talks:
+User message: "Bad"
+User intent: express feeling bad
+
+User message: "I'm feeling good"
+User intent: express feeling good
+
+User message: "Good"
+User intent: express feeling good
+
+User message: "Hi"
+User intent: express greeting
+
+User message: "Hello"
+User intent: express greeting
+
+
+
+# ryan-test(general.yml): This is the current conversation between the user and the bot:
+# Choose intent from this list: express feeling bad, express feeling good, express greeting
+User message: "Hello there!"
+User intent: express greeting
+Bot intent: express greeting
+Bot message: "Hello! How can I assist you today?"
+User message: "What can you do for me?"
+User intent: ask about capabilities
+Bot intent: respond about capabilities
+Bot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your
+preferences."
+User message: "hello"
+
+
+
+LLM Completion (c169d..)
+User intent: express greeting
+Bot intent: express greeting
+Bot message: "Hello! How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you
+today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How
+can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist
+you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today?
+How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today? How can I assist you today?
+
+19:34:17.915 | Output Stats None
+19:34:17.916 | LLM call took 52.61 seconds
+19:34:17.917 | Event UserIntent | {'uid': 'b49a...', 'intent': 'express greeting'}
+19:34:17.919 | Event BotIntent | {'uid': '90bb...', 'intent': 'express greeting'}
+19:34:17.920 | Event StartInternalSystemAction | {'uid': '4f6e...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '9072...', 'is_system_action': True}
+19:34:17.921 | Executing action retrieve_relevant_chunks
+19:34:17.922 | Event InternalSystemActionFinished | {'uid': 'eaa3...', 'action_uid': '9072...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success',
+'is_success': True, 'return_value': '\n', 'events': None, 'is_system_action': True}
+19:34:17.924 | Event StartInternalSystemAction | {'uid': 'e120...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': '40ee...', 'is_system_action': True}
+19:34:17.926 | Executing action generate_bot_message
+19:34:17.927 | Phase 3 Generating bot message ...
+19:34:17.928 | Event BotMessage | {'uid': '660f...', 'text': 'Hello world!'}
+19:34:17.931 | Event StartInternalSystemAction | {'uid': 'aacf...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}},
+'action_result_key': None, 'action_uid': '2293...', 'is_system_action': True}
+19:34:17.932 | Executing action create_event
+19:34:17.933 | Event StartUtteranceBotAction | {'uid': 'd294...', 'script': 'Hello world!', 'action_uid': 'ea30...'}
+19:34:17.935 | Event BotIntent | {'uid': '353a...', 'intent': 'ask how are you'}
+19:34:17.936 | Event StartInternalSystemAction | {'uid': '7a32...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'action_uid': '67de...', 'is_system_action': True}
+19:34:17.937 | Executing action retrieve_relevant_chunks
+19:34:17.938 | Event InternalSystemActionFinished | {'uid': 'd853...', 'action_uid': '67de...', 'action_name': 'retrieve_relevant_chunks', 'action_params': {}, 'action_result_key': None, 'status': 'success',
+'is_success': True, 'return_value': '\n\n', 'events': None, 'is_system_action': True}
+19:34:17.940 | Event StartInternalSystemAction | {'uid': '4b0a...', 'action_name': 'generate_bot_message', 'action_params': {}, 'action_result_key': None, 'action_uid': 'd850...', 'is_system_action': True}
+19:34:17.940 | Executing action generate_bot_message
+19:34:17.941 | Phase 3 Generating bot message ...
+19:34:17.943 | Event BotMessage | {'uid': 'ec5c...', 'text': 'How are you feeling today?'}
+19:34:17.945 | Event StartInternalSystemAction | {'uid': 'fd3a...', 'action_name': 'create_event', 'action_params': {'event': {'_type': 'StartUtteranceBotAction', 'script': '$bot_message'}},
+'action_result_key': None, 'action_uid': 'f060...', 'is_system_action': True}
+19:34:17.946 | Executing action create_event
+19:34:17.946 | Event StartUtteranceBotAction | {'uid': '4bd8...', 'script': 'How are you feeling today?', 'action_uid': 'e9a2...'}
+19:34:17.950 | Total processing took 52.69 seconds. LLM Stats: 1 total calls, 52.61 total time, 0 total tokens, 0 total prompt tokens, 0 total completion tokens, [52.61] as latencies
+INFO:     127.0.0.1:38814 - "POST /v1/chat/completions HTTP/1.1" 200 OK

@@ -35,17 +35,17 @@ pip install -r requirements.txt
 ## 6. launch nemoguardrails server
 - If you enable chat-ui, you can use the following command:
 ```
-cd ./ryan-bot
-nemoguardrails server --config=./config
+cd ./ryan_bot
+nemoguardrails server --config=./config --default-config-id=qwen_model
 ```
 
 - If you disable chat-ui, you can use the following command:
 ```
 # launch server without chat-ui (please check the path of the config file)
-nemoguardrails server --config=./config --disable-chat-ui --default-config-id=default
+nemoguardrails server --config=./config --disable-chat-ui --default-config-id=qwen_model
 
 # launch client
-cd ryan-bot/ryan-client
+cd ryan_bot/ryan-client
 python ryan_dmeo_client.py  # recommend
 or
 python restful_api_client.py
@@ -62,6 +62,6 @@ cd nemo-guardrails
 select and start debug configuration -> Debug Ryan Bot Server
 F5 -> launch server
 
-cd nemo-guardrails/ryan-bot
+cd nemo-guardrails/ryan_bot
 python ryan_dmeo_client.py  # launch client to start the conversation
 ```
