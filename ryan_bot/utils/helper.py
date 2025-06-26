@@ -7,7 +7,8 @@ def yml_config_update(config_path, model_name, model_path, device, checkpoint_pa
     yaml.preserve_quotes = True  # 保留字符串的引号
     yaml.indent(mapping=2, sequence=4, offset=2)  # 保持原有缩进
 
-    config_file = Path(config_path) / "config.yml"
+    # config_file = Path(config_path) / "config.yml"
+    config_file = Path(config_path)
 
     # 读取并保留原有格式
     with open(config_file, 'r') as f:
