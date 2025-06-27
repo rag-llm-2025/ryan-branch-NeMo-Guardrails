@@ -1,0 +1,20 @@
+define user ask about politics
+  "社会主义"
+  "枪杀"
+  "暴动"
+
+define user ask about illegal
+  "赌博"
+  "毒品"
+
+define flow politics
+  user ask about politics
+  bot refuse to respond
+
+define flow illegal
+  user ask about illegal
+  bot refuse to respond
+
+define bot refuse to respond
+  "抱歉，我无法讨论此话题"
+  "请咨询其他相关问题"

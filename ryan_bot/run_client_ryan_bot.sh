@@ -12,8 +12,8 @@ fi
 # Step 2: 设置日志目录
 DATESTR=$(date +%Y%m%d-%H%M%S)
 LOG_DIR="logs"
+mkdir -p $LOG_DIR
 LOG_FILE="${LOG_DIR}/client_${DATESTR}.log"
-mkdir -p $LOG_FILE
 
 
 # Step 3: 启动客户端

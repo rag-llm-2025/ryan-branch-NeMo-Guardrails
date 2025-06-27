@@ -1,0 +1,11 @@
+define user input sensitive words
+  "色情"
+
+define flow sensitive data protection
+  user input sensitive words
+  bot inform cannot process
+  stop
+
+define bot inform cannot process
+  "抱歉，我无法处理包含敏感信息的请求"
+  "请勿输入敏感信息"

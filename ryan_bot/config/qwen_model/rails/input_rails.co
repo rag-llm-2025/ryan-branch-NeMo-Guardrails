@@ -1,0 +1,18 @@
+define flow input rails
+  # 从上下文中获取输入文本
+  $input_text = $user_message
+
+  # 这里可以添加调试语句查看实际值
+  # bot debug "[RYAN_DEBUG] =================== input_rails调试： input_text值为: $input_text"
+
+  # 敏感词检查
+  $has_sensitive = execute check_sensitive_words(text=$input_text)
+  if $has_sensitive
+    bot refuse to respond
+    stop
+
+  # 脏话检查
+  $has_profanity = execute check_profanity(text=$input_text)
+  if $has_profanity
+    bot warn inappropriate language
+    stop

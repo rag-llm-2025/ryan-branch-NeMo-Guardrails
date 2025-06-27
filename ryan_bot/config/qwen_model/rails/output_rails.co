@@ -1,0 +1,16 @@
+define flow output rails
+  # 从上下文中获取输出文本
+  $output_text = $bot_message
+  # 这里可以添加调试语句查看实际值
+  # bot debug "[RYAN_DEBUG] =================== input_rails调试： output_text值为: $output_text"
+
+  # 敏感词检查
+  $has_sensitive = execute check_sensitive_words(text=$output_text)
+  if $has_sensitive
+    bot say "响应包含敏感内容，已过滤"
+    stop
+
+  $is_appropriate = execute check_output_appropriateness(text=$output_text)
+  if not $is_appropriate
+    bot refuse to respond
+    stop

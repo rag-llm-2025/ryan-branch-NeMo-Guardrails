@@ -1,0 +1,11 @@
+define user express profanity
+  "大傻逼"
+
+define flow profanity filter
+  user express profanity
+  bot warn inappropriate language
+  stop
+
+define bot warn inappropriate language
+  "请注意文明用语"
+  "请勿使用不雅语言"

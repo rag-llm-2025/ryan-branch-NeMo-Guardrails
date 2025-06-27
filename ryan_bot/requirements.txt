@@ -3,3 +3,4 @@ torch
 peft
 ruamel.yaml
 requests
+thefuzz
