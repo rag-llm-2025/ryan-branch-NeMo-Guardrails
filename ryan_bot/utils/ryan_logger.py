@@ -1,12 +1,28 @@
 import logging
 from typing import Any
 
+# 定义颜色代码
+class LogColors:
+    RED = '\033[91m' # ERROR/CRITICAL
+    YELLOW = '\033[93m' # INFO/WARNING
+    RESET = '\033[0m'
+
 logger = logging.getLogger("ryan_bot")
 logger.setLevel(logging.DEBUG)
 
+# DEBUG/INFO/WARNING/ERROR/CRITICAL
+class ColoredFormatter(logging.Formatter):
+    def format(self, record):
+        message = super().format(record)
+        if record.levelno >= logging.ERROR:
+            return f"{LogColors.RED}{message}{LogColors.RESET}"
+        elif record.levelno >= logging.INFO:
+            return f"{LogColors.YELLOW}{message}{LogColors.RESET}"
+        return message
+
 if not logger.handlers:
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter(
+    handler.setFormatter(ColoredFormatter(
         '[%(asctime)s.%(msecs)03d] [%(tag_name)s] [%(levelname)s] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     ))
