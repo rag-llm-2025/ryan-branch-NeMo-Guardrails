@@ -17,7 +17,7 @@ def init(llm_rails: LLMRails):
     #         ryan_log.debug(tag_name, f.read())
 
     # init model and guardrails
-    ryan_log.debug(tag_name, f"================== 初始化配置 ==================")
+    ryan_log.info(tag_name, f"================== 初始化配置 ==================")
     config = llm_rails.config
     initialize_rails(config)
 
@@ -40,4 +40,4 @@ def init(llm_rails: LLMRails):
         name="check_output_appropriateness"
     )
 
-    ryan_log.debug(tag_name, f"================== 配置完成 ==================")
+    ryan_log.info(tag_name, f"================== 配置完成 ==================")

@@ -1,34 +1,37 @@
 from ruamel.yaml import YAML
 from pathlib import Path
 
+from ryan_bot.utils.ryan_logger import ryan_log
+tag_name="utils.helper.py"
+
 def yml_config_update(config_path, model_name, model_path, device, checkpoint_path):
-    """更新config.yml文件中的模型配置，保持原有格式和结构"""
+    """update config.yml file with model configuration, keeping the original format and structure"""
     yaml = YAML()
-    yaml.preserve_quotes = True  # 保留字符串的引号
-    yaml.indent(mapping=2, sequence=4, offset=2)  # 保持原有缩进
+    yaml.preserve_quotes = True  # keep the original quotes
+    yaml.indent(mapping=2, sequence=4, offset=2)  # keep the original indentation
 
     # config_file = Path(config_path) / "config.yml"
     config_file = Path(config_path)
 
-    # 读取并保留原有格式
+    # read and keep the original format
     with open(config_file, 'r') as f:
         config = yaml.load(f)
 
-    # 更新模型配置
+    # update model configuration
     for model in config['models']:
         if model['type'] == 'main':
             model['model'] = model_name
             model['parameters']['model_path'] = model_path
             model['parameters']['device'] = device
             model['parameters']['checkpoint_path'] = checkpoint_path
-            print(f"[DEBUG] In config.yml: model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
+            ryan_log.info(tag_name, f"Updated config.yml with model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
-    # 写回文件，保持原有格式
+    # write back to file, keeping the original format
     with open(config_file, 'w') as f:
         yaml.dump(config, f)
 
 def print_prompt_loading(config):
-    print("[RYAN_DEBUG] print_prompt_loading...")
+    ryan_log.info(tag_name, "print loaded prompt templates related to ryan_local_engine ...")
     # 优化后的调试输出
     if config.prompts:
         matched_prompts = [
@@ -36,9 +39,9 @@ def print_prompt_loading(config):
             for p in config.prompts
             if p.models and 'ryan_local_engine' in [m.lower() for m in p.models]
         ]
-        print("[RYAN_DEBUG] ===== 匹配的提示模板 =====")
+        ryan_log.debug(tag_name, "===== 匹配的提示模板 =====")
         for i, (task, models) in enumerate(matched_prompts, 1):
-            print(f"{i}. Task: {task} | Models: {models}")
-        print(f"共匹配 {len(matched_prompts)} 个模板")
+            ryan_log.debug(tag_name, f"{i}. Task: {task} | Models: {models}")
+        ryan_log.debug(tag_name, f"共匹配 {len(matched_prompts)} 个模板")
     else:
-        print("[RYAN_DEBUG] 警告: 未加载任何提示模板")
+        ryan_log.warn(tag_name, "警告: 未加载任何提示模板")

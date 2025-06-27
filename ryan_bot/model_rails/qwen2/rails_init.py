@@ -7,20 +7,25 @@ from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatib
 from ryan_bot.utils.helper import print_prompt_loading
 
 from ryan_bot.model_rails.qwen2.qwen_model import QwenModel
+
+from ryan_bot.utils.ryan_logger import ryan_log
+tag_name="model_rails.qwen2.helper.py"
+
 class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
     def __call__(self, prompt: str, **kwargs) -> str:
-        print("==============================")
-        print("[RYAN_DEBUG] Qwen2PipelineWrapper is called with prompt:", prompt)
-        print("[RYAN_DEBUG] Qwen2PipelineWrapper is called with kwargs:", kwargs)
-        print("==============================")
+        ryan_log.info(tag_name, "==============================")
+        ryan_log.info(tag_name, "[RYAN_DEBUG] Qwen2PipelineWrapper is called with prompt:", prompt)
+        ryan_log.info(tag_name, "[RYAN_DEBUG] Qwen2PipelineWrapper is called with kwargs:", kwargs)
+        ryan_log.info(tag_name, "============================")
 
         try:
             result = super().__call__(prompt, **kwargs)
 
             # 调试日志
             with open("llm_debug.log", "a") as f:
-                f.write(f"[RYAN_DEBUG] Prompt: {prompt}\n")
-                f.write(f"[RYAN_DEBUG] Response: {result}\n\n")
+
+                f.write(f"[{tag_name}] Prompt: {prompt}\n")
+                f.write(f"[{tag_name}] Response: {result}\n\n")
 
             # 处理不同格式的返回结果
             if isinstance(result, list):
@@ -30,13 +35,13 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
 
             # 确保返回有效内容
             if not output.strip():
-                return "[RYAN_DEBUG] I don't have an answer for that."
+                return f"[{tag_name}] I don't have an answer for that."
 
             return output
 
         except Exception as e:
-            print(f"[RYAN_DEBUG]Error generating response: {str(e)}")
-            return "[RYAN_DEBUG] Sorry, I encountered an error while processing your request."
+            ryan_log.error(tag_name, f"Error generating response: {str(e)}")
+            return f"[{tag_name}] Sorry, I encountered an error while processing your request."
 
 def initialize_rails(config: RailsConfig):
     print_prompt_loading(config)
@@ -48,22 +53,23 @@ def initialize_rails(config: RailsConfig):
         checkpoint_path = model_config.parameters.get("checkpoint_path")
         device = model_config.parameters.get("device", "cuda")
         num_gpus = model_config.parameters.get("num_gpus", 1)
-        print(f"[RYAN_DEBUG] In config.yml: model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
+        ryan_log.info(tag_name, f"In config.yml: model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
-        # 初始化Qwen模型
+        # initialize qwen_model
         qwen_model = QwenModel(model_path, checkpoint_path=checkpoint_path, device=device)
-        # print("==================MODEL TEST======================")
+
+        # ryan_test: model test
+        # ryan_log.debug(tag_name, "==================MODEL TEST======================")
         # messages = [
         #             {"role": "system", "content": "你是我的私人助理"},
         #             {"role": "user", "content": "对于美国最近的暴动，你有什么看法？"}
         #         ]
-        # print("ryan test input: ", messages[1]["content"])
+        # ryan_log.info(tag_name, "ryan test input: ", messages[1]["content"])
         # test_response = qwen_model.generate(messages)
-        # print("ryan test_response: ", test_response)
-        # print("==================MODEL TEST EDN===================\n")
+        # ryan_log.info(tag_name, "ryan test_response: ", test_response)
+        # ryan_log.debug(tag_name, "==================MODEL TEST END===================")
 
-
-        # 配置pipeline参数
+        # configure pipeline parameters
         pipe = pipeline(
             "text-generation",
             model=qwen_model.model,
@@ -73,17 +79,17 @@ def initialize_rails(config: RailsConfig):
             do_sample=True,
             return_full_text=False,
             pad_token_id=qwen_model.tokenizer.eos_token_id,
-            # repetition_penalty=1.2,  # 添加重复惩罚
-            # no_repeat_ngram_size=3   # 防止3-gram重复
+            # repetition_penalty=1.2,  # add repetition penalty
+            # no_repeat_ngram_size=3   # prevent 3-gram repetition
         )
 
-        # 使用自定义wrapper封装
+        # create custom wrapper
         hf_llm = Qwen2PipelineWrapper(pipeline=pipe)
 
-        # 注册LLM provider
+        # register LLM provider
         provider = get_llm_instance_wrapper(
             llm_instance=hf_llm,
             llm_type="ryan_local_engine"
         )
         register_llm_provider("ryan_local_engine", provider)
-        print(f"[RYAN_DEBUG] LLM Provider registered: {provider}")
+        ryan_log.debug(tag_name, f"LLM Provider registered: {provider}")
