@@ -8,7 +8,7 @@ cd nemo-guardrails
 ## 2. setup running environment
 ```
 cd nemo-guardrails
-source ./ryan_bot/run_setup_ryan_bot.sh
+source ./ryan_bot/run_setup_env_ryan_bot.sh
 ```
 
 ## 3. run the server in python virtual environment
@@ -21,7 +21,7 @@ source venv/bin/activate (source ./ryan_bot/run_setup_ryan_bot.sh)
 ## 4. run the client in python virtual environment
 ```
 cd nemo-guardrails
-source venv/bin/activate (source ./ryan_bot/run_setup_ryan_bot.sh)
+# source venv/bin/activate (source ./ryan_bot/run_setup_ryan_bot.sh)
 ./ryan_bot/run_client_ryan_bot.sh
 ```
 

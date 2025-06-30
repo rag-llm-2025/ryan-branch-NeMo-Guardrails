@@ -1,18 +1,18 @@
 models:
   - type: main
     engine: ryan_local_engine
-    model: Qwen2_BE_0.6B
+    model: Qwen2.5-7B-Instruct
     parameters:
-      model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B
+      model_path: /root/ryan/llm/models/Qwen2.5-7B-Instruct
       checkpoint_path: ''                                                                                                            # 确保路径正确
-      device: "cpu"  # 可以根据需要选择 "cpu" 或 "cuda"
+      device: "cuda" # 可以根据需要选择 "cpu" 或 "cuda"
       # num_gpus: 1  # 如果使用 GPU，可以指定使用的 GPU 数量
 
 custom_data:
-      sensitive_words_file: "./resources/sensitive_words.txt"
-      profanity_words_file: "./resources/profanity_words.txt"
-      level: 'DEBUG'  # DEBUG|INFO|WARNING|ERROR|CRITICAL
-      disabled: false # true|false
+  sensitive_words_file: "./resources/sensitive_words.txt"
+  profanity_words_file: "./resources/profanity_words.txt"
+  level: 'DEBUG'      # DEBUG|INFO|WARNING|ERROR|CRITICAL
+  disabled: false     # true|false
 
 rails:
   input:

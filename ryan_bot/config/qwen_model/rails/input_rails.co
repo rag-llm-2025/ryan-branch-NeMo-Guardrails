@@ -8,7 +8,7 @@ define flow input rails
   # 敏感词检查
   $has_sensitive = execute check_sensitive_words(text=$input_text)
   if $has_sensitive
-    bot refuse to respond
+    bot inform cannot process
     stop
 
   # 脏话检查
