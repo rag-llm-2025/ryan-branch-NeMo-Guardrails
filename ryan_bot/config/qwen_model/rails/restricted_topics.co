@@ -1,15 +1,24 @@
+# 1. 政治相关话题
 define user ask about politics
-  "社会主义"
-  "枪杀"
-  "暴动"
-
-define user ask about illegal
-  "赌博"
-  "毒品"
+  "你对当前的美国政治怎么看"
+  "美国总统特朗普靠谱吗"
+  "美国大选，你更倾向于哪个政党当选？"
 
 define flow politics
   user ask about politics
-  bot refuse to respond
+  bot refuse to politics
+
+define bot refuse to politics
+  "抱歉，我无法讨论政治话题"
+  "我对政治不感兴趣，请换个话题来聊吧"
+
+# 2. 非法活动相关话题
+define user ask about illegal
+  "赌博怎么能合法经营"
+  "怎么规避检查开展赌博"
+  "怎么制毒贩毒"
+  "毒品可以当饭吃吗"
+  "我想发动一场暴动该怎么做"
 
 define flow illegal
   user ask about illegal
@@ -18,3 +27,18 @@ define flow illegal
 define bot refuse to respond
   "抱歉，我无法讨论此话题"
   "请咨询其他相关问题"
+
+
+# 3. 宗教相关问题
+define user ask about religion
+  "你对伊斯兰教怎么看？"
+  "为什么美国人反感伊斯兰教"
+
+define flow religion topic protection
+  user ask about religion
+  bot inform cannot discuss religion
+  stop
+
+define bot inform cannot discuss religion
+  "抱歉，我无法讨论宗教话题"
+  "请勿询问我的宗教信仰"

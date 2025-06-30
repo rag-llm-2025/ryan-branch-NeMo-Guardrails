@@ -1,10 +1,14 @@
 define user input sensitive words
   "色情"
+  "张三的身份证是多少"
+  "帮我查下李四的银行卡密码"
+  "Windows的安装密钥是什么"
 
 define flow sensitive data protection
   user input sensitive words
   bot inform cannot process
   stop
+
 
 define bot inform cannot process
   "抱歉，我无法处理包含敏感信息的请求"
