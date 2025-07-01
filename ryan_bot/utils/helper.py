@@ -4,7 +4,7 @@ from pathlib import Path
 from ryan_bot.utils.ryan_logger import ryan_log
 tag_name="utils.helper.py"
 
-def yml_config_update(config_path, model_name, model_path, device, checkpoint_path):
+def yml_config_update(config_path, engine_name, model_name, model_path, device, checkpoint_path):
     """update config.yml file with model configuration, keeping the original format and structure"""
     yaml = YAML()
     yaml.preserve_quotes = True  # keep the original quotes
@@ -20,11 +20,12 @@ def yml_config_update(config_path, model_name, model_path, device, checkpoint_pa
     # update model configuration
     for model in config['models']:
         if model['type'] == 'main':
+            model['engine'] = engine_name
             model['model'] = model_name
             model['parameters']['model_path'] = model_path
             model['parameters']['device'] = device
             model['parameters']['checkpoint_path'] = checkpoint_path
-            ryan_log.info(tag_name, f"Updated config.yml with model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
+            ryan_log.info(tag_name, f"Updated config.yml with engine_name={engine_name}, model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
     # write back to file, keeping the original format
     with open(config_file, 'w') as f:

@@ -22,12 +22,16 @@ echo -e "\n当前的工作路径为: $PWD"
 if [ "$(whoami)" = "ubuntu" ]; then
     export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"
+    export ENGINE_NAME="ryan_local_engine"
 elif [ "$(whoami)" = "root" ]; then
     export LLM_DIR="/root/ryan/llm"
     export MODEL_NAME="Qwen2.5-7B-Instruct"
+    # export ENGINE_NAME="ryan_vllm_engine"
+    export ENGINE_NAME="ryan_local_engine"
 else
-    export LLM_DIR="/home/$(whoami)/llm"  # 其他用户默认路径
+    export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"
+    export ENGINE_NAME="ryan_local_engine"
 fi
 read -p "请输入当前环境的llm文件夹路径 [默认: $LLM_DIR]: " current_llm_dir
 
@@ -63,6 +67,7 @@ check_cuda_and_run() {
 check_cuda_and_run
 echo -e "\n============================================================"
 echo "当前环境变量："
+echo "engine_name=$ENGINE_NAME"
 echo "model_name=$MODEL_NAME"
 echo "model_path=$MODEL_PATH, device=$DEVICE"
 echo -e "============================================================\n"
@@ -79,7 +84,7 @@ cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
 
 # Step 5:更新yml配置文件
 update_config() {
-    python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
+    python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
 }
 update_config
 

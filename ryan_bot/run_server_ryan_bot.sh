@@ -9,11 +9,13 @@ if [ -z "$VIRTUAL_ENV" ]; then
     exit 1
 fi
 
+
 # Step 2: 设置日志目录
 DATESTR=$(date +%Y%m%d-%H%M%S)
 LOG_DIR="logs"
 mkdir -p $LOG_DIR
-LOG_FILE="${LOG_DIR}/server_${DATESTR}.log"
+rm -f $LOG_DIR/ryan_server_*.log
+LOG_FILE="${LOG_DIR}/ryan_server_${DATESTR}.log"
 
 # Step 3: 启动服务器
 echo "正在启动服务器..."
