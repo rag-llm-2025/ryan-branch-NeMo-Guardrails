@@ -14,7 +14,20 @@ DATESTR=$(date +%Y%m%d-%H%M%S)
 LOG_DIR="logs"
 mkdir -p $LOG_DIR
 LOG_FILE="${LOG_DIR}/client_${DATESTR}.log"
-LLM_DIR=${1:-"/root/ryan/llm"}
+
+echo -e "\n当前的工作路径为: $PWD"
+if [ "$(whoami)" = "ubuntu" ]; then
+    export LLM_DIR="/home/ubuntu/workspace/llm"
+    export MODEL_NAME="Qwen2_BE_0.6B"
+elif [ "$(whoami)" = "root" ]; then
+    export LLM_DIR="/root/ryan/llm"
+    export MODEL_NAME="Qwen2.5-7B-Instruct"
+else
+    export LLM_DIR="/home/$(whoami)/llm"  # 其他用户默认路径
+    export MODEL_NAME="Qwen2_BE_0.6B"
+fi
+
+# LLM_DIR=${1:-"/root/ryan/llm"}
 
 
 # Step 3: 启动客户端
