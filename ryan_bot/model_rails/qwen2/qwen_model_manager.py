@@ -6,8 +6,8 @@ import os
 from ryan_bot.utils.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.qwen_model.py"
 
-class QwenModel:
-    def __init__(self, model_name, model_path, checkpoint_path=None, device="cuda"):
+class QwenModelManager:
+    def __init__(self, model_name, model_path, checkpoint_path=None, device="cuda", num_gpus=0):
         """Initialize Qwen2 local model"""
 
         ryan_log.info(tag_name, f"Initialize Qwen2 local model, model_path: {model_path}, checkpoint_path: {checkpoint_path}, device: {device}")

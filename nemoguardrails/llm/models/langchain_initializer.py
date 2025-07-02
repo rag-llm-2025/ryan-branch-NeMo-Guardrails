@@ -354,6 +354,7 @@ def _init_nvidia_model(
 # special model handlers
 _SPECIAL_MODEL_INITIALIZERS = {
     "gpt-3.5-turbo-instruct": _init_gpt35_turbo_instruct,
+    "Qwen2.5-7B-Instruct": _init_gpt35_turbo_instruct,
 }
 
 # provider-specific handlers
@@ -390,8 +391,8 @@ def _handle_model_special_cases(
     if initializer is None and provider_name in _PROVIDER_INITIALIZERS:
         initializer = _PROVIDER_INITIALIZERS[provider_name]
 
-    if initializer is None:
-        return None
+    # if initializer is None:
+    #     return None
 
     result = initializer(model_name, provider_name, kwargs)
     if not isinstance(result, (BaseChatModel, BaseLLM)):

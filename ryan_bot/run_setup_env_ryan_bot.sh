@@ -26,8 +26,8 @@ if [ "$(whoami)" = "ubuntu" ]; then
 elif [ "$(whoami)" = "root" ]; then
     export LLM_DIR="/root/ryan/llm"
     export MODEL_NAME="Qwen2.5-7B-Instruct"
-    # export ENGINE_NAME="ryan_vllm_engine"
-    export ENGINE_NAME="ryan_local_engine"
+    export ENGINE_NAME="ryan_vllm_engine"
+    # export ENGINE_NAME="ryan_local_engine"
 else
     export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"

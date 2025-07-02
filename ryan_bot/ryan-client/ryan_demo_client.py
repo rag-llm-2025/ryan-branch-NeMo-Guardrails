@@ -52,18 +52,19 @@ class RyanBotClient:
 
 def interactive_demo():
     client = RyanBotClient()
-    # print("对话开始(输入'quit'退出)")
     ryan_log.info(tag_name, "对话开始(输入'quit'退出)")
 
     while True:
         user_input = input("You: ")
-        ryan_log.info(tag_name, f"User: {user_input}")
         if user_input.lower() == 'quit':
             break
 
+        import time
+        start_time = time.perf_counter()
+        ryan_log.info(tag_name, f"User: {user_input}")
         reply = client.chat(user_input)
-        ryan_log.info(tag_name, f"Bot: {reply}")
-        # print("AI:", reply)
+        elapsed = (time.perf_counter() - start_time) * 1000  # 毫秒
+        ryan_log.info(tag_name, f"Bot: {reply} （latency: {elapsed:.2f}ms]")
 
 if __name__ == "__main__":
     interactive_demo()

@@ -2,18 +2,19 @@
 
 from nemoguardrails import RailsConfig
 
-from ryan_bot.model_rails.qwen2.qwen_model import QwenModel
+from ryan_bot.model_rails.qwen2.qwen_model_manager import QwenModelManager
 from ryan_bot.model_rails.qwen2.huggingface_wrapper import Qwen2PipelineWrapper
 
-from ryan_bot.model_rails.vllm_qwen.vllm_qwen_model import VllmQwenModel
-from ryan_bot.model_rails.vllm_qwen.vllm_qwen_wrapper import VllmQwenWrapper
+from ryan_bot.model_rails.vllm_qwen.vllm_model_manager import VllmModelManager
+# from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import VllmQwenWrapper
+from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import custom_register_llm_provider
 
 from ryan_bot.utils.helper import print_prompt_loading
 from ryan_bot.utils.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.helper.py"
 
 def initialize_rails(config: RailsConfig):
-    print_prompt_loading(config)
+    # print_prompt_loading(config)
 
     model_config = next((model for model in config.models if model.type == "main"), None)
     if model_config:
@@ -27,20 +28,21 @@ def initialize_rails(config: RailsConfig):
 
         if engine_name == "ryan_vllm_engine":
             # initialize vllm_model
-            vllm_model = VllmQwenModel(model_name, model_path, checkpoint_path=checkpoint_path, device=device)
-            vllm_model.chat("你对美国最近的暴动怎么看？")
+            vllm_model_manager = VllmModelManager(model_name, model_path, checkpoint_path=checkpoint_path, device=device, tensor_parallel_size=num_gpus)
+            vllm_model_manager.chat("你对美国最近的暴动怎么看？")
 
-            vllm_qwen_wrapper = VllmQwenWrapper(vllm_model)
-            provider = vllm_qwen_wrapper.register_llm_provider()
+            provider = custom_register_llm_provider(vllm_model_manager)
             ryan_log.debug(tag_name, f"vllm_qwen_wrapper Provider registered: {provider}")
+
         elif engine_name == "ryan_local_engine":
             # initialize qwen_model
-            qwen_model = QwenModel(model_name, model_path, checkpoint_path=checkpoint_path, device=device, num_gpus=num_gpus)
-            qwen_model.chat("你对美国最近的暴动怎么看？")
+            qwen_model_manager = QwenModelManager(model_name, model_path, checkpoint_path=checkpoint_path, device=device, num_gpus=num_gpus)
+            qwen_model_manager.chat("你对美国最近的暴动怎么看？")
 
             huggingface_wrapper = Qwen2PipelineWrapper()
-            provider = huggingface_wrapper.register_llm_provider(qwen_model)
+            provider = huggingface_wrapper.register_llm_provider(qwen_model_manager)
             ryan_log.debug(tag_name, f"huggingface_wrapper Provider registered: {provider}")
+
         else:
             ryan_log.error(tag_name, f"Unknown engine_name: {engine_name}")
             raise ValueError(f"Unknown engine_name: {engine_name}")

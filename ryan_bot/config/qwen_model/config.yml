@@ -1,6 +1,6 @@
 models:
   - type: main
-    engine: ryan_local_engine
+    engine: ryan_vllm_engine
     model: Qwen2.5-7B-Instruct
     parameters:
       model_path: /root/ryan/llm/models/Qwen2.5-7B-Instruct
