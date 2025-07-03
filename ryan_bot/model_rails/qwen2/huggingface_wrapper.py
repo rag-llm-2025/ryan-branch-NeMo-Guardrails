@@ -16,19 +16,18 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
         try:
             result = super().__call__(prompt, **kwargs)
 
-            # 调试日志
+            # Debug logging
             with open("llm_debug.log", "a") as f:
-
                 f.write(f"[{tag_name}] Prompt: {prompt}\n")
                 f.write(f"[{tag_name}] Response: {result}\n\n")
 
-            # 处理不同格式的返回结果
+            # Handle different response formats
             if isinstance(result, list):
                 output = result[0].get("generated_text", "")
             else:
                 output = result.get("generated_text", "")
 
-            # 确保返回有效内容
+            # Ensure valid content is returned
             if not output.strip():
                 return f"[{tag_name}] I don't have an answer for that."
 
@@ -39,14 +38,14 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
             return f"[{tag_name}] Sorry, I encountered an error while processing your request."
 
     def register_llm_provider(self, qwen_model):
-        # configure pipeline parameters
+        # Configure pipeline parameters
         pipe = pipeline(
             "text-generation",
             model=qwen_model.model,
             tokenizer=qwen_model.tokenizer,
             device=qwen_model.device,
             max_new_tokens=128,
-            temperature=0.7,  # 可根据需求动态调整
+            temperature=0.7,  # Can be adjusted dynamically as needed
             do_sample=True,
             # top_k=50,
             top_p=0.9,
@@ -56,10 +55,10 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
             # no_repeat_ngram_size=3   # prevent 3-gram repetition
         )
 
-        # create custom wrapper
+        # Create custom wrapper
         hf_llm = Qwen2PipelineWrapper(pipeline=pipe)
 
-        # register LLM provider
+        # Register LLM provider
         provider = get_llm_instance_wrapper(
             llm_instance=hf_llm,
             llm_type="ryan_local_engine"

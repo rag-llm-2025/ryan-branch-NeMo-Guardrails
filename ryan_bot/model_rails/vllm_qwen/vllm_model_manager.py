@@ -10,7 +10,7 @@ tag_name = "model_rails.v_qwen.vllm_qwen_model.py"
 
 
 class ModelConfig(BaseModel):
-    """模型配置参数容器"""
+    """Model configuration parameter container"""
     model_name: str
     model_path: str
     checkpoint_path: Optional[str] = None
@@ -23,7 +23,7 @@ class ModelConfig(BaseModel):
 class VllmModelManager:
     def __init__(self, model_name: str, model_path: str, checkpoint_path: Optional[str] = None,
                  device: str = "cuda", tensor_parallel_size: int = 1):
-        """初始化模型管理器"""
+        """Initialize model manager"""
         self.config = ModelConfig(
             model_name=model_name,
             model_path=model_path,
@@ -33,7 +33,7 @@ class VllmModelManager:
         )
         self._validate_paths()
 
-        # 初始化默认采样参数
+        # Initialize default sampling parameters
         self.default_params = {
             "temperature": 0.7,
             "top_p": 0.8,
@@ -41,22 +41,22 @@ class VllmModelManager:
         }
 
         ryan_log.info(tag_name,
-            f"初始化vLLM模型 | 路径: {self.config.model_path} | "
+            f"Initializing vLLM model | Path: {self.config.model_path} | "
             f"设备: {self.config.device} | 并行度: {self.config.tensor_parallel_size}"
         )
 
         self.model = self.load_model()
-        self.tokenizer = self.model.get_tokenizer()  # 确保tokenizer可用
+        self.tokenizer = self.model.get_tokenizer()  # Ensure tokenizer is available
 
     def _validate_paths(self):
-        """路径验证逻辑"""
+        """Path validation logic"""
         if not os.path.exists(self.config.model_path):
-            raise FileNotFoundError(f"模型路径不存在: {self.config.model_path}")
+            raise FileNotFoundError(f"Model path does not exist: {self.config.model_path}")
         if self.config.checkpoint_path and not os.path.exists(self.config.checkpoint_path):
-            ryan_log.warning(tag_name, f"Peft模型路径不存在: {self.config.checkpoint_path}")
+            ryan_log.warning(tag_name, f"Peft model path does not exist: {self.config.checkpoint_path}")
 
     def load_model(self) -> LLM:
-        """加载vLLM模型引擎"""
+        """Load vLLM model engine"""
         try:
             return LLM(
                 model=self.config.model_path,
@@ -66,44 +66,45 @@ class VllmModelManager:
                 trust_remote_code=True
             )
         except Exception as e:
-            ryan_log.error(tag_name, f"模型加载失败: {str(e)}")
+            ryan_log.error(tag_name, f"Model loading failed: {str(e)}")
             raise
 
     def _get_sampling_params(self, **kwargs) -> SamplingParams:
-        """生成采样参数"""
+        """Generate sampling parameters"""
         params = {**self.default_params, **kwargs}
         return SamplingParams(**params)
 
     def generate(self, prompts: List[str], **kwargs) -> List[str]:
-        """同步生成接口"""
+        """Synchronous generation interface"""
         params = self._get_sampling_params(**kwargs)
         outputs = self.model.generate(prompts, params)
         return [self._process_output(o) for o in outputs]
 
     async def generate_async(self, prompts: List[str], **kwargs) -> List[str]:
-        """异步生成接口 (vLLM原生支持)"""
+        """Asynchronous generation interface (vLLM native support)"""
 
-        ryan_log.info(tag_name, f"异步生成请求 | 提示: {prompts} | 参数: {kwargs}")
+        ryan_log.info(tag_name, f"Async generation request | Prompts: {prompts} | Params: {kwargs}")
         params = self._get_sampling_params(**kwargs)
         outputs = self.model.generate(prompts, params)
         return [self._process_output(o) for o in outputs]
 
     def _process_output(self, output) -> str:
-        """统一输出处理"""
+        """Unified output processing"""
         text = output.outputs[0].text
         return text.split("<|im_end|>")[0].strip()
 
     def chat(self, prompt: str, **kwargs) -> str:
-        """对话接口"""
-        ryan_log.debug(tag_name, f"处理用户输入: {prompt[:60]}...")
+        """Chat interface"""
+        ryan_log.debug(tag_name, f"Processing user input: {prompt[:60]}...")
 
-        system_prompt = "你是我的私人助理"
-        full_prompt = f"系统: {system_prompt}\n用户: {prompt}\n助手:"
+        system_prompt = "You are my personal assistant"
+        full_prompt = f"System: {system_prompt}\nUser: {prompt}\nAssistant:"
 
         try:
             response = self.generate([full_prompt], **kwargs)[0]
-            ryan_log.debug(tag_name, f"生成响应: {response[:60]}...")
+            # ryan_log.debug(tag_name, f"Bot: {response[:60]}...")
+            ryan_log.debug(tag_name, f"Bot: {response}")
             return response
         except Exception as e:
-            ryan_log.error(tag_name, f"对话生成失败 | 错误: {str(e)}")
-            return "抱歉，生成响应时出现错误"
+            ryan_log.error(tag_name, f"Chat generation failed | Error: {str(e)}")
+            return "Sorry, an error occurred while generating the response"

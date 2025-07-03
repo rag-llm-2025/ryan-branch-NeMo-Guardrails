@@ -14,7 +14,7 @@ from typing import Optional, List
 class VllmQwenWrapper(HuggingFacePipelineCompatible):
     vllm_model_manager: Optional[VllmModelManager] = None
 
-    def __init__(self, vllm_model_manager: VllmModelManager):  # 添加构造函数
+    def __init__(self, vllm_model_manager: VllmModelManager):  # Added constructor
         super().__init__()
         self.vllm_model_manager = vllm_model_manager
 
@@ -27,19 +27,18 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
         try:
             result = super().__call__(prompt, **kwargs)
 
-            # 调试日志
+            # Debug logging
             with open("llm_debug.log", "a") as f:
-
                 f.write(f"[{tag_name}] Prompt: {prompt}\n")
                 f.write(f"[{tag_name}] Response: {result}\n\n")
 
-            # 处理不同格式的返回结果
+            # Handle different response formats
             if isinstance(result, list):
                 output = result[0].get("generated_text", "")
             else:
                 output = result.get("generated_text", "")
 
-            # 确保返回有效内容
+            # Ensure valid content is returned
             if not output.strip():
                 return f"[{tag_name}] I don't have an answer for that."
 
@@ -52,44 +51,44 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
     async def _acall(
         self,
         prompt: str,
-        stop: Optional[List[str]] = None,  # 添加必须的stop参数
-        run_manager = None,  # 添加回调管理器参数
+        stop: Optional[List[str]] = None,  # Added required stop parameter
+        run_manager = None,  # Added callback manager parameter
         **kwargs
     ) -> str:
-        """实现符合Langchain规范的异步调用接口"""
-        ryan_log.info(tag_name, f"异步调用接口，prompt: {prompt[:100]}...")
+        """Implement asynchronous call interface compliant with Langchain specifications"""
+        ryan_log.info(tag_name, f"Async call interface, prompt: {prompt[:100]}...")
         try:
-            # 将stop参数转换为vLLM需要的格式
+            # Convert stop parameters to vLLM required format
             stop_token_ids = []
             if stop:
                 stop_token_ids = [self.vllm_model_manager.tokenizer.encode(s, add_special_tokens=False)[-1] for s in stop]
 
-            # 添加stop参数到生成配置
+            # Add stop parameters to generation configuration
             response = await self.vllm_model_manager.generate_async(
                 [prompt],
                 temperature=kwargs.get("temperature", 0.7),
                 top_p=kwargs.get("top_p", 0.9),
                 max_tokens=kwargs.get("max_tokens", 128),
-                stop_token_ids=stop_token_ids  # 传递停止token
+                stop_token_ids=stop_token_ids  # Pass stop tokens
             )
-            ryan_log.info(tag_name, f"异步生成结果response: {response}")
-            return response[0]  # 直接返回文本内容
+            ryan_log.info(tag_name, f"Async generation result response: {response}")
+            return response[0]  # Return text content directly
 
         except Exception as e:
-            ryan_log.error(tag_name, f"异步生成错误: {str(e)}")
-            return f"[{tag_name}] 异步请求处理失败"
+            ryan_log.error(tag_name, f"Async generation error: {str(e)}")
+            return f"[{tag_name}] Async request processing failed"
 
 def custom_register_llm_provider(vllm_model_manager):
-    # configure pipeline parameters
+    """create and register vllm_qwen_wrapper"""
 
-    # 创建自定义包装器时传递vLLM实例
+    # Pass vLLM instance when creating custom wrapper
     hf_llm = VllmQwenWrapper(vllm_model_manager)
 
-    # register LLM provider
+    # Register LLM provider
     provider = get_llm_instance_wrapper(
         llm_instance=hf_llm,
         llm_type="ryan_vllm_engine"
     )
     register_llm_provider("ryan_vllm_engine", provider)
-    ryan_log.info(tag_name, f"可用LLM提供者: {get_llm_provider_names()}")
+    ryan_log.info(tag_name, f"Available LLM providers: {get_llm_provider_names()}")
     return provider
