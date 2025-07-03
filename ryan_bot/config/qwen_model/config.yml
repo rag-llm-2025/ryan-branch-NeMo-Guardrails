@@ -1,11 +1,11 @@
 models:
   - type: main
-    engine: ryan_vllm_engine
-    model: Qwen2.5-7B-Instruct
+    engine: ryan_local_engine
+    model: Qwen2_BE_0.6B
     parameters:
-      model_path: /root/ryan/llm/models/Qwen2.5-7B-Instruct
+      model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B
       checkpoint_path: ''                                                                                                            # 确保路径正确
-      device: "cuda" # 可以根据需要选择 "cpu" 或 "cuda"
+      device: "cpu"  # 可以根据需要选择 "cpu" 或 "cuda"
       # num_gpus: 1  # 如果使用 GPU，可以指定使用的 GPU 数量
 
 custom_data:

@@ -55,6 +55,15 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
             # no_repeat_ngram_size=3   # prevent 3-gram repetition
         )
 
+        ryan_log.info(tag_name, pipe.model.generation_config.num_return_sequences)
+        test = "你对美国的印象是什么？"
+        output = pipe(test, max_new_tokens=10)
+        if isinstance(output, list):
+            logged_output = output[0].get("generated_text", "")
+        else:
+            logged_output = output.get("generated_text", "")
+        ryan_log.info(tag_name, test + " --> " +logged_output)
+
         # Create custom wrapper
         hf_llm = Qwen2PipelineWrapper(pipeline=pipe)
 

@@ -35,9 +35,10 @@ class VllmModelManager:
 
         # Initialize default sampling parameters
         self.default_params = {
+            # "max_new_tokens": 128,
+            "max_tokens": 512,
             "temperature": 0.7,
-            "top_p": 0.8,
-            "max_tokens": 512
+            "top_p": 0.8
         }
 
         ryan_log.info(tag_name,
@@ -63,7 +64,13 @@ class VllmModelManager:
                 tensor_parallel_size=torch.cuda.device_count(),
                 dtype=self.config.dtype,
                 gpu_memory_utilization=self.config.gpu_memory_utilization,
-                trust_remote_code=True
+                # max_new_tokens=self.default_params.get("max_new_tokens", 128),
+                # temperature=self.default_params.get("temperature", 0.7),
+                # top_p=self.default_params.get("top_p", 0.8),
+                trust_remote_code=True,
+                # use_cache=True,
+                # streaming=True,
+                # device_map="auto"
             )
         except Exception as e:
             ryan_log.error(tag_name, f"Model loading failed: {str(e)}")
