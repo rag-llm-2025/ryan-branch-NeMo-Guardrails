@@ -110,6 +110,11 @@ def chat(
 
 @app.command()
 def server(
+    # 新增host参数
+    host: str = typer.Option(
+        default="0.0.0.0",
+        help="The host interface to bind the server to.",
+    ),
     port: int = typer.Option(
         default=8000, help="The port that the server should listen on. "
     ),
@@ -170,7 +175,7 @@ def server(
     if default_config_id:
         api.set_default_config_id(default_config_id)  # Call function
 
-    uvicorn.run(server_app, port=port, log_level="info", host="0.0.0.0")
+    uvicorn.run(server_app, port=port, log_level="info", host=host)
 
 
 _AVAILABLE_OPTIONS = ["1.0", "2.0-alpha"]

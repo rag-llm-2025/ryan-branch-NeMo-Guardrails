@@ -19,15 +19,14 @@ LOG_FILE="${LOG_DIR}/ryan_client_${DATESTR}.log"
 echo -e "\n当前的工作路径为: $PWD"
 if [ "$(whoami)" = "ubuntu" ]; then
     export LLM_DIR="/home/ubuntu/workspace/llm"
-    export MODEL_NAME="Qwen2_BE_0.6B"
 elif [ "$(whoami)" = "root" ]; then
     export LLM_DIR="/root/ryan/llm"
-    export MODEL_NAME="Qwen2.5-7B-Instruct"
+elif [ "$(whoami)" = "ryan_niu" ]; then
+    export LLM_DIR="/home/ryan_niu/ryan/llm"
 else
     export LLM_DIR="/home/$(whoami)/llm"  # 其他用户默认路径
-    export MODEL_NAME="Qwen2_BE_0.6B"
 fi
-read -p "当前环境的llm路径: $LLM_DIR"
+# read -p "当前环境的llm路径: $LLM_DIR"
 
 # LLM_DIR=${1:-"/root/ryan/llm"}
 
@@ -36,7 +35,18 @@ read -p "当前环境的llm路径: $LLM_DIR"
 echo "正在启动客户端..."
 # If you want to launch client in the docker
 cd $LLM_DIR/src/nemo-guardrails
-python ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://localhost:8000 --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
+
+# 在环境变量设置部分添加（与服务端脚本一致）
+# 在环境变量设置部分添加（与客户端脚本一致）
+if [ "$(whoami)" = "ryan_niu" ]; then
+    export SERVER_IP="10.16.118.43" # ifconfig
+else
+    export SERVER_IP="0.0.0.0"
+fi
+
+export API_KEY="test_key"
+export API_SECRET="test_secret"
+python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${SERVER_IP}:8000 --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
 
 # If you want to launch client in the local browser with VScode
 # http://localhost:8000

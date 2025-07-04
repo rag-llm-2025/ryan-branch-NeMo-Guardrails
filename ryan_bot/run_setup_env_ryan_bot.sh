@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+# set -ex
 
 # 检查是否只导入环境变量
 ONLY_EXPORT=${1:-false}
@@ -28,6 +28,11 @@ elif [ "$(whoami)" = "root" ]; then
     export MODEL_NAME="Qwen2.5-7B-Instruct"
     # export ENGINE_NAME="ryan_vllm_engine"
     export ENGINE_NAME="ryan_local_engine"
+elif [ "$(whoami)" = "ryan_niu" ]; then
+    export LLM_DIR="/home/ryan_niu/ryan/llm"
+    export MODEL_NAME="Qwen2.5-7B-Instruct"
+    # export ENGINE_NAME="ryan_vllm_engine"
+    export ENGINE_NAME="ryan_local_engine"
 else
     export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"
@@ -48,6 +53,16 @@ if [ "$ONLY_EXPORT" = "true" ]; then
     echo "只导出环境变量，跳过后续步骤"
     exit 0
 fi
+
+
+# Step 3: 创建并激活python虚拟环境
+# sudo apt install python3-venv -y && python3 -m venv venv && source venv/bin/activate
+# sudo apt install python3-venv -y && python3 -m venv venv && source venv/bin/activate
+# python -m venv ~/my_venv_312 && source ~/my_venv_312/bin/activate
+
+# Step 4: 在虚拟环境安装依赖
+cd $LLM_DIR/src/nemo-guardrails/ && pip install -e .
+cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
 
 # Step 2: 检查CUDA可用性并更新device
 check_cuda_and_run() {
@@ -72,15 +87,6 @@ echo "model_name=$MODEL_NAME"
 echo "model_path=$MODEL_PATH, device=$DEVICE"
 echo -e "============================================================\n"
 read -p "请确认是否使用 $DEVICE 设备 [y/n]: " confirm
-
-
-# Step 3: 创建并激活python虚拟环境
-sudo apt install python3-venv -y && python3 -m venv venv && source venv/bin/activate
-
-# Step 4: 在虚拟环境安装依赖
-cd $LLM_DIR/src/nemo-guardrails/ && pip install -e .
-cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
-
 
 # Step 5:更新yml配置文件
 update_config() {
