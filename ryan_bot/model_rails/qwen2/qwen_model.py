@@ -3,11 +3,13 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import os
 
+from transformers import BitsAndBytesConfig
+
 from ryan_bot.utils.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.qwen_model.py"
 
 class QwenModel:
-    def __init__(self, model_name, model_path, checkpoint_path=None, device="cuda"):
+    def __init__(self, model_name, model_path, checkpoint_path=None, device="cuda", quantization=False):
         """Initialize Qwen2 local model"""
 
         ryan_log.info(tag_name, f"Initialize Qwen2 local model, model_path: {model_path}, checkpoint_path: {checkpoint_path}, device: {device}")
@@ -15,6 +17,7 @@ class QwenModel:
         self.checkpoint_path = checkpoint_path
         self.device = device
         self.model_name = model_name
+        self.quantization = quantization
 
         ryan_log.info(tag_name, "Loading model and tokenizer...")
         self.tokenizer, self.model = self.load_model(self.model_path, self.checkpoint_path, self.device)
@@ -22,16 +25,37 @@ class QwenModel:
 
     def load_model(self, model_path, checkpoint_path, device):
         tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-        ryan_log.info(tag_name, f"checkpont_path: {checkpoint_path}")
+
+        if self.quantization == True:
+        # 新增量化配置
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True,  # 启用8bit量化
+                bnb_8bit_use_double_quant=True,  # 嵌套量化节省更多内存
+                bnb_8bit_quant_type="nf8",  # 量化类型
+                bnb_8bit_compute_dtype=torch.bfloat16  # 计算精度
+            )
+
+            model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                quantization_config=quantization_config,
+                torch_dtype=torch.bfloat16,  # 保持计算精度
+                device_map="auto"          # 自动分配设备
+            )
+        else:
+            model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
 
         # only when checkpoint_path is not empty and valid, load peft model
+        ryan_log.info(tag_name, f"checkpont_path: {checkpoint_path}")
         if checkpoint_path and os.path.exists(checkpoint_path):
             model = PeftModel.from_pretrained(model, model_id=checkpoint_path)
         else:
             ryan_log.warning(tag_name, f"未提供有效checkpoint_path，仅加载基础模型: {model_path}")
 
-        model = model.to(device).eval()
+        # Remove manual device assignment for quantized models
+        if not getattr(model, "is_loaded_in_8bit", False) or self.quantization == False:
+            model = model.to(device)
+
+        model = model.eval()
         return tokenizer, model
 
 

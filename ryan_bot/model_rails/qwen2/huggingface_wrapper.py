@@ -40,21 +40,24 @@ class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):
 
     def register_llm_provider(self, qwen_model):
         # configure pipeline parameters
-        pipe = pipeline(
-            "text-generation",
-            model=qwen_model.model,
-            tokenizer=qwen_model.tokenizer,
-            device=qwen_model.device,
-            max_new_tokens=128,
-            temperature=0.7,  # 可根据需求动态调整
-            do_sample=True,
-            # top_k=50,
-            top_p=0.9,
-            return_full_text=False,
-            pad_token_id=qwen_model.tokenizer.eos_token_id,
-            # repetition_penalty=1.2,  # add repetition penalty
-            # no_repeat_ngram_size=3   # prevent 3-gram repetition
-        )
+        # common parameters
+        pipeline_args = {
+            "task": "text-generation",
+            "model": qwen_model.model,
+            "tokenizer": qwen_model.tokenizer,
+            "max_new_tokens": 128,
+            "temperature": 0.7,
+            "do_sample": True,
+            "top_p": 0.9,
+            "return_full_text": False,
+            "pad_token_id": qwen_model.tokenizer.eos_token_id
+        }
+
+        # add device parameter based on quantization state
+        if not getattr(qwen_model, "quantization", False):
+            pipeline_args["device"] = qwen_model.device
+
+        pipe = pipeline(**pipeline_args)
 
         # create custom wrapper
         hf_llm = Qwen2PipelineWrapper(pipeline=pipe)

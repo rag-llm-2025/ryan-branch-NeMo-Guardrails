@@ -7,6 +7,7 @@ models:
       checkpoint_path: ''                                                                                                            # 确保路径正确
       device: "cuda" # 可以根据需要选择 "cpu" 或 "cuda"
       # num_gpus: 1  # 如果使用 GPU，可以指定使用的 GPU 数量
+      quantization: True
 
 custom_data:
   sensitive_words_file: "./resources/sensitive_words.txt"
