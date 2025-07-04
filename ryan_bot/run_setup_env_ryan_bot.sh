@@ -31,8 +31,8 @@ elif [ "$(whoami)" = "root" ]; then
 elif [ "$(whoami)" = "ryan_niu" ]; then
     export LLM_DIR="/home/ryan_niu/ryan/llm"
     export MODEL_NAME="Qwen2.5-7B-Instruct"
-    # export ENGINE_NAME="ryan_vllm_engine"
-    export ENGINE_NAME="ryan_local_engine"
+    export ENGINE_NAME="ryan_vllm_engine"
+    # export ENGINE_NAME="ryan_local_engine"
 else
     export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"

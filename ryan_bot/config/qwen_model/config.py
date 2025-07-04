@@ -1,6 +1,6 @@
 from ryan_bot.config.qwen_model.actions import check_sensitive_words, check_profanity, check_output_appropriateness
 from nemoguardrails import LLMRails, RailsConfig
-from ryan_bot.model_rails.qwen2 import initialize_rails
+from ryan_bot.model_rails.rails_init import initialize_rails
 from ryan_bot.utils.ryan_logger import ryan_log
 import os
 
