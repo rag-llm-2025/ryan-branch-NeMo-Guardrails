@@ -25,7 +25,7 @@ rails:
 
   dialog:
     single_call:
-      enabled: true
+      enabled: false
       fallback_to_multiple_calls: true
     user_messages:
       embeddings_only: false
