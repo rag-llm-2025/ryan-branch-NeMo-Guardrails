@@ -29,7 +29,7 @@ def initialize_rails(config: RailsConfig):
         if engine_name == "ryan_vllm_engine":
             # initialize vllm_model
             vllm_model_manager = VllmModelManager(model_name, model_path, checkpoint_path=checkpoint_path, device=device, tensor_parallel_size=num_gpus)
-            vllm_model_manager.chat("你对美国最近的暴动怎么看？")
+            # vllm_model_manager.chat("你对美国最近的暴动怎么看？")
 
             provider = custom_register_llm_provider(vllm_model_manager)
             ryan_log.debug(tag_name, f"vllm_qwen_wrapper Provider registered: {provider}")
@@ -37,7 +37,7 @@ def initialize_rails(config: RailsConfig):
         elif engine_name == "ryan_local_engine":
             # initialize qwen_model
             qwen_model_manager = QwenModelManager(model_name, model_path, checkpoint_path=checkpoint_path, device=device, num_gpus=num_gpus)
-            qwen_model_manager.chat("你对美国最近的暴动怎么看？")
+            # qwen_model_manager.chat("你对美国最近的暴动怎么看？")
 
             huggingface_wrapper = Qwen2PipelineWrapper()
             provider = huggingface_wrapper.register_llm_provider(qwen_model_manager)

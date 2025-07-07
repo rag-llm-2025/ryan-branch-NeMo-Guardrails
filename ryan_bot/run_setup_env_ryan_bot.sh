@@ -20,6 +20,7 @@ echo "                └── config.yml"
 # Step 1: 导出环境变量供其他脚本使用
 echo -e "\n当前的工作路径为: $PWD"
 if [ "$(whoami)" = "ubuntu" ]; then
+    # MUST run in ryan's ubuntu docker
     export LLM_DIR="/home/ubuntu/workspace/llm"
     export MODEL_NAME="Qwen2_BE_0.6B"
     export ENGINE_NAME="ryan_local_engine"

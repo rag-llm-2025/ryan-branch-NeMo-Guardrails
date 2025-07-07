@@ -87,7 +87,7 @@
                 "PROMPTS_DIR": "./ryan_bot/config/prompts"
             },
             // 指定虚拟环境的 Python 解释器路径
-            "python": "/root/ryan/llm/src/nemo-guardrails/venv/bin/python"
+            // "python": "/root/ryan/llm/src/nemo-guardrails/venv/bin/python"
         },
         {
             "name": "Debug Ryan Bot Chat",

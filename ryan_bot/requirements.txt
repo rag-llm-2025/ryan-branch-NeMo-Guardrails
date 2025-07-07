@@ -4,4 +4,4 @@ peft
 ruamel.yaml
 requests
 thefuzz
-# vllm
+vllm
