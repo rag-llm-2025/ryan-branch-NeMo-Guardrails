@@ -94,6 +94,9 @@ update_config() {
 }
 update_config
 
-# Step 6: 在虚拟环境测试运行环境
+# Step 6: 更新prompt文件
+./replace_engine.sh ${ENGINE_NAME} $LLM_DIR
+
+# Step 7: 在虚拟环境测试运行环境
 cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && python3 -c "import nemoguardrails; print(nemoguardrails.__version__)"
 cd $LLM_DIR/src/nemo-guardrails

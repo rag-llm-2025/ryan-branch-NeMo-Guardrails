@@ -39,7 +39,11 @@ cd $LLM_DIR/src/nemo-guardrails
 # 在环境变量设置部分添加（与服务端脚本一致）
 # 在环境变量设置部分添加（与客户端脚本一致）
 if [ "$(whoami)" = "ryan_niu" ]; then
+    # srun --partition=h100.80gb --gres=gpu:hopper:1 --nodelist=gn403 --mem=30G --job-name=ryan_sever  --pty bash -i
     export SERVER_IP="10.16.118.43" # ifconfig
+
+    # srun --partition=a100.40gb --gres=gpu:ampere:1 --nodelist=gn201 --mem=30G --job-name=ryan_sever  --pty bash -i
+    # export SERVER_IP="10.16.118.11" # ifconfig
 else
     export SERVER_IP="0.0.0.0"
 fi
