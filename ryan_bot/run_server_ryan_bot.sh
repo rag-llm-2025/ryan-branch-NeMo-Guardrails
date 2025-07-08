@@ -56,7 +56,7 @@ else
 fi
 
 # If you disable chat-ui, you can use the following command:
-nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=qwen_model --host ${SERVER_IP} --port 8000 --verbose 2>&1 | tee $LOG_FILE
+nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=qwen_model --host ${SERVER_IP} --port 8010 --verbose 2>&1 | tee $LOG_FILE
 
 echo "服务端退出，日志保存在: $LOG_FILE"
 

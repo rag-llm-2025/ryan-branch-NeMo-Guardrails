@@ -31,6 +31,7 @@ from nemoguardrails.logging.stats import LLMStats
 from nemoguardrails.utils import new_uuid
 
 log = logging.getLogger(__name__)
+from nemoguardrails.ryan_logger import ryan_log
 
 
 class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
@@ -161,6 +162,8 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         if llm_call_info is None:
             llm_call_info = LLMCallInfo()
         llm_call_info.completion = response.generations[0][0].text
+        ryan_log.info(f"LLM Completion :: task: {llm_call_info.task}, id: {llm_call_info.id},\n {response.generations[0][0].text}")
+
         llm_call_info.finished_at = time()
         log.info(
             "Completion :: %s",

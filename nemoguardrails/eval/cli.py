@@ -31,7 +31,7 @@ from nemoguardrails.utils import console
 app = typer.Typer()
 app.add_typer(evaluate.app, name="rail", short_help="Run a rail evaluation task.")
 
-logging.getLogger().setLevel(logging.WARNING)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 @app.command()

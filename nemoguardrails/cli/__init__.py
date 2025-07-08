@@ -36,7 +36,7 @@ app = typer.Typer()
 app.add_typer(cli.app, name="eval", short_help="Evaluation a guardrail configuration.")
 app.pretty_exceptions_enable = False
 
-logging.getLogger().setLevel(logging.WARNING)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 @app.command()
@@ -116,7 +116,7 @@ def server(
         help="The host interface to bind the server to.",
     ),
     port: int = typer.Option(
-        default=8000, help="The port that the server should listen on. "
+        default=8010, help="The port that the server should listen on. "
     ),
     config: List[str] = typer.Option(
         default=[],

@@ -46,7 +46,7 @@ fi
 
 export API_KEY="test_key"
 export API_SECRET="test_secret"
-python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${SERVER_IP}:8000 --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
+python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${SERVER_IP}:8010 --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
 
 # If you want to launch client in the local browser with VScode
 # http://localhost:8000
