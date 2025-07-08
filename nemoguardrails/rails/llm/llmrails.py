@@ -83,6 +83,7 @@ from nemoguardrails.utils import (
 )
 
 log = logging.getLogger(__name__)
+from nemoguardrails.ryan_logger import ryan_log
 
 process_events_semaphore = asyncio.Semaphore(1)
 
@@ -826,10 +827,11 @@ class LLMRails:
             )
 
         total_time = time.time() - t0
-        log.info(
-            "--- :: Total processing took %.2f seconds. LLM Stats: %s"
-            % (total_time, llm_stats)
-        )
+        # log.info(
+        #     "--- :: Total processing took %.2f seconds. LLM Stats: %s"
+        #     % (total_time, llm_stats)
+        # )
+        ryan_log.info(f"Total processing took {total_time:.2f} seconds. LLM Stats: {llm_stats}")
 
         # If there is a streaming handler, we make sure we close it now
         streaming_handler = streaming_handler_var.get()
