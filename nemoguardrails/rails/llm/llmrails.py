@@ -753,6 +753,8 @@ class LLMRails:
                     # Check if we need to remove a message
                     if event["script"] == "(remove last message)":
                         responses = responses[0:-1]
+                    elif event["script"] is None:
+                        continue
                     else:
                         responses.append(event["script"])
                 elif event["type"].endswith("Exception"):

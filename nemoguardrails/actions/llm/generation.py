@@ -350,7 +350,7 @@ class LLMGenerationActions:
         Returns:
             包含(user_intent, bot_message)的元组
         """
-        ryan_log.info(f"extract_intent_and_message input: {text}")
+        ryan_log.info(f"extract_intent_and_message input: \n{text}")
 
         if not isinstance(text, str) or not text.strip():
             return None, None
@@ -495,6 +495,7 @@ class LLMGenerationActions:
                     if result.meta["intent"] not in potential_user_intents:
                         potential_user_intents.append(result.meta["intent"])
 
+            ryan_log.info("llm_task_manager.render_task_prompt is called.")
             prompt = self.llm_task_manager.render_task_prompt(
                 task=Task.GENERATE_USER_INTENT,
                 events=events,
@@ -507,6 +508,7 @@ class LLMGenerationActions:
             # Initialize the LLMCallInfo object
             llm_call_info_var.set(LLMCallInfo(task=Task.GENERATE_USER_INTENT.value))
 
+            ryan_log.info("llm_call is called.")
             # We make this call with temperature 0 to have it as deterministic as possible.
             with llm_params(llm, temperature=self.config.lowest_temperature):
                 result = await llm_call(llm, prompt)

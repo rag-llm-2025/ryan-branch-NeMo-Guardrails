@@ -120,6 +120,8 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         )
 
         log.info("Invocation Params :: %s", kwargs.get("invocation_params", {}))
+        ryan_log.info(f"Invocation Params :: {llm_call_info.task}, id: {llm_call_info.id},\n {kwargs.get("invocation_params", {})}")
+
         log.info(
             "Prompt Messages :: %s",
             prompt,
