@@ -77,6 +77,8 @@
                 "--config=./ryan_bot/config",
                 "--disable-chat-ui",
                 "--default-config-id=qwen_model",
+                "--host=0.0.0.0",
+                "--port=8000",
                 "--verbose"
             ],
             "cwd": "${workspaceFolder}",
