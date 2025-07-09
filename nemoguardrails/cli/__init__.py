@@ -36,7 +36,8 @@ app = typer.Typer()
 app.add_typer(cli.app, name="eval", short_help="Evaluation a guardrail configuration.")
 app.pretty_exceptions_enable = False
 
-logging.getLogger().setLevel(logging.DEBUG)
+from ryan_bot.env_setup.env_config import EnvConfig
+logging.getLogger().setLevel(EnvConfig.CLI_LOGGER_LEVEL)
 
 
 @app.command()
@@ -158,7 +159,8 @@ def server(
             api.app.rails_config_path = local_configs_path
 
     if verbose:
-        logging.getLogger().setLevel(logging.INFO)
+        # logging.getLogger().setLevel(logging.INFO)
+        logging.getLogger().setLevel(EnvConfig.CLI_LOGGER_LEVEL)
 
     if disable_chat_ui:
         api.app.disable_chat_ui = True

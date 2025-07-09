@@ -1,6 +1,8 @@
 import logging
 from typing import Any
 
+from ryan_bot.env_setup.env_config import EnvConfig
+
 # 定义颜色代码
 class LogColors:
     RED = '\033[91m' # ERROR/CRITICAL
@@ -8,7 +10,7 @@ class LogColors:
     RESET = '\033[0m'
 
 logger = logging.getLogger("ryan_bot")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(EnvConfig.RYAN_LOGGER_LEVEL)
 
 # DEBUG/INFO/WARNING/ERROR/CRITICAL
 class ColoredFormatter(logging.Formatter):

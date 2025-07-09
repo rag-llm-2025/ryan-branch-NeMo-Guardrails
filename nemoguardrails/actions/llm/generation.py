@@ -350,7 +350,7 @@ class LLMGenerationActions:
         Returns:
             包含(user_intent, bot_message)的元组
         """
-        ryan_log.info(f"extract_intent_and_message input: \n{text}")
+        ryan_log.debug(f"extract_intent_and_message input: \n{text}")
 
         if not isinstance(text, str) or not text.strip():
             return None, None
@@ -459,8 +459,8 @@ class LLMGenerationActions:
             #  or use the LLM to detect the canonical form. The below implementation
             #  is for the latter.
 
-            log.info("Phase 1 :: Generating user intent")
-            ryan_log.info("Phase 1 :: Generating user intent")
+            # log.info("Phase 1 :: Generating user intent")
+            ryan_log.critical("KPI", "Phase 1 :: Generating user intent")
 
             # We search for the most relevant similar user utterance
             examples = ""
@@ -534,7 +534,7 @@ class LLMGenerationActions:
             # Initialize the LLMCallInfo object
             llm_call_info_var.set(LLMCallInfo(task=Task.GENERATE_USER_INTENT.value))
 
-            ryan_log.info("llm_call is called.")
+            ryan_log.critical("KPI", "llm_call is called.")
             # We make this call with temperature 0 to have it as deterministic as possible.
             with llm_params(llm, temperature=self.config.lowest_temperature):
                 result = await llm_call(llm, prompt)
@@ -721,8 +721,8 @@ class LLMGenerationActions:
 
         Currently, only generates a next step after a user intent.
         """
-        log.info("Phase 2 :: Generating next step ...")
-        ryan_log.info("Phase 2 :: Generating next step ...")
+        # log.info("Phase 2 :: Generating next step ...")
+        ryan_log.critical("KPI", "Phase 2 :: Generating next step ...")
 
         # Use action specific llm if registered else fallback to main llm
         llm = llm or self.llm
@@ -888,8 +888,8 @@ class LLMGenerationActions:
         self, events: List[dict], context: dict, llm: Optional[BaseLLM] = None
     ):
         """Generate a bot message based on the desired bot intent."""
-        log.info("Phase 3 :: Generating bot message ...")
-        ryan_log.info("Phase 3 :: Generating bot message ...")
+        # log.info("Phase 3 :: Generating bot message ...")
+        ryan_log.info("KPI", "Phase 3 :: Generating bot message ...")
 
         # Use action specific llm if registered else fallback to main llm
         llm = llm or self.llm
@@ -912,8 +912,8 @@ class LLMGenerationActions:
         if streaming_handler and self.config.rails.output.streaming.enabled:
             context_updates["skip_output_rails"] = True
 
-        ryan_log.info(f"self.config.bot_messagese: {self.config.bot_messages}")
-        ryan_log.info(f"get_last_bot_intent_event: {event}")
+        ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
+        ryan_log.debug(f"get_last_bot_intent_event: {event}")
 
         user_input_bot_utterance_event = get_user_input_bot_utterance_event(events)
         if user_input_bot_utterance_event:

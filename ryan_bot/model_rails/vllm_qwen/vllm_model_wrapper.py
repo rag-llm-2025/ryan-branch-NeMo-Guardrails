@@ -56,7 +56,8 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
         **kwargs
     ) -> str:
         """Implement asynchronous call interface compliant with Langchain specifications"""
-        ryan_log.info(tag_name, f"Async call interface, prompt: {prompt[:100]}...")
+        ryan_log.critical("kpi", f"VllmQwenWrapper _acall is called.")
+        ryan_log.debug(tag_name, f"Async call interface, prompt: {prompt[:100]}...")
         try:
             # Convert stop parameters to vLLM required format
             stop_token_ids = []

@@ -83,6 +83,8 @@ from nemoguardrails.utils import (
 )
 
 log = logging.getLogger(__name__)
+from ryan_bot.env_setup.env_config import EnvConfig
+log.setLevel(EnvConfig.RYAN_LOGGER_LEVEL)
 from nemoguardrails.ryan_logger import ryan_log
 
 process_events_semaphore = asyncio.Semaphore(1)
@@ -832,6 +834,7 @@ class LLMRails:
         #     % (total_time, llm_stats)
         # )
         ryan_log.info(f"Total processing took {total_time:.2f} seconds. LLM Stats: {llm_stats}")
+        ryan_log.critical("KPI", "Dialog is over")
 
         # If there is a streaming handler, we make sure we close it now
         streaming_handler = streaming_handler_var.get()
