@@ -2,9 +2,6 @@
 
 # set -ex
 
-# 检查是否只导入环境变量
-ONLY_EXPORT=${1:-false}
-
 # 打印示例目录结构
 echo "示例目录结构："
 echo "/home/ubuntu/llm"
@@ -17,42 +14,39 @@ echo "        └── config"
 echo "            └── qwen_model"
 echo "                └── config.yml"
 
+# load .env and set environment variables first
+curr_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+echo "curr_dir: $curr_dir"
+source $curr_dir/env_setup/check_env_config.sh
+
 # Step 1: 导出环境变量供其他脚本使用
 echo -e "\n当前的工作路径为: $PWD"
 if [ "$(whoami)" = "ubuntu" ]; then
-    export LLM_DIR="/home/ubuntu/workspace/llm"
-    export MODEL_NAME="Qwen2_BE_0.6B"
-    export ENGINE_NAME="ryan_local_engine"
-elif [ "$(whoami)" = "root" ]; then
-    export LLM_DIR="/root/ryan/llm"
-    export MODEL_NAME="Qwen2.5-7B-Instruct"
-    # export ENGINE_NAME="ryan_vllm_engine"
-    export ENGINE_NAME="ryan_local_engine"
-elif [ "$(whoami)" = "ryan_niu" ]; then
-    export LLM_DIR="/home/ryan_niu/ryan/llm"
-    export MODEL_NAME="Qwen2.5-7B-Instruct"
-    export ENGINE_NAME="ryan_vllm_engine"
+    # export LLM_DIR="/home/ubuntu/workspace/llm"
+    # export MODEL_NAME="Qwen2_BE_0.6B"
     # export ENGINE_NAME="ryan_local_engine"
+    echo "import env from .env.ubuntu file"
+elif [ "$(whoami)" = "root" ]; then
+    # export LLM_DIR="/root/ryan/llm"
+    # export MODEL_NAME="Qwen2.5-7B-Instruct"
+    # # export ENGINE_NAME="ryan_vllm_engine"
+    # export ENGINE_NAME="ryan_local_engine"
+
+    echo "import env from .env.root file"
+elif [ "$(whoami)" = "ryan_niu" ]; then
+    # export LLM_DIR="/home/ryan_niu/ryan/llm"
+    # export MODEL_NAME="Qwen2.5-7B-Instruct"
+    # export ENGINE_NAME="ryan_vllm_engine"
+    # export ENGINE_NAME="ryan_local_engine"
+    echo "import env from .env.ryan_niu file"
 else
-    export LLM_DIR="/home/ubuntu/workspace/llm"
-    export MODEL_NAME="Qwen2_BE_0.6B"
-    export ENGINE_NAME="ryan_local_engine"
+    echo "ERROR!!! Please check the current SYSTEM USER"
+    exit 1
 fi
 read -p "请输入当前环境的llm文件夹路径 [默认: $LLM_DIR]: " current_llm_dir
 
 # 如果用户输入不为空，则更新LLM_DIR
 [ -n "$current_llm_dir" ] && export LLM_DIR="$current_llm_dir"
-
-export MODEL_PATH="$LLM_DIR/models/$MODEL_NAME"
-export CHECKPOINT_PATH=""
-export DEVICE="cpu"  # 默认值，会被下面的检查覆盖
-export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
-
-# 如果只导入环境变量，则退出
-if [ "$ONLY_EXPORT" = "true" ]; then
-    echo "只导出环境变量，跳过后续步骤"
-    exit 0
-fi
 
 
 # Step 3: 创建并激活python虚拟环境
@@ -90,6 +84,7 @@ read -p "请确认是否使用 $DEVICE 设备 [y/n]: " confirm
 
 # Step 5:更新yml配置文件
 update_config() {
+    export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
     python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
 }
 update_config

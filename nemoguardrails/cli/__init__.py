@@ -116,7 +116,7 @@ def server(
         help="The host interface to bind the server to.",
     ),
     port: int = typer.Option(
-        default=8010, help="The port that the server should listen on. "
+        default=8000, help="The port that the server should listen on. "
     ),
     config: List[str] = typer.Option(
         default=[],

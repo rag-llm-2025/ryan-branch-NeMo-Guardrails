@@ -357,10 +357,10 @@ class LLMGenerationActions:
 
         # 情况1：匹配第一个完整的对话轮次（User intent到Bot message）
         first_conversation_pattern = (
-            r'User intent:\s*(.*?)\s*'  # 提取user intent
-            r'Bot intent:\s*(.*?)\s*'    # 提取bot intent
-            r'Bot message:\s*"(.*?)"'     # 提取bot message
-            r'(?:\s*execute|\s*$|\s*User message)'  # 忽略后面的execute或新对话
+            r'User intent:\s*(.*?)\s*'      # 提取user intent
+            r'Bot intent:\s*(.*?)\s*'       # 提取bot intent
+            r'Bot message:\s*"(.*?)"'       # 提取bot message
+            r'(?:\s*#.*?|\s*execute|\s*$|\s*User message)'  # 忽略注释/后面的execute或新对话
         )
         first_match = re.search(first_conversation_pattern, text, re.DOTALL)
         if first_match:
