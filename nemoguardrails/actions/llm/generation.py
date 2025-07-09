@@ -355,76 +355,75 @@ class LLMGenerationActions:
         if not isinstance(text, str) or not text.strip():
             return None, None
 
-        # 情况1：匹配第一个完整的对话轮次（User intent到Bot message）
-        first_conversation_pattern = (
-            r'User intent:\s*(.*?)\s*'      # 提取user intent
-            r'Bot intent:\s*(.*?)\s*'       # 提取bot intent
-            r'Bot message:\s*"(.*?)"'       # 提取bot message
-            r'(?:\s*#.*?|\s*execute|\s*$|\s*User message)'  # 忽略注释/后面的execute或新对话
-        )
-        first_match = re.search(first_conversation_pattern, text, re.DOTALL)
-        if first_match:
-            user_intent = first_match.group(1).strip() if first_match.group(1) else None
-            bot_intent = first_match.group(2).strip() if first_match.group(2) else None
-            bot_message = first_match.group(3).strip() if first_match.group(3) else None
-
-            if bot_message is None:
-                bot_message = "bot message为空，占位符"
-            ryan_log.info(f"extracted - user_intent: {user_intent}, bot_message: {bot_message}")
+        # 统一日志格式
+        def log_result(user_intent, bot_message, case_type="standard"):
+            ryan_log.info(f"extracted({case_type}) - user_intent: {user_intent}, bot_message: {bot_message}")
             return user_intent, bot_message
 
-        # 新增：处理只有前引号没有后引号的情况
-        partial_message_pattern = (
+        # 合并后的正则模式，处理带引号和不带引号的情况
+        combined_pattern = (
             r'User intent:\s*(.*?)\s*'
             r'Bot intent:\s*(.*?)\s*'
-            r'Bot message:\s*"(.*)'  # 匹配从第一个"开始到文本结束
+            r'Bot message:\s*(?:"([^"]*)"|([^"\n]+))'  # 匹配带引号或不带引号
+            r'(?:\s*#.*?|\s*execute|\s*$|\s*User message)'
         )
-        partial_match = re.search(partial_message_pattern, text, re.DOTALL)
-        if partial_match:
-            user_intent = partial_match.group(1).strip() if partial_match.group(1) else None
-            bot_intent = partial_match.group(2).strip() if partial_match.group(2) else None
-            bot_message = partial_match.group(3).strip() if partial_match.group(3) else None
 
+        # 优先查找第一个完整匹配
+        first_match = re.search(combined_pattern, text, re.DOTALL)
+        if first_match:
+            user_intent = (first_match.group(1) or "").strip()
+            bot_message = (first_match.group(3) or first_match.group(4) or "").strip()
             if bot_message:
-                # 移除可能的后续execute等指令
-                if 'execute' in bot_message:
-                    bot_message = bot_message.split('execute')[0].strip()
-                if 'User message' in bot_message:
-                    bot_message = bot_message.split('User message')[0].strip()
+                return log_result(user_intent, bot_message, "combined")
 
-                ryan_log.info(f"extracted partial - user_intent: {user_intent}, bot_message: {bot_message}")
-                return user_intent, bot_message
+        # 处理只有前引号的情况
+        partial_match = re.search(
+            r'User intent:\s*(.*?)\s*'
+            r'Bot intent:\s*(.*?)\s*'
+            r'Bot message:\s*"([^"]*)',  # 只匹配前引号
+            text, re.DOTALL
+        )
+        if partial_match:
+            user_intent = (partial_match.group(1) or "").strip()
+            bot_message = (partial_match.group(3) or "").strip()
+            if bot_message:
+                # 清理可能的后续指令
+                bot_message = re.split(r'\s*(?:execute|User message)', bot_message)[0].strip()
+                return log_result(user_intent, bot_message, "partial")
 
-        # 情况2：只有User intent和Bot intent
-        intent_only_pattern = r'User intent:\s*(.*?)\s*Bot intent:\s*(.*?)(?:\s*$|\s*#|\s*Bot message)'
-        intent_match = re.search(intent_only_pattern, text, re.DOTALL)
-        if intent_match:
-            user_intent = intent_match.group(1).strip() if intent_match.group(1) else None
+        # 处理只有intent没有message的情况
+        intent_only_match = re.search(
+            r'User intent:\s*(.*?)\s*'
+            r'Bot intent:\s*(.*?)(?:\s*$|\s*#|\s*Bot message)',
+            text, re.DOTALL
+        )
+        if intent_only_match:
+            return log_result(
+                (intent_only_match.group(1) or "").strip(),
+                "没获取到大模型的回答，异常case",
+                "intent_only"
+            )
 
-            bot_message = "没获取到大模型的回答，异常case"
-            ryan_log.info(f"extracted - user_intent: {user_intent}, bot_message: {bot_message}")
-            return user_intent, bot_message
-
-        # 情况3：尝试从非标准格式中提取
+        # 非标准格式处理
         lines = [line.strip() for line in text.split('\n') if line.strip()]
         user_intent = None
         bot_message = None
 
-        for i, line in enumerate(lines):
-            if line.startswith("user "):
+        for line in lines:
+            if not user_intent and line.startswith("user "):
                 user_intent = line[5:].strip()
-            elif line.startswith('"') and line.endswith('"'):
-                bot_message = line[1:-1].strip()
-            elif ":" in line and not user_intent:
+            elif not user_intent and ":" in line:
                 parts = line.split(":", 1)
                 if parts[0].strip().lower() == "user intent":
                     user_intent = parts[1].strip()
+            elif line.startswith('"') and line.endswith('"'):
+                bot_message = line[1:-1].strip()
 
-        if bot_message is None:
-            bot_message = "非标准格式，bot message为空，占位符"
-
-        ryan_log.info(f"extracted - user_intent: {user_intent}, bot_message: {bot_message}")
-        return user_intent, bot_message
+        return log_result(
+            user_intent or None,
+            bot_message or "非标准格式，bot message为空，占位符",
+            "non-standard"
+        )
 
 
     @action(is_system_action=True)
