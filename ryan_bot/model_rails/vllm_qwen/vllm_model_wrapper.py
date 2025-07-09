@@ -62,17 +62,16 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
             stop_token_ids = []
             if stop:
                 stop_token_ids = [self.vllm_model_manager.tokenizer.encode(s, add_special_tokens=False)[-1] for s in stop]
+                kwargs["stop"] = stop_token_ids  # vLLM原生支持stop参数
 
             # Add stop parameters to generation configuration
             response = await self.vllm_model_manager.generate_async(
                 [prompt],
-                temperature=kwargs.get("temperature", 0.7),
-                top_p=kwargs.get("top_p", 0.9),
-                max_tokens=kwargs.get("max_tokens", 128),
+                **kwargs,
                 stop_token_ids=stop_token_ids  # Pass stop tokens
             )
             ryan_log.info(tag_name, f"Async generation result response: {response}")
-            return response[0]  # Return text content directly
+            return response[0]  # Return the first response's text content directly
 
         except Exception as e:
             ryan_log.error(tag_name, f"Async generation error: {str(e)}")

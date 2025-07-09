@@ -64,4 +64,4 @@ docs/**/config
 firebase.json
 scratch.py
 
-.env
+# .env

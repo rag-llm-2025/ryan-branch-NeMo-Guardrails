@@ -15,9 +15,14 @@ function print_kv() {
     printf "%-20s: %s\n" "$1" "${!1:-未设置}"
 }
 
-# load .env config
+# get current directory
 curr_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-source $curr_dir/.env.$(whoami)
+
+# update ryan_niu@gn403 host ip based on current cluster server
+source $curr_dir/update_env_host.sh
+
+# load .env config
+source $curr_dir/.env.$USER
 print_header "当前环境变量文件"
 printf "%-20s: %s\n" "$curr_dir/.env.$(whoami)"
 print_separator
