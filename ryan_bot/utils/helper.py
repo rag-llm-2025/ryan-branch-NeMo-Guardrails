@@ -1,7 +1,7 @@
 from ruamel.yaml import YAML
 from pathlib import Path
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name="utils.helper.py"
 
 def yml_config_update(config_path, engine_name, model_name, model_path, device, checkpoint_path):

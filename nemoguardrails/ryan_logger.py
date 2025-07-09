@@ -27,6 +27,7 @@ if not logger.handlers:
         datefmt='%Y-%m-%d %H:%M:%S'
     ))
     logger.addHandler(handler)
+    logger.propagate = False  # 阻止日志传播到父logger
 
 class RyanLog:
     @staticmethod

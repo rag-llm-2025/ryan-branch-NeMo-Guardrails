@@ -10,7 +10,7 @@ from ryan_bot.model_rails.vllm_qwen.vllm_model_manager import VllmModelManager
 from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import custom_register_llm_provider
 
 from ryan_bot.utils.helper import print_prompt_loading
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.helper.py"
 
 def initialize_rails(config: RailsConfig):

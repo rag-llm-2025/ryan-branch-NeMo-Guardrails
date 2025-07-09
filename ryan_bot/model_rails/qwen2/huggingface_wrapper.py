@@ -3,7 +3,7 @@ from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.llm.providers.huggingface import HuggingFacePipelineCompatible
 from transformers import pipeline
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.huggingface_wrapper"
 
 class Qwen2PipelineWrapper(HuggingFacePipelineCompatible):

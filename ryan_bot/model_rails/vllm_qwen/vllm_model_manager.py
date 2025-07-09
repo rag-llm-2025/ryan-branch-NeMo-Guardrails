@@ -5,7 +5,7 @@ import asyncio
 import torch
 import os
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name = "model_rails.v_qwen.vllm_qwen_model.py"
 
 

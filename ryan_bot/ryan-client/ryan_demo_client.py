@@ -2,7 +2,7 @@ from typing import List, Dict
 import requests
 import argparse
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name="ryan_bot_client"
 
 

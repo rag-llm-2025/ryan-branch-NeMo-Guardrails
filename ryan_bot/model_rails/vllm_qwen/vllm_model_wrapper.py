@@ -6,7 +6,7 @@ from transformers import pipeline
 
 from ryan_bot.model_rails.vllm_qwen.vllm_model_manager import VllmModelManager
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 tag_name = "model_rails.vllm_qwen.vllm_qwen_wrapper"
 
 from typing import Optional, List

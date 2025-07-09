@@ -5,7 +5,7 @@ import os
 
 from thefuzz import fuzz  # Add this import for fuzzy string matching
 
-from ryan_bot.utils.ryan_logger import ryan_log
+from nemoguardrails.ryan_logger import ryan_log
 
 tag_name="qwen_model.actions.py"
 
