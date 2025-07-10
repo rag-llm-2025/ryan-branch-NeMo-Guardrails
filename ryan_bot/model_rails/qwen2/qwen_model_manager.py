@@ -37,6 +37,7 @@ class QwenModelManager:
 
     def generate(self, messages, **kwargs):
         """generate reply"""
+        # TODO: WONT be called!!!
         if self.model_name == "Qwen2_BE_0.6B":
             # handling input messages to the format required by Qwen model
             # images format is assumed to be OpenAI style
@@ -49,7 +50,7 @@ class QwenModelManager:
 
             # generate response
             with torch.no_grad():
-                outputs = self.model.generate(**inputs, max_new_tokens=1024)
+                outputs = self.model.generate(**inputs, max_new_tokens=128, **kwargs)
                 ryan_log.info(tag_name, f"Generated outputs: {outputs}")
                 response = self.tokenizer.decode(outputs[:, inputs['input_ids'].shape[1]:][0], skip_special_tokens=True)
             # ryan_log.info(tag_name, f"Decoded response: {response}")
@@ -66,7 +67,7 @@ class QwenModelManager:
 
         # generate response
         with torch.no_grad():
-            outputs = self.model.generate(**inputs, max_new_tokens=1024)
+            outputs = self.model.generate(**inputs, max_new_tokens=128)
             ryan_log.info(tag_name, f"Generated outputs: {outputs}")
             response = self.tokenizer.decode(outputs[:, inputs['input_ids'].shape[1]:][0], skip_special_tokens=True)
         # ryan_log.info(tag_name, f"Decoded response: {response}")

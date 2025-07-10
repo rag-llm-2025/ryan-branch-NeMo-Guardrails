@@ -65,6 +65,7 @@ _embedding_model_cache = {}
 
 register_embedding_provider(fastembed.FastEmbedEmbeddingModel)
 register_embedding_provider(openai.OpenAIEmbeddingModel)
+
 # RYAN TODO: consider to comment this
 register_embedding_provider(sentence_transformers.SentenceTransformerEmbeddingModel)
 register_embedding_provider(nim.NIMEmbeddingModel)

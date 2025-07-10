@@ -50,7 +50,7 @@ class FastEmbedEmbeddingModel(EmbeddingModel):
         self.embedding_model = embedding_model
 
         try:
-            self.model = Embedding(embedding_model, **kwargs)
+            self.model = Embedding(embedding_model, cache_dir="model_cache", **kwargs)
         except ValueError as ex:
             # Sometimes the cached model in the temporary folder gets removed,
             # but the folder still exists, which causes an error. In this case,

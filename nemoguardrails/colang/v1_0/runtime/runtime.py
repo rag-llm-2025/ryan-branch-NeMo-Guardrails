@@ -39,6 +39,8 @@ log = logging.getLogger(__name__)
 from ryan_bot.env_setup.env_config import EnvConfig
 log.setLevel(EnvConfig.RYAN_LOGGER_LEVEL)
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
+
 
 class RuntimeV1_0(Runtime):
     """Runtime for executing the guardrails."""
@@ -124,6 +126,7 @@ class RuntimeV1_0(Runtime):
         for flow in self.config.flows:
             self._load_flow_config(flow)
 
+    @log_kpi_async
     async def generate_events(
         self, events: List[dict], processing_log: Optional[List[dict]] = None
     ) -> List[dict]:

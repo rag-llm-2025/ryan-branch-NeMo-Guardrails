@@ -1,5 +1,9 @@
 
 ```gitignore
+
+# ryan ignored files
+model_cache/*
+
 # Byte-compiled / optimized / DLL files
 *.pyc
 *.so

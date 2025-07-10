@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import logging
+from functools import cached_property
 
 # 根据系统用户名加载对应的.env文件
 username = os.getenv('USER') or os.getenv('USERNAME')
@@ -27,20 +28,26 @@ class EnvConfig:
     MODEL_NAME = os.getenv('MODEL_NAME', 'Qwen2.5-7B-Instruct')
     ENGINE_NAME = os.getenv('ENGINE_NAME', 'ryan_vllm_engine')
 
+    # feature toggles
+    STREAM = os.getenv('STREAM', 'False') == 'True'  # 是否启用流式响应
+    ENABLE_VLLM = os.getenv('ENABLE_VLLM', 'False') == 'True'  # 是否启用vllm
+    ENABLE_TEXT_EMBEDDING = os.getenv('ENABLE_TEXT_EMBEDDING', 'False') == 'True'  # 是否启用文本嵌入
+    ENABLE_LATENCY_OPTIMIZATION = os.getenv('ENABLE_LATENCY_OPTIMIZATION', 'False') == 'True'  # 是否启用延迟优化
+
     # 日志级别配置
     RYAN_LOGGER_LEVEL = logging.DEBUG
     CLI_LOGGER_LEVEL = logging.INFO
     TEST_LOGGER_LEVEL = logging.ERROR
 
     @classmethod
-    def init_logger_levels(self):
+    def init_logger_levels(cls):
         """初始化所有日志级别配置"""
         # Ryan日志级别
-        self.RYAN_LOGGER_LEVEL = self._get_log_level('RYAN_LOGGER_LEVEL', logging.DEBUG)
+        cls.RYAN_LOGGER_LEVEL = cls._get_log_level('RYAN_LOGGER_LEVEL', logging.DEBUG)
         # CLI日志级别
-        self.CLI_LOGGER_LEVEL = self._get_log_level('CLI_LOGGER_LEVEL', logging.INFO)
+        cls.CLI_LOGGER_LEVEL = cls._get_log_level('CLI_LOGGER_LEVEL', logging.INFO)
         # 测试日志级别
-        self.TEST_LOGGER_LEVEL = self._get_log_level('TEST_LOGGER_LEVEL', logging.ERROR)
+        cls.TEST_LOGGER_LEVEL = cls._get_log_level('TEST_LOGGER_LEVEL', logging.ERROR)
 
     @staticmethod
     def _get_log_level(env_var: str, default_level: int) -> int:
@@ -55,19 +62,43 @@ class EnvConfig:
         level_str = os.getenv(env_var, '').upper()
         return level_map.get(level_str, default_level)
 
-    @classmethod
+    # only for test: 用@cached_property 修饰实例方法缓存私有成员属性
+    __show_config = {
+        'api_key': API_KEY,
+        'host': HOST,
+        'port': PORT,
+        'debug': DEBUG,
+        'env': PRJ_ENV,
+        'log_level': RYAN_LOGGER_LEVEL,
+        'llm_dir': LLM_DIR,
+        'model_name': MODEL_NAME,
+        'engine_name': ENGINE_NAME,
+        'stream': STREAM,
+        'enable_vllm': ENABLE_VLLM,
+        'enable_text_embedding': ENABLE_TEXT_EMBEDDING,
+        'enable_latency_optimization': ENABLE_LATENCY_OPTIMIZATION
+    }
+    @cached_property
     def show_config(self):
+        return self.__show_config
+
+    @classmethod
+    def show_config(cls):
         """显示当前环境配置"""
         return {
-            'api_key': self.API_KEY,
-            'host': self.HOST,
-            'port': self.PORT,
-            'debug': self.DEBUG,
-            'env': self.PRJ_ENV,
-            'log_level': self.RYAN_LOGGER_LEVEL,
-            'llm_dir': self.LLM_DIR,
-            'model_name': self.MODEL_NAME,
-            'engine_name': self.ENGINE_NAME
+            'api_key': cls.API_KEY,
+            'host': cls.HOST,
+            'port': cls.PORT,
+            'debug': cls.DEBUG,
+            'env': cls.PRJ_ENV,
+            'log_level': cls.RYAN_LOGGER_LEVEL,
+            'llm_dir': cls.LLM_DIR,
+            'model_name': cls.MODEL_NAME,
+            'engine_name': cls.ENGINE_NAME,
+            'stream': cls.STREAM,
+            'enable_vllm': cls.ENABLE_VLLM,
+            'enable_text_embedding': cls.ENABLE_TEXT_EMBEDDING,
+            'enable_latency_optimization': cls.ENABLE_LATENCY_OPTIMIZATION
         }
 
 def print_env_config():

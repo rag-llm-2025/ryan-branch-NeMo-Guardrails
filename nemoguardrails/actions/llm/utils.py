@@ -28,6 +28,7 @@ from nemoguardrails.context import llm_call_info_var, reasoning_trace_var
 from nemoguardrails.logging.callbacks import logging_callbacks
 from nemoguardrails.logging.explain import LLMCallInfo
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
 
 class LLMCallException(Exception):
     """A wrapper around the LLM call invocation exception.
@@ -62,7 +63,7 @@ def _infer_model_name(llm: BaseLanguageModel):
     # If we still can't figure out, return "unknown".
     return "unknown"
 
-
+@log_kpi_async
 async def llm_call(
     llm: BaseLanguageModel,
     prompt: Union[str, List[dict]],

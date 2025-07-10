@@ -86,6 +86,9 @@ log = logging.getLogger(__name__)
 from ryan_bot.env_setup.env_config import EnvConfig
 log.setLevel(EnvConfig.RYAN_LOGGER_LEVEL)
 from nemoguardrails.ryan_logger import ryan_log
+tag_name="LLMRails"
+
+from ryan_bot.env_setup.env_config import EnvConfig
 
 process_events_semaphore = asyncio.Semaphore(1)
 
@@ -121,7 +124,7 @@ class LLMRails:
         # an index of them.
         self.embedding_search_providers = {}
 
-        # The default embeddings model is using FastEmbed
+        # The default embeddings model is all-MiniLM-L6-v2, engine is FastEmbed, cache_dir is model_cache under the current work directory.
         self.default_embedding_model = "all-MiniLM-L6-v2"
         self.default_embedding_engine = "FastEmbed"
         self.default_embedding_params = {}
@@ -397,7 +400,10 @@ class LLMRails:
                     kwargs=kwargs,
                 )
 
-                if self.config.streaming:
+                ryan_log.info(tag_name, f"self.config.streaming is {self.config.streaming}")
+                ryan_log.info(tag_name, f"EnvConfig.STREAM is {EnvConfig.STREAM}")
+                # if self.config.streaming:
+                if EnvConfig.STREAM:
                     if "streaming" in llm_model.model_fields:
                         llm_model.streaming = True
                         self.main_llm_supports_streaming = True
@@ -407,6 +413,7 @@ class LLMRails:
                             model_name,
                             provider_name,
                         )
+                ryan_log.info(tag_name, f"llm_model.streaming is {llm_model.streaming}, self.main_llm_supports_streaming is {self.main_llm_supports_streaming}")
 
                 if llm_config.type == "main" or len(self.config.models) == 1:
                     self.llm = llm_model
@@ -438,6 +445,7 @@ class LLMRails:
         if esp_config.name == "default":
             from nemoguardrails.embeddings.basic import BasicEmbeddingsIndex
 
+            # If the default embedding search provider is requested, we create an instance of the BasicEmbeddingsIndex
             return BasicEmbeddingsIndex(
                 embedding_model=esp_config.parameters.get(
                     "embedding_model", self.default_embedding_model
@@ -833,6 +841,7 @@ class LLMRails:
         #     "--- :: Total processing took %.2f seconds. LLM Stats: %s"
         #     % (total_time, llm_stats)
         # )
+        ryan_log.info(f"EnvConfig.STREAM: {EnvConfig.STREAM}")
         ryan_log.info(f"Total processing took {total_time:.2f} seconds. LLM Stats: {llm_stats}")
         ryan_log.critical("KPI", "Dialog is over")
 

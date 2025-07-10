@@ -5,13 +5,11 @@ from nemoguardrails import RailsConfig
 from ryan_bot.model_rails.qwen2.qwen_model_manager import QwenModelManager
 from ryan_bot.model_rails.qwen2.huggingface_wrapper import Qwen2PipelineWrapper
 
-from ryan_bot.model_rails.vllm_qwen.vllm_model_manager import VllmModelManager
-# from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import VllmQwenWrapper
-from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import custom_register_llm_provider
-
 from ryan_bot.utils.helper import print_prompt_loading
 from nemoguardrails.ryan_logger import ryan_log
 tag_name="model_rails.qwen2.helper.py"
+
+from ryan_bot.env_setup.env_config import EnvConfig
 
 def initialize_rails(config: RailsConfig):
     # print_prompt_loading(config)
@@ -26,7 +24,10 @@ def initialize_rails(config: RailsConfig):
         num_gpus = model_config.parameters.get("num_gpus", 1)
         ryan_log.info(tag_name, f"In config.yml: model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
-        if engine_name == "ryan_vllm_engine":
+        if EnvConfig.ENABLE_VLLM and engine_name == "ryan_vllm_engine":
+            from ryan_bot.model_rails.vllm_qwen.vllm_model_manager import VllmModelManager
+            from ryan_bot.model_rails.vllm_qwen.vllm_model_wrapper import custom_register_llm_provider
+
             # initialize vllm_model
             vllm_model_manager = VllmModelManager(model_name, model_path, checkpoint_path=checkpoint_path, device=device, tensor_parallel_size=num_gpus)
             # vllm_model_manager.chat("你对美国最近的暴动怎么看？")

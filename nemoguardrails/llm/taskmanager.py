@@ -54,6 +54,8 @@ from nemoguardrails.llm.prompts import get_prompt, get_task_model
 from nemoguardrails.llm.types import Task
 from nemoguardrails.rails.llm.config import MessageTemplate, RailsConfig
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
+
 
 def output_has_reasoning_traces(output: str, start_token: str, end_token: str) -> bool:
     """Checks if the output string contains both start and end reasoning tokens."""
@@ -359,6 +361,7 @@ class LLMTaskManager:
 
         return len(text)
 
+    @log_kpi_sync
     def render_task_prompt(
         self,
         task: Union[str, Task],

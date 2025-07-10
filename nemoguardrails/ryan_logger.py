@@ -33,7 +33,7 @@ if not logger.handlers:
 
 class RyanLog:
     @staticmethod
-    def debug(tag_name: str = None, message: str = None):
+    def debug(tag_name: str = None, message: str = None, stacklevel: int = 2):
         """打印DEBUG级别日志"""
         if message is None and tag_name is not None:
             message, tag_name = tag_name, "ryan_bot"
@@ -42,7 +42,7 @@ class RyanLog:
                     stacklevel=2)  # 新增stacklevel参数
 
     @staticmethod
-    def info(tag_name: str = None, message: str = None):
+    def info(tag_name: str = None, message: str = None, stacklevel: int = 2):
         """打印INFO级别日志"""
         if message is None and tag_name is not None:
             message, tag_name = tag_name, "ryan_bot"
@@ -51,7 +51,7 @@ class RyanLog:
                    stacklevel=2)  # 新增stacklevel参数
 
     @staticmethod
-    def warning(tag_name: str = None, message: str = None):
+    def warning(tag_name: str = None, message: str = None, stacklevel: int = 2):
         """打印WARNING级别日志"""
         if message is None and tag_name is not None:
             message, tag_name = tag_name, "ryan_bot"
@@ -60,7 +60,7 @@ class RyanLog:
                       stacklevel=2)  # 新增stacklevel参数
 
     @staticmethod
-    def error(tag_name: str = None, message: str = None):
+    def error(tag_name: str = None, message: str = None, stacklevel: int = 2):
         """打印ERROR级别日志"""
         if message is None and tag_name is not None:
             message, tag_name = tag_name, "ryan_bot"
@@ -69,12 +69,58 @@ class RyanLog:
                     stacklevel=2)  # 新增stacklevel参数
 
     @staticmethod
-    def critical(tag_name: str = None, message: str = None):
+    def critical(tag_name: str = None, message: str = None, stacklevel: int = 2):
         """打印CRITICAL级别日志"""
         if message is None and tag_name is not None:
             message, tag_name = tag_name, "ryan_bot"
         logger.critical(message,
                        extra={'tag_name': tag_name or "ryan_bot"},
-                       stacklevel=2)  # 新增stacklevel参数
+                       stacklevel=stacklevel)  # 新增stacklevel参数
 
 ryan_log = RyanLog()
+
+
+from functools import wraps
+import time
+
+def log_kpi_async(func_name=None):
+    def decorator(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            start_time = time.time()
+            ryan_log.critical("KPI", f"Enter {func.__name__}")
+            try:
+                result = await func(*args, **kwargs)
+                elapsed = (time.time() - start_time) * 1000  # convert to ms
+                ryan_log.critical("KPI", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]")
+                return result
+            except Exception as e:
+                elapsed = (time.time() - start_time) * 1000
+                ryan_log.error("KPI", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]")
+                raise
+        return async_wrapper
+
+    if callable(func_name):
+        return decorator(func_name)
+    return decorator
+
+def log_kpi_sync(func_name=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            ryan_log.critical("KPI", f"Enter {func.__name__}")
+            try:
+                result = func(*args, **kwargs)
+                elapsed = (time.time() - start_time) * 1000
+                ryan_log.critical("KPI", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]")
+                return result
+            except Exception as e:
+                elapsed = (time.time() - start_time) * 1000
+                ryan_log.error("KPI", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]")
+                raise
+        return wrapper
+
+    if callable(func_name):
+        return decorator(func_name)
+    return decorator
