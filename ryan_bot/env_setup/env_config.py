@@ -42,6 +42,9 @@ class EnvConfig:
     @classmethod
     def init_logger_levels(cls):
         """初始化所有日志级别配置"""
+        import os
+        os.environ['TZ'] = 'Asia/Shanghai'
+
         # Ryan日志级别
         cls.RYAN_LOGGER_LEVEL = cls._get_log_level('RYAN_LOGGER_LEVEL', logging.DEBUG)
         # CLI日志级别

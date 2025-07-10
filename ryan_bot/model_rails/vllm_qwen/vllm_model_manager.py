@@ -79,15 +79,15 @@ class VllmModelManager:
 
     def generate(self, prompts: List[str], **kwargs) -> List[str]:
         """Synchronous generation interface"""
-        params = self._get_sampling_params(**kwargs)
-        outputs = self.model.generate(prompts, params, stream=EnvConfig.STREAM)
-        return [self._process_output(o) for o in outputs]
+        ryan_log.info(tag_name, f"for generation method, call generate_async instead")
+        self.generate_async(prompts, **kwargs)
 
     async def generate_async(self, prompts: List[str], **kwargs) -> List[str]:
         """Asynchronous generation interface (vLLM native support)"""
 
-        ryan_log.info(tag_name, f"Async generation request | Prompts: {prompts} | Params: {kwargs}")
+        ryan_log.debug(tag_name, f"Async generation request | Prompts: {prompts}")
         params = self._get_sampling_params(**kwargs)
+        ryan_log.info(tag_name, f"Async generation request Params: {params}")
         outputs = self.model.generate(prompts, params)
         return [self._process_output(o) for o in outputs]
 
