@@ -44,8 +44,11 @@ class RyanBotClient:
 
         stream = EnvConfig.STREAM
         self.stream = stream
+        self.start_time = None # init start_time
 
     def chat(self, message: str) -> str:
+        self.start_time = time.perf_counter()  # update start_time for every chat
+
         payload = {
             "config_id": self.config_id,
             "messages": [{"role": "user", "content": message}],
@@ -53,7 +56,8 @@ class RyanBotClient:
         }
         headers = {
             "X-API-Key": self.api_key,
-            "X-API-Secret": self.api_secret
+            "X-API-Secret": self.api_secret,
+            "X-Accel-Buffering": "no"  # 禁用代理缓冲
         }
 
         try:
@@ -88,6 +92,7 @@ class RyanBotClient:
 
     def _handle_stream_response(self, payload: Dict, headers: Dict) -> str:
         full_response = ""
+        first_chunk = False
         with requests.post(
             f"{self.base_url}/v1/chat/completions",
             json=payload,
@@ -95,10 +100,16 @@ class RyanBotClient:
             stream=True
         ) as response:
             response.raise_for_status()
+            ryan_log.debug(tag_name, f"response: {response}")
 
             for line in response.iter_lines():
                 if line:
                     decoded_line = line.decode('utf-8')
+                    if not first_chunk:
+                        elapsed = (time.perf_counter() - self.start_time) * 1000
+                        ryan_log.info(tag_name, f"first chunk data received. (latency: {elapsed:.2f}ms)")
+                        first_chunk = True
+
                     ryan_log.debug(tag_name, f"decoded_line: {decoded_line}")
                     if decoded_line.startswith("data:"):
                         try:
@@ -106,12 +117,12 @@ class RyanBotClient:
                             if "choices" in data and data["choices"][0]["delta"].get("content"):
                                 content = data["choices"][0]["delta"]["content"]
                                 ryan_log.info(tag_name, content)
-                                full_response += content
+                                full_response += " " + content
                         except json.JSONDecodeError as e:
                             ryan_log.error(tag_name, f"JSONDecodeError: {e}")
                             continue
                     else:
-                        full_response += decoded_line
+                        full_response += " " + decoded_line
                         if "messages" in full_response:
                                 full_response = full_response["messages"][0]["content"]
                         elif "choices" in full_response:
@@ -140,15 +151,13 @@ def interactive_demo():
         if user_input.lower() == 'quit':
             break
 
-        start_time = time.perf_counter()
         ryan_log.info(tag_name, f"User: {user_input}")
-
         if client.stream:
             reply = client.chat(user_input)
         else:
             reply = client.chat(user_input)
 
-        elapsed = (time.perf_counter() - start_time) * 1000
+        elapsed = (time.perf_counter() - client.start_time) * 1000
         ryan_log.info(tag_name, f"Bot: {reply} (latency: {elapsed:.2f}ms)")
 
 if __name__ == "__main__":

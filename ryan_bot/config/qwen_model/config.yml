@@ -1,14 +1,15 @@
 models:
   - type: main
-    engine: ryan_local_engine                 # use environment variables, set ryan_vllm_engine as default
-    model: Qwen2_BE_0.6B
+    engine: ryan_vllm_engine                  # use environment variables, set ryan_vllm_engine as default
+    model: Qwen2.5-7B-Instruct
     parameters:
-      model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B
+      model_path: /home/ryan_niu/ryan/llm/models/Qwen2.5-7B-Instruct
       checkpoint_path: ''                                                                                                            # 确保路径正确
-      device: cpu             # "cpu" or "cuda"
+      device: cuda            # "cpu" or "cuda"
       # num_gpus: 1  # if use GPU, specific the nums
 
-# streaming : true
+streaming : true
+stream_interval: 2  # 可选：控制流式响应间隔
 
 custom_data:
   sensitive_words_file: "./resources/sensitive_words.txt"

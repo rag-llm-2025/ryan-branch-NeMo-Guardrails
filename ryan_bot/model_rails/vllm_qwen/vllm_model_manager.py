@@ -7,6 +7,7 @@ import os
 
 from nemoguardrails.ryan_logger import ryan_log
 tag_name = "model_rails.v_qwen.vllm_qwen_model.py"
+from ryan_bot.env_setup.env_config import EnvConfig
 
 
 class ModelConfig(BaseModel):
@@ -79,7 +80,7 @@ class VllmModelManager:
     def generate(self, prompts: List[str], **kwargs) -> List[str]:
         """Synchronous generation interface"""
         params = self._get_sampling_params(**kwargs)
-        outputs = self.model.generate(prompts, params)
+        outputs = self.model.generate(prompts, params, stream=EnvConfig.STREAM)
         return [self._process_output(o) for o in outputs]
 
     async def generate_async(self, prompts: List[str], **kwargs) -> List[str]:
@@ -93,6 +94,7 @@ class VllmModelManager:
     def _process_output(self, output) -> str:
         """Unified output processing"""
         text = output.outputs[0].text
+        ryan_log.debug(tag_name, f"raw text: {text}")
         return text.split("<|im_end|>")[0].strip()
 
     def chat(self, prompt: str, **kwargs) -> str:
