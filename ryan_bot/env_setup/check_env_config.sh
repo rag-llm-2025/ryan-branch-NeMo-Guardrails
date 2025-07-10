@@ -22,7 +22,7 @@ curr_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source $curr_dir/update_env_host.sh
 
 # load .env config
-source $curr_dir/.env.$USER
+source $curr_dir/.env.$(whoami)
 print_header "当前环境变量文件"
 printf "%-20s: %s\n" "$curr_dir/.env.$(whoami)"
 print_separator
