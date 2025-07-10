@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
 from peft import PeftModel
 import os
 
@@ -17,8 +17,17 @@ class QwenModelManager:
         self.model_name = model_name
 
         ryan_log.info(tag_name, "Loading model and tokenizer...")
-        self.tokenizer, self.model = self.load_model(self.model_path, self.checkpoint_path, self.device)
+        self.tokenizer, self.model, self.streamer = self.load_model(self.model_path, self.checkpoint_path, self.device)
         ryan_log.info(tag_name, "Model and tokenizer loaded successfully.")
+
+        # Initialize default generate parameters
+        self.default_params = dict(
+            max_new_tokens=128,
+            temperature=0.7,
+            top_p=0.8,
+            streamer=self.streamer,  # 将streamer传入生成参数
+            do_sample=True
+        )
 
     def load_model(self, model_path, checkpoint_path, device):
         tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -32,11 +41,16 @@ class QwenModelManager:
             ryan_log.warning(tag_name, f"未提供有效checkpoint_path，仅加载基础模型: {model_path}")
 
         model = model.to(device).eval()
-        return tokenizer, model
 
+        # 创建流式生成器
+        streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+        return tokenizer, model, streamer
 
     def generate(self, messages, **kwargs):
         """generate reply"""
+        generate_params = {**self.default_params, **kwargs}
+        ryan_log.info(tag_name, f"generate_params: {generate_params}")
+
         # TODO: WONT be called!!!
         if self.model_name == "Qwen2_BE_0.6B":
             # handling input messages to the format required by Qwen model
@@ -50,7 +64,7 @@ class QwenModelManager:
 
             # generate response
             with torch.no_grad():
-                outputs = self.model.generate(**inputs, max_new_tokens=128, **kwargs)
+                outputs = self.model.generate(**inputs, **generate_params)
                 ryan_log.info(tag_name, f"Generated outputs: {outputs}")
                 response = self.tokenizer.decode(outputs[:, inputs['input_ids'].shape[1]:][0], skip_special_tokens=True)
             # ryan_log.info(tag_name, f"Decoded response: {response}")
@@ -67,7 +81,7 @@ class QwenModelManager:
 
         # generate response
         with torch.no_grad():
-            outputs = self.model.generate(**inputs, max_new_tokens=128)
+            outputs = self.model.generate(**inputs, **generate_params)
             ryan_log.info(tag_name, f"Generated outputs: {outputs}")
             response = self.tokenizer.decode(outputs[:, inputs['input_ids'].shape[1]:][0], skip_special_tokens=True)
         # ryan_log.info(tag_name, f"Decoded response: {response}")
