@@ -84,7 +84,7 @@ from nemoguardrails.utils import (
 
 log = logging.getLogger(__name__)
 from ryan_bot.env_setup.env_config import EnvConfig
-log.setLevel(EnvConfig.RYAN_LOGGER_LEVEL)
+log.setLevel(EnvConfig.NEMO_LOGGER_LEVEL)
 from nemoguardrails.ryan_logger import ryan_log
 tag_name="LLMRails"
 

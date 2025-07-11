@@ -557,7 +557,7 @@ class LLMGenerationActions:
             result = result.text
 
             user_intent = get_first_nonempty_line(result)
-            ryan_log.info(f"get_first_nonempty_line user_intent: {user_intent}")
+            ryan_log.debug(f"get_first_nonempty_line user_intent: {user_intent}")
 
             if user_intent is None:
                 user_intent = "unknown message"
@@ -565,18 +565,16 @@ class LLMGenerationActions:
             if user_intent and user_intent.startswith("user "):
                 user_intent = user_intent[5:]
 
-            log.info(
+            ryan_log.debug(
                 "Canonical form for user intent: "
                 + (user_intent if user_intent else "None")
             )
 
             if user_intent is None:
-                ryan_log.info(f"Canonical form for user intent: None unknown message")
                 return ActionResult(
                     events=[new_event_dict("UserIntent", intent="unknown message")]
                 )
             else:
-                ryan_log.info(f"Canonical form for user intent: {user_intent}")
                 if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
                     return ActionResult(
                         events=[new_event_dict("UserIntent", intent=user_intent), new_event_dict("BotMessage", message=bot_message)]

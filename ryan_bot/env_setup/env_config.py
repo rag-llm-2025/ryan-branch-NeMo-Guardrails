@@ -43,7 +43,7 @@ class EnvConfig:
     # 日志级别配置
     RYAN_LOGGER_LEVEL = logging.DEBUG
     CLI_LOGGER_LEVEL = logging.INFO
-    TEST_LOGGER_LEVEL = logging.ERROR
+    NEMO_LOGGER_LEVEL = logging.ERROR
 
     @classmethod
     def init_logger_levels(cls):
@@ -56,7 +56,7 @@ class EnvConfig:
         # CLI日志级别
         cls.CLI_LOGGER_LEVEL = cls._get_log_level('CLI_LOGGER_LEVEL', logging.INFO)
         # 测试日志级别
-        cls.TEST_LOGGER_LEVEL = cls._get_log_level('TEST_LOGGER_LEVEL', logging.ERROR)
+        cls.NEMO_LOGGER_LEVEL = cls._get_log_level('NEMO_LOGGER_LEVEL', logging.ERROR)
 
     @staticmethod
     def _get_log_level(env_var: str, default_level: int) -> int:
