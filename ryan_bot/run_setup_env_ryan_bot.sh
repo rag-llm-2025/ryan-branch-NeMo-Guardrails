@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Description:
+# cmd: ./run_setup_env_ryan_bot.sh install=true update_yaml=true
+
 # set -ex
 
 # parse params
@@ -58,22 +61,14 @@ check_cuda_and_run() {
 }
 check_cuda_and_run
 
-echo -e "\n============================================================"
-echo "当前环境变量："
-echo "engine_name=$ENGINE_NAME"
-echo "model_name=$MODEL_NAME"
-echo "model_path=$MODEL_PATH, device=$DEVICE"
-echo -e "============================================================\n"
-read -p "请确认是否使用 $DEVICE 设备 [y/n]: " confirm
-
 # Step 5:更新yml配置文件
-update_config() {
+update_yaml() {
     export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
-    python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
+    cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
 }
 
 if [ "$UPDATE_YAML" = "true" ]; then
-    update_config
+    update_yaml
 else
     echo "skip update yml config in shell script"
 fi

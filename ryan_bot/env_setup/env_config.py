@@ -32,7 +32,9 @@ class EnvConfig:
     MODEL_PATH = os.getenv('MODEL_PATH', '/home/ryan_niu/ryan/llm/Qwen2.5-7B-Instruct')
     ENGINE_NAME = os.getenv('ENGINE_NAME', 'ryan_vllm_engine')
     CHECKPOINT_PATH = os.getenv('CHECKPOINT_PATH', '')
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # 默认使用GPU
+    # DEVICE is set by env_setup.sh to config.yml to avoid vllm loading model confliction with torch.cuda
+    # DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # 默认使用GPU
+    DEVICE = os.getenv("DEVICE", "cuda")
 
     # feature toggles
     STREAM = os.getenv('STREAM', 'False') == 'True'  # 是否启用流式响应
