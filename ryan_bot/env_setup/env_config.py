@@ -128,7 +128,7 @@ def print_env_config():
 EnvConfig.init_logger_levels()
 
 # update yml config
-EnvConfig.update_yml_config("./config/qwen_model/config.yml")
+# EnvConfig.update_yml_config("./config/qwen_model/config.yml")
 
 # 打印配置信息
 print_env_config()
