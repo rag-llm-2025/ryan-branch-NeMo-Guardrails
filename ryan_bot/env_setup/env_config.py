@@ -66,6 +66,7 @@ class EnvConfig:
             'INFO': logging.INFO,
             'WARNING': logging.WARNING,
             'ERROR': logging.ERROR,
+            'CRITICAL': logging.CRITICAL,
             'FATAL': logging.FATAL
         }
         level_str = os.getenv(env_var, '').upper()
