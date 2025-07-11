@@ -2,6 +2,15 @@
 
 # set -ex
 
+# parse params
+source "$(dirname "${BASH_SOURCE[0]}")/include.sh"
+
+# show help info: ./run_setup_env_ryan_bot.sh -h/--help
+if [ "$HELP" = true ]; then
+    show_help
+    exit 0
+fi
+
 # 打印示例目录结构
 echo "示例目录结构："
 echo "/home/ubuntu/llm"
@@ -19,44 +28,18 @@ curr_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 echo "curr_dir: $curr_dir"
 source $curr_dir/env_setup/check_env_config.sh
 
-# Step 1: 导出环境变量供其他脚本使用
-echo -e "\n当前的工作路径为: $PWD"
-if [ "$(whoami)" = "ubuntu" ]; then
-    # export LLM_DIR="/home/ubuntu/workspace/llm"
-    # export MODEL_NAME="Qwen2_BE_0.6B"
-    # export ENGINE_NAME="ryan_local_engine"
-    echo "import env from .env.ubuntu file"
-elif [ "$(whoami)" = "root" ]; then
-    # export LLM_DIR="/root/ryan/llm"
-    # export MODEL_NAME="Qwen2.5-7B-Instruct"
-    # # export ENGINE_NAME="ryan_vllm_engine"
-    # export ENGINE_NAME="ryan_local_engine"
 
-    echo "import env from .env.root file"
-elif [ "$(whoami)" = "ryan_niu" ]; then
-    # export LLM_DIR="/home/ryan_niu/ryan/llm"
-    # export MODEL_NAME="Qwen2.5-7B-Instruct"
-    # export ENGINE_NAME="ryan_vllm_engine"
-    # export ENGINE_NAME="ryan_local_engine"
-    echo "import env from .env.ryan_niu file"
+install_dependencies() {
+    # Step 4: 在虚拟环境安装依赖
+    cd $LLM_DIR/src/nemo-guardrails/ && pip install -e .
+    cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
+}
+if [ "$INSTALL" = "true" ]; then
+    install_dependencies
 else
-    echo "ERROR!!! Please check the current SYSTEM USER"
-    exit 1
+    echo "skip dependencies installation"
 fi
-read -p "请输入当前环境的llm文件夹路径 [默认: $LLM_DIR]: " current_llm_dir
 
-# 如果用户输入不为空，则更新LLM_DIR
-[ -n "$current_llm_dir" ] && export LLM_DIR="$current_llm_dir"
-
-
-# Step 3: 创建并激活python虚拟环境
-# sudo apt install python3-venv -y && python3 -m venv venv && source venv/bin/activate
-# sudo apt install python3-venv -y && python3 -m venv venv && source venv/bin/activate
-# python -m venv ~/my_venv_312 && source ~/my_venv_312/bin/activate
-
-# Step 4: 在虚拟环境安装依赖
-cd $LLM_DIR/src/nemo-guardrails/ && pip install -e .
-cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
 
 # Step 2: 检查CUDA可用性并更新device
 check_cuda_and_run() {
@@ -74,6 +57,7 @@ check_cuda_and_run() {
     fi
 }
 check_cuda_and_run
+
 echo -e "\n============================================================"
 echo "当前环境变量："
 echo "engine_name=$ENGINE_NAME"
@@ -87,7 +71,12 @@ update_config() {
     export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
     python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
 }
-update_config
+
+if [ "$UPDATE_YAML" = "true" ]; then
+    update_config
+else
+    echo "skip update yml config in shell script"
+fi
 
 # Step 6: 在虚拟环境测试运行环境
 cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && python3 -c "import nemoguardrails; print(nemoguardrails.__version__)"

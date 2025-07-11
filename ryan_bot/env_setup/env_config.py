@@ -3,6 +3,9 @@ import os
 from pathlib import Path
 import logging
 from functools import cached_property
+import torch
+
+from ryan_bot.utils.helper import yml_config_update
 
 # 根据系统用户名加载对应的.env文件
 username = os.getenv('USER') or os.getenv('USERNAME')
@@ -26,7 +29,10 @@ class EnvConfig:
     # NeMo Guardrails配置
     LLM_DIR = os.getenv('LLM_DIR', '/home/ryan_niu/ryan/llm')
     MODEL_NAME = os.getenv('MODEL_NAME', 'Qwen2.5-7B-Instruct')
+    MODEL_PATH = os.getenv('MODEL_PATH', '/home/ryan_niu/ryan/llm/Qwen2.5-7B-Instruct')
     ENGINE_NAME = os.getenv('ENGINE_NAME', 'ryan_vllm_engine')
+    CHECKPOINT_PATH = os.getenv('CHECKPOINT_PATH', '')
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # 默认使用GPU
 
     # feature toggles
     STREAM = os.getenv('STREAM', 'False') == 'True'  # 是否启用流式响应
@@ -67,7 +73,6 @@ class EnvConfig:
 
     # only for test: 用@cached_property 修饰实例方法缓存私有成员属性
     __show_config = {
-        'api_key': API_KEY,
         'host': HOST,
         'port': PORT,
         'debug': DEBUG,
@@ -79,7 +84,8 @@ class EnvConfig:
         'stream': STREAM,
         'enable_vllm': ENABLE_VLLM,
         'enable_text_embedding': ENABLE_TEXT_EMBEDDING,
-        'enable_latency_optimization': ENABLE_LATENCY_OPTIMIZATION
+        'enable_latency_optimization': ENABLE_LATENCY_OPTIMIZATION,
+        'device': DEVICE
     }
     @cached_property
     def show_config(self):
@@ -89,7 +95,6 @@ class EnvConfig:
     def show_config(cls):
         """显示当前环境配置"""
         return {
-            'api_key': cls.API_KEY,
             'host': cls.HOST,
             'port': cls.PORT,
             'debug': cls.DEBUG,
@@ -101,8 +106,15 @@ class EnvConfig:
             'stream': cls.STREAM,
             'enable_vllm': cls.ENABLE_VLLM,
             'enable_text_embedding': cls.ENABLE_TEXT_EMBEDDING,
-            'enable_latency_optimization': cls.ENABLE_LATENCY_OPTIMIZATION
+            'enable_latency_optimization': cls.ENABLE_LATENCY_OPTIMIZATION,
+            'device': cls.DEVICE
         }
+
+    @classmethod
+    def update_yml_config(cls, yml_path):
+        """更新yml配置文件"""
+        yml_config_update(config_path=yml_path, engine_name=cls.ENGINE_NAME, model_name=cls.MODEL_NAME, model_path=cls.MODEL_PATH, device=cls.DEVICE, checkpoint_path=cls.CHECKPOINT_PATH)
+
 
 def print_env_config():
     print(f"加载的环境文件: {env_file}")
@@ -111,6 +123,9 @@ def print_env_config():
 
 # 初始化日志级别
 EnvConfig.init_logger_levels()
+
+# update yml config
+EnvConfig.update_yml_config("./config/qwen_model/config.yml")
 
 # 打印配置信息
 print_env_config()

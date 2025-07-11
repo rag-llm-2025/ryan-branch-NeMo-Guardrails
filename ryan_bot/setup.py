@@ -11,8 +11,7 @@ setup(
         "nemoguardrails",
         "transformers",
         "torch",
-        "peft",
-        "ruamel.yaml"
+        "peft"
     ],
     python_requires=">=3.8"
 )
