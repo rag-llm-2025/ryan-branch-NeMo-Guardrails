@@ -110,9 +110,13 @@ try_allocate() {
     echo "执行命令: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i"
 
     # 实际执行申请命令
-    srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i
-
-    return $?
+    if srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i; then
+        echo -e "\033[1;32m资源申请成功！\033[0m"
+        return 0
+    else
+        echo -e "\033[1;31m资源申请失败！\033[0m"
+        return 1
+    fi
 }
 
 # 修改后的主处理函数
@@ -121,6 +125,7 @@ process_partitions() {
     local auto_allocate=${2:-false}
     local requested_gpus=${3:-1}
     local requested_mem=${4:-30}
+    local allocation_success=false
 
     if [ -n "${partition_dict[$key]}" ]; then
         local partitions="${partition_dict[$key]}"
@@ -141,6 +146,7 @@ process_partitions() {
                     if [ "$available_gpus" -ge "$requested_gpus" ]; then
                         try_allocate "$node" "$partition" "gpu:$gpu_arch" "$requested_gpus" "$requested_mem"
                         if [ $? -eq 0 ]; then
+                            allocation_success=true
                             exit 0
                         fi
                     fi
@@ -162,11 +168,17 @@ process_partitions() {
                 if [ "$available_gpus" -ge "$requested_gpus" ]; then
                     try_allocate "$node" "$key" "gpu:$gpu_arch" "$requested_gpus" "$requested_mem"
                     if [ $? -eq 0 ]; then
+                        allocation_success=true
                         exit 0
                     fi
                 fi
             done
         fi
+    fi
+
+    if [ "$auto_allocate" = true ] && [ "$allocation_success" = false ]; then
+        echo -e "\033[1;31m所有节点资源申请失败！没有找到可用的资源。\033[0m"
+        exit 1
     fi
 }
 
