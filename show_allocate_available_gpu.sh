@@ -1,4 +1,9 @@
 #!/bin/bash
+# Description:
+# cmd: 查看使用帮助： ./show_available_gpu.sh --help
+# cmd: 申请h100 GPU资源： ./show_available_gpu.sh --allocate h100 1 100
+# cmd: 申请h100 GPU资源： ./show_available_gpu.sh h100 1 100
+# cmd: 查询h100 GPU的可用状态： ./show_available_gpu.sh h100
 
 # 定义函数，用于获取指定分区的GPU架构
 get_gpu_arch() {
@@ -57,7 +62,7 @@ get_partition_gpu_info() {
         echo "Partition $1 doesn't have any gpus"
         return
     fi
-    
+
     total_gpus=0
     available_gpus=0
     free_mems=0
@@ -81,21 +86,6 @@ get_partition_gpu_info() {
     echo "Partition $1 Total $gpu_arch GPUs: $total_gpus, Available: $available_gpus, Free Memory: $free_mems GB, Total Memory: $total_mems GB"
 }
 
-process_partitions() {
-    local key="$1"
-
-    if [ -n "${partition_dict[$key]}" ]; then
-        local partitions="${partition_dict[$key]}"
-
-        # 循环遍历所有分区并调用函数
-        for partition in $partitions; do
-            get_partition_gpu_info "$partition"
-        done
-    else
-        get_partition_gpu_info "$key"
-    fi
-}
-
 # 自定义group
 declare -A partition_dict
 partition_dict=(
@@ -107,14 +97,99 @@ partition_dict=(
     [all]="a100.80gb a100.40gb a100.pci v100 h100.80gb h200.141gb cpu cpu.t4 cpu.t4.cuda12 gpu gcpu"
 )
 
-# 检查是否提供了参数
+try_allocate() {
+    local node=$1
+    local partition=$2
+    local gres=$3
+    local gpu_count=$4
+    local mem_gb=$5
+
+    echo "尝试在节点 $node 上申请资源..."
+    echo "Debug: Trying to allocate $gpu_count GPU(s) on $node with $mem_gb GB memory"
+    echo "Debug: Full command: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i"
+    echo "执行命令: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i"
+
+    # 实际执行申请命令
+    srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i
+
+    return $?
+}
+
+# 修改后的主处理函数
+process_partitions() {
+    local key="$1"
+    local auto_allocate=${2:-false}
+    local requested_gpus=${3:-1}
+    local requested_mem=${4:-30}
+
+    if [ -n "${partition_dict[$key]}" ]; then
+        local partitions="${partition_dict[$key]}"
+
+        for partition in $partitions; do
+            get_partition_gpu_info "$partition"
+
+            if [ "$auto_allocate" = true ]; then
+                # 获取分区信息
+                gpu_arch=$(get_gpu_arch "$partition")
+                nodes=$(sinfo -p "$partition" -N -h -o "%N")
+
+                # 尝试在每个可用节点上申请资源
+                for node in $nodes; do
+                    node_info=$(get_gpu_info "$node" "$gpu_arch")
+                    available_gpus=$(echo $node_info | awk '{print $2}')
+
+                    if [ "$available_gpus" -ge "$requested_gpus" ]; then
+                        try_allocate "$node" "$partition" "gpu:$gpu_arch" "$requested_gpus" "$requested_mem"
+                        if [ $? -eq 0 ]; then
+                            exit 0
+                        fi
+                    fi
+                done
+            fi
+        done
+    else
+        get_partition_gpu_info "$key"
+
+        if [ "$auto_allocate" = true ]; then
+            # 直接处理单个分区
+            gpu_arch=$(get_gpu_arch "$key")
+            nodes=$(sinfo -p "$key" -N -h -o "%N")
+
+            for node in $nodes; do
+                node_info=$(get_gpu_info "$node" "$gpu_arch")
+                available_gpus=$(echo $node_info | awk '{print $2}')
+
+                if [ "$available_gpus" -ge "$requested_gpus" ]; then
+                    try_allocate "$node" "$key" "gpu:$gpu_arch" "$requested_gpus" "$requested_mem"
+                    if [ $? -eq 0 ]; then
+                        exit 0
+                    fi
+                fi
+            done
+        fi
+    fi
+}
+
+# 修改参数处理逻辑
 if [ -z "$1" ]; then
     echo "Error: Please provide a partition or group name as an argument. Use --help to see available options."
     exit 1
 fi
 
+# 处理帮助选项
 if [ "$1" == "--help" ]; then
-    echo "Available groups:"
+    echo "Usage: $0 [OPTIONS] [GROUP_NAME] [GPU_NUMS] [MEMORY]"
+    echo "Options:"
+    echo "  --allocate [GPUS] [MEM_GB]  Automatically allocate resources"
+    echo "  --help                      Show this help message"
+    echo "Examples:"
+    echo "  check help: ./show_available_gpu.sh --help"
+    echo "  check h100 GPU's availability: ./show_available_gpu.sh h100"
+    echo "  allocate h100 GPU resource: ./show_available_gpu.sh --allocate h100 1 100"
+    echo "  allocate h100 GPU resource: ./show_available_gpu.sh h100 1 100"
+
+    echo ""
+    echo "Available GROUP_NAMES:"
     for key in "${!partition_dict[@]}"; do
         echo "  $key"
     done
@@ -124,4 +199,16 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
-process_partitions "$1"
+# 处理自动分配选项
+if [ "$1" == "--allocate" ]; then
+    shift
+    partition_name=$1
+    gpus=${2:-1}
+    mem=${3:-30}
+    process_partitions "$partition_name" true "$gpus" "$mem"
+elif [[ "$2" =~ ^[0-9]+$ ]]; then
+    # 支持直接传递数字参数的简写方式
+    process_partitions "$1" true "$2" "${3:-30}"
+else
+    process_partitions "$1"
+fi
