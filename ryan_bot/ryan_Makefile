@@ -16,7 +16,7 @@ include $(ENV_FILE)
 export $(shell sed 's/=.*//' $(ENV_FILE))
 
 # 包含子Makefile
-include ryan_bot/project_mk/project_help.mk
+include ryan_bot/project_mk/help_project.mk
 include ryan_bot/project_mk/env_setup.mk
 include ryan_bot/project_mk/server_client.mk
 include ryan_bot/project_mk/conda.mk
@@ -25,4 +25,4 @@ include ryan_bot/project_mk/show_allocate_available_gpu.mk
 
 # 默认目标
 .PHONY: help
-help: project_help
+help: help_project
