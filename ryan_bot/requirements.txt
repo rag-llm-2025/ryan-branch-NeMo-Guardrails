@@ -1,7 +1,7 @@
 transformers
 torch
 peft
-ruamel.yaml
+pyyaml>=6.0
 requests
 thefuzz
 vllm

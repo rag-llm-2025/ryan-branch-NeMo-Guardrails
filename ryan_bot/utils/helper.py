@@ -1,20 +1,14 @@
-from ruamel.yaml import YAML
+import yaml  # 使用PyYAML替代ruamel.yaml
 from pathlib import Path
 
 # from nemoguardrails.ryan_logger import ryan_log
 # tag_name="utils.helper.py"
 
-def yml_config_update(config_path, engine_name, model_name, model_path, device, checkpoint_path):
-    """update config.yml file with model configuration, keeping the original format and structure"""
-    yaml = YAML()
-    yaml.preserve_quotes = True  # keep the original quotes
-    yaml.indent(mapping=2, sequence=4, offset=2)  # keep the original indentation
 
-    # config_file = Path(config_path) / "config.yml"
-    # convert to absolute path
+def yml_config_update(config_path, engine_name, model_name, model_path, device, checkpoint_path):
+    """update config.yml file with model configuration"""
     config_file = Path(config_path)
     if not config_file.is_absolute():
-        # if relative path, resolve based on the script directory
         config_file = Path(__file__).parent.parent / config_path
 
     print(f"[DEBUG] update yml config: {config_file}")
@@ -22,11 +16,10 @@ def yml_config_update(config_path, engine_name, model_name, model_path, device, 
     if not config_file.exists():
         raise FileNotFoundError(f"Config file not found at: {config_file}")
 
-    # read and keep the original format
+    # 读取YAML文件
     with open(config_file, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
 
-    # update model configuration
     for model in config['models']:
         if model['type'] == 'main':
             model['engine'] = engine_name
@@ -34,12 +27,11 @@ def yml_config_update(config_path, engine_name, model_name, model_path, device, 
             model['parameters']['model_path'] = model_path
             model['parameters']['device'] = str(device)
             model['parameters']['checkpoint_path'] = checkpoint_path
-            # ryan_log.info(tag_name, f"Updated config.yml with engine_name={engine_name}, model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
             print(f"Updated config.yml with engine_name={engine_name}, model_name={model_name}, model_path={model_path}, device={device}, checkpoint_path={checkpoint_path}")
 
-    # write back to file, keeping the original format
+    # 写入YAML文件
     with open(config_file, 'w') as f:
-        yaml.dump(config, f)
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
 def print_prompt_loading(config):
     # ryan_log.info(tag_name, "print loaded prompt templates related to ryan_local_engine ...")
