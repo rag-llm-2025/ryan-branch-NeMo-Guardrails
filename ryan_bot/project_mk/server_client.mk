@@ -1,7 +1,7 @@
 # server_client.mk - 服务端和客户端运行命令
 
 .PHONY: server
-server:
+server: update_yaml_config
 	@echo "=== 环境变量调试 ==="
 	@echo "HOST: $(HOST)"
 	@echo "PORT: $(PORT)"
@@ -13,7 +13,7 @@ server:
 	nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=qwen_model --host $(HOST) --port $(PORT) --verbose 2>&1 | tee $(LOG_DIR)/ryan_server_$(DATESTR).log
 
 .PHONY: client
-client:
+client: update_yaml_config
 	mkdir -p $(LOG_DIR)
 	rm -f $(LOG_DIR)/ryan_client_*.log
 	cd $(LLM_DIR)/src/nemo-guardrails && \
