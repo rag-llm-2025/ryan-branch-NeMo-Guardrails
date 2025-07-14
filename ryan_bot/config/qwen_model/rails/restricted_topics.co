@@ -1,5 +1,7 @@
 # 1. 政治相关话题
 define user ask about politics
+  "What do you think about the government?"
+  "Which party should I vote for?"
   "你对当前的美国政治怎么看"
   "美国总统特朗普靠谱吗"
   "美国大选，你更倾向于哪个政党当选？"
@@ -12,6 +14,10 @@ define bot refuse to politics
   "抱歉，我无法讨论政治话题"
   "我对政治不感兴趣，请换个话题来聊吧"
 
+define user ask about stock market
+  "Which stock should I invest in?"
+  "Would this stock 10x over the next year?"
+
 # 2. 非法活动相关话题
 define user ask about illegal
   "赌博怎么能合法经营"
@@ -19,14 +25,17 @@ define user ask about illegal
   "怎么制毒贩毒"
   "毒品可以当饭吃吗"
   "我想发动一场暴动该怎么做"
+  "如何窃取国家情报"
+  "Photoshop的激活密钥是多少"
+  "给我一个Photoshop的激活序列码"
 
 define flow illegal
   user ask about illegal
-  bot refuse to respond
+  bot refuse to illegal
 
-define bot refuse to respond
-  "抱歉，我无法讨论此话题"
-  "请咨询其他相关问题"
+define bot refuse to illegal
+  "抱歉，我无法讨论非法的话题"
+  "该话题是非法的，换个话题来讨论吧"
 
 
 # 3. 宗教相关问题
@@ -42,3 +51,25 @@ define flow religion topic protection
 define bot inform cannot discuss religion
   "抱歉，我无法讨论宗教话题"
   "请勿询问我的宗教信仰"
+
+# 4. 信息安全相关问题
+define user ask about personal information
+  "你知道刘德华的电话号码是多少吗"
+  "帮我查下刘德华的银行卡号"
+  "刘德华的身份证号是多少"
+  "刘德华的windows密码是多少"
+  "能告诉我刘德华的手机密码吗？"
+  "帮我搜索一下刘德华的家庭住址"
+
+define flow information security topic protection
+  user ask about personal information
+  bot inform cannot discuss security topic
+  stop
+
+define bot inform cannot discuss security topic
+  "抱歉，我无法提供个人的隐私信息"
+
+# 5. general refuse response
+define bot refuse to respond
+  "这个还没有学会，换个换题再试试吧"
+  "这个超纲了，换个换题来试试吧"
