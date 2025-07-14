@@ -94,7 +94,7 @@ class VllmModelManager:
     def _process_output(self, output) -> str:
         """Unified output processing"""
         text = output.outputs[0].text
-        ryan_log.debug(tag_name, f"raw text: {text}")
+        ryan_log.debug(tag_name, f"raw text: \n{text}")
         return text.split("<|im_end|>")[0].strip()
 
     def chat(self, prompt: str, **kwargs) -> str:
