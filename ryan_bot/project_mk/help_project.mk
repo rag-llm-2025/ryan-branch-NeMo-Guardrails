@@ -6,9 +6,14 @@ help_project: help_gpu help_env help_run help_conda
 .PHONY: help_gpu help_env help_run help_conda
 
 help_gpu:
-	@printf "\033[1;33mGPU资源管理:\033[0m\n"
-	@echo "  make allocate_gpu GPU_TYPE=h100 GPU_NUM=1 MEM_GB=100 - 自动申请指定GPU资源"
-	@echo "  make check_gpu GPU_TYPE=h100  - 检查GPU资源是否可用"
+	@printf "\033[1;33m\nGPU资源管理:\033[0m\n"
+	@printf "\033[1;32m%-70s\033[0m %s\n" "  make allocate_gpu GPU_TYPE=h100 GPU_NUM=1 MEM_GB=100" "- 自动申请指定GPU资源"
+	@printf "\033[1;32m%-70s\033[0m %s\n" "  make check_gpu GPU_TYPE=h100" "- 检查GPU资源是否可用"
+	@printf "\033[1;34m\n最佳实践:\033[0m\n"
+	@printf "\033[1;36m%-70s\033[0m %s\n" "  export GPU_TYPE=v100 GPU_NUM=1 MEM_GB=30 && echo ${GPU_TYPE} ${GPU_NUM} ${MEM_GB}" "- 设置环境变量并验证"
+	@printf "\033[1;36m%-70s\033[0m %s\n" "  make check_gpu" "- 检查GPU可用性"
+	@printf "\033[1;36m%-70s\033[0m %s\n" "  make allocate_gpu" "- 申请GPU资源"
+	@echo ""
 
 help_env:
 	@printf "\033[1;33m环境设置:\033[0m\n"
@@ -21,11 +26,13 @@ help_env:
 	@echo "  make update_env_host          - 更新指定服务器的IP地址"
 	@echo "  make export_history           - 导出历史记录"
 	@echo "  make custom_bashrc_cmd        - 自定义.bashrc命令"
+	@echo ""
 
 help_run:
 	@printf "\033[1;33m运行命令:\033[0m\n"
 	@echo "  make server                   - 启动服务端"
 	@echo "  make client                   - 启动客户端"
+	@echo ""
 
 
 help_conda:
@@ -34,3 +41,4 @@ help_conda:
 	@echo "  make conda_create             - 创建conda环境"
 	@echo "  make conda_activate           - 激活conda环境"
 	@echo "  make conda_deactivate         - 停用conda环境"
+	@echo ""

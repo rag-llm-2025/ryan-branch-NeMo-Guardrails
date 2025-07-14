@@ -1,6 +1,11 @@
 # Description:
-# cmd: make check_gpu GPU_TYPE=v100
-# cmd: make allocate_gpu GPU_TYPE=v100 GPU_NUM=1 MEM_GB=30
+# make check_gpu GPU_TYPE=v100
+# make allocate_gpu GPU_TYPE=v100 GPU_NUM=1 MEM_GB=30
+
+# Best Practise:
+# export GPU_TYPE=v100 GPU_NUM=1 MEM_GB=30 && echo $GPU_TYPE $GPU_NUM $MEM_GB
+# make check_gpu 		# check gpu availability
+# make allocate_gpu		# allocate specific gpu resources
 
 # 添加参数默认值
 GPU_TYPE ?= h100

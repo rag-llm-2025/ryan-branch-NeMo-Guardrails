@@ -1,9 +1,6 @@
 #!/bin/bash
 # Description:
-# cmd: 查看使用帮助： ./show_available_gpu.sh --help
-# cmd: 申请h100 GPU资源： ./show_available_gpu.sh --allocate h100 1 100
-# cmd: 申请h100 GPU资源： ./show_available_gpu.sh h100 1 100
-# cmd: 查询h100 GPU的可用状态： ./show_available_gpu.sh h100
+# 查看使用帮助： ./show_allocate_available_gpu.sh --help
 
 # 定义函数，用于获取指定分区的GPU架构
 get_gpu_arch() {
@@ -126,6 +123,7 @@ process_partitions() {
     local requested_gpus=${3:-1}
     local requested_mem=${4:-30}
     local allocation_success=false
+    echo "Debug: Processing GPU type '$key' with partitions: ${partition_dict[$key]}, auto_allocate: $auto_allocate, requested_gpus: $requested_gpus, requested_mem: $requested_mem"
 
     if [ -n "${partition_dict[$key]}" ]; then
         local partitions="${partition_dict[$key]}"
@@ -189,19 +187,26 @@ if [ -z "$1" ]; then
 fi
 
 # 处理帮助选项
-if [ "$1" == "--help" ]; then
-    echo "Usage: $0 [OPTIONS] [GROUP_NAME] [GPU_NUMS] [MEMORY]"
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+    echo "Usage: $0 [OPTIONS] [PARTITION_GROUP_NAME] [GPU_NUMS] [MEMORY]"
     echo "Options:"
     echo "  --allocate [GPUS] [MEM_GB]  Automatically allocate resources"
     echo "  --help                      Show this help message"
+
     echo "Examples:"
-    echo "  check help: ./show_available_gpu.sh --help"
-    echo "  check h100 GPU's availability: ./show_available_gpu.sh h100"
-    echo "  allocate h100 GPU resource: ./show_available_gpu.sh --allocate h100 1 100"
-    echo "  allocate h100 GPU resource: ./show_available_gpu.sh h100 1 100"
+    echo "  ./show_allocate_available_gpu.sh --help                         # check help"
+    echo "  ./show_allocate_available_gpu.sh h100                           # check h100 GPU's availability"
+    echo "  ./show_allocate_available_gpu.sh --allocate h100 1 30           # allocate GPU resource"
+    echo "  ./show_allocate_available_gpu.sh -a h100 1 30                   # allocate GPU resource"
+    echo "  ./show_allocate_available_gpu.sh -i h100 1 30                   # allocate GPU resource"
+
+    echo  "Best Practise:"
+    echo '  export GPU_TYPE=v100 GPU_NUM=1 MEM_GB=30 && echo $GPU_TYPE $GPU_NUM $MEM_GB'
+    echo "  make check_gpu                                             # check gpu availability"
+    echo "  make allocate_gpu                                          # allocate specific gpu resources"
 
     echo ""
-    echo "Available GROUP_NAMES:"
+    echo "Available PARTITION_GROUP_NAMES:"
     for key in "${!partition_dict[@]}"; do
         echo "  $key"
     done
@@ -211,16 +216,26 @@ if [ "$1" == "--help" ]; then
     exit 0
 fi
 
+echo "Debug: Processing argument: $@"
+
 # 处理自动分配选项
-if [ "$1" == "--allocate" ]; then
+if [ "$1" == "--allocate" ] || [ "$1" == "-a" ]; then
     shift
     partition_name=$1
     gpus=${2:-1}
     mem=${3:-30}
     process_partitions "$partition_name" true "$gpus" "$mem"
-elif [[ "$2" =~ ^[0-9]+$ ]]; then
+elif [[ "$1" = "-i" ]]; then
     # 支持直接传递数字参数的简写方式
-    process_partitions "$1" true "$2" "${3:-30}"
-else
+    read -p "请输入GPU类型 [h100, a100, v100]: " gpu_type;
+    partition_name=${gpu_type:-$2};
+    read -p "请输入GPU数量 [1]: " gpu_num;
+    gpus=${gpu_num:-$3};
+    read -p "请输入内存大小(GB) [30]: " mem_gb;
+    mem=${mem_gb:-$4};
+    echo "partition_name=$$partition_name, gpus=$$gpus, mem=$mem"
+    process_partitions "$partition_name" true "$gpus" "$mem"
+
+else # check gpu availablitily
     process_partitions "$1"
 fi
