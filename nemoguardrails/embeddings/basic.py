@@ -26,6 +26,8 @@ from nemoguardrails.rails.llm.config import EmbeddingsCacheConfig
 
 log = logging.getLogger(__name__)
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
+
 
 class BasicEmbeddingsIndex(EmbeddingsIndex):
     """Basic implementation of an embeddings index.
@@ -132,6 +134,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
         """Setter to allow replacing the index dynamically."""
         self._index = index
 
+    @log_kpi_sync
     def _init_model(self):
         """Initialize the model used for computing the embeddings."""
         self._model = init_embedding_model(
@@ -140,6 +143,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             embedding_params=self.embedding_params,
         )
 
+    @log_kpi_async
     @cache_embeddings
     async def _get_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Compute embeddings for a list of texts.
@@ -156,6 +160,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
         embeddings = await self._model.encode_async(texts)
         return embeddings
 
+    @log_kpi_async
     async def add_item(self, item: IndexItem):
         """Add a single item to the index.
 
@@ -171,6 +176,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             # Update the embedding if it was not computed up to this point
             self._embedding_size = len(self._embeddings[0])
 
+    @log_kpi_async
     async def add_items(self, items: List[IndexItem]):
         """Add multiple items to the index at once.
 
@@ -188,6 +194,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             # Update the embedding if it was not computed up to this point
             self._embedding_size = len(self._embeddings[0])
 
+    @log_kpi_async
     async def build(self):
         """Builds the Annoy index."""
         self._index = AnnoyIndex(len(self._embeddings[0]), "angular")
@@ -195,6 +202,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             self._index.add_item(i, self._embeddings[i])
         self._index.build(10)
 
+    @log_kpi_async
     async def _run_batch(self):
         """Runs the current batch of embeddings."""
 
@@ -235,6 +243,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
         # Signal that the batch has finished processing
         batch_event.set()
 
+    @log_kpi_async
     async def _batch_get_embeddings(self, text: str) -> List[float]:
         # As long as the queue is full, we wait for the next batch
         while len(self._req_queue) >= self.max_batch_size:
@@ -263,6 +272,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
 
         return result
 
+    @log_kpi_async
     async def search(
         self, text: str, max_results: int = 20, threshold: Optional[float] = None
     ) -> List[IndexItem]:
@@ -306,8 +316,9 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
 
         return [self._items[i] for i in filtered_results]
 
-    @staticmethod
-    def _filter_results(
+    # @staticmethod
+    @log_kpi_sync
+    def _filter_results(self,
         indices: List[int], distances: List[float], threshold: float
     ) -> List[int]:
         if threshold == float("inf"):
