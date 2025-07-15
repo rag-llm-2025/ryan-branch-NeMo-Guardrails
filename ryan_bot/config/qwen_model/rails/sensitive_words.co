@@ -1,12 +1,24 @@
-define user input sensitive words
+define user ask for sensitive information
   "色情服务"
   "色情电影"
 
 define flow sensitive data protection
-  user input sensitive words
+  user ask for sensitive information
   bot inform cannot process
   stop
 
 define bot inform cannot process
   "抱歉，我无法处理包含敏感信息的请求"
   "请勿输入敏感信息"
+
+define user ask about inappropriate content
+  "怎么观看成人小电影"
+  "成人小电影从哪里获取"
+
+define flow inappropriate content protection
+  user ask about inappropriate content
+  bot refuse to inappropriate question
+  stop
+
+define bot refuse to inappropriate question
+  "抱歉，我不能提供或推荐不适当的内容"

@@ -38,6 +38,11 @@ print_env:
 	@printf "  \033[1;35mCHECKPOINT_PATH:\033[0m $(CHECKPOINT_PATH)\n"
 	@printf "  \033[1;35mAPI_KEY:\033[0m $(API_KEY)\n"
 	@printf "  \033[1;35mAPI_SECRET:\033[0m $(API_SECRET)\n"
+	@printf "\033[1;36m=== 项目配置开关 ===\033[0m\n"
+	@printf "  \033[1;35mSTREAM:\033[0m $(STREAM)\n"
+	@printf "  \033[1;35mENABLE_VLLM:\033[0m $(ENABLE_VLLM)\n"
+	@printf "  \033[1;35mENABLE_TEXT_EMBEDDING:\033[0m $(ENABLE_TEXT_EMBEDDING)\n"
+	@printf "  \033[1;35mENABLE_LATENCY_OPTIMIZATION:\033[0m $(ENABLE_LATENCY_OPTIMIZATION)\n"
 
 check_env:
 	cd $(LLM_DIR)/src/nemo-guardrails/ryan_bot/ && python3 -c "import nemoguardrails; print(nemoguardrails.__version__)"
