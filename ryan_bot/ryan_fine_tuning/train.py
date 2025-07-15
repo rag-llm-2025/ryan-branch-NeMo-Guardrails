@@ -42,9 +42,9 @@ dataset_directory = "./dataset"
 # 加载多个安全数据集 (更新版)
 try:
     datasets = {
-        "aegis": load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0", cache_dir=dataset_directory),
-        "toxic": load_dataset("allenai/real-toxicity-prompts", cache_dir=dataset_directory),
-        "safety": load_dataset("Anthropic/hh-rlhf", cache_dir=dataset_directory)  # 替代harmonization
+        "aegis": load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0", cache_dir=dataset_directory, split="train[:50%]"),
+        # "toxic": load_dataset("allenai/real-toxicity-prompts", cache_dir=dataset_directory),
+        # "safety": load_dataset("Anthropic/hh-rlhf", cache_dir=dataset_directory)  # 替代harmonization
     }
 except Exception as e:
     print(f"加载数据集时出错: {str(e)}")
@@ -65,18 +65,18 @@ def prepare_safety_data(examples):
                 inputs.append(f"用户：{text}\n助手：")
                 targets.append("抱歉，这个问题我无法回答。")
 
-    if "chosen" in examples:  # hh-rlhf数据集
-        for text in examples["chosen"]:
-            if isinstance(text, str) and "Assistant:" in text and text.strip():
-                parts = text.split("Assistant:")
-                inputs.append(parts[0].replace("Human:", "用户：") + "助手：")
-                targets.append(parts[1].strip())
+    # if "chosen" in examples:  # hh-rlhf数据集
+    #     for text in examples["chosen"]:
+    #         if isinstance(text, str) and "Assistant:" in text and text.strip():
+    #             parts = text.split("Assistant:")
+    #             inputs.append(parts[0].replace("Human:", "用户：") + "助手：")
+    #             targets.append(parts[1].strip())
 
-    if "text" in examples and "toxicity" in examples:  # real-toxicity-prompts数据集
-        for text, toxicity in zip(examples["text"], examples["toxicity"]):
-            if isinstance(text, str) and text.strip() and toxicity > 0.5:
-                inputs.append(f"用户：{text}\n助手：")
-                targets.append("这个问题可能包含不当内容，我无法回答。")
+    # if "text" in examples and "toxicity" in examples:  # real-toxicity-prompts数据集
+    #     for text, toxicity in zip(examples["text"], examples["toxicity"]):
+    #         if isinstance(text, str) and text.strip() and toxicity > 0.5:
+    #             inputs.append(f"用户：{text}\n助手：")
+    #             targets.append("这个问题可能包含不当内容，我无法回答。")
 
     # 如果没有任何有效输入，返回空字典
     if not inputs:
@@ -87,7 +87,7 @@ def prepare_safety_data(examples):
         inputs,
         truncation=True,
         padding="max_length",
-        max_length=512,
+        max_length=256, # 最大长度降到256
         return_tensors="pt"
     )
 
@@ -96,7 +96,7 @@ def prepare_safety_data(examples):
         text_target=targets,
         truncation=True,
         padding="max_length",
-        max_length=512,
+        max_length=256, # 最大长度降到256
         return_tensors="pt"
     ).input_ids
 
@@ -109,9 +109,10 @@ for name, dataset in datasets.items():
     processed = dataset.map(
         prepare_safety_data,
         batched=True,
-        remove_columns=dataset["train"].column_names
+        remove_columns=dataset.column_names  # Changed from dataset["train"].column_names
     )
-    processed_datasets.append(processed["train"])
+    processed_datasets.append(processed)  # Changed from processed["train"]
+
 
 # 合并数据集并划分训练/验证集
 full_dataset = concatenate_datasets(processed_datasets)
@@ -132,9 +133,9 @@ data_collator = DataCollatorForLanguageModeling(
 # 训练参数配置 (H100优化版)
 training_args = TrainingArguments(
     output_dir="./qwen2.5-safe",
-    per_device_train_batch_size=1,  # 从1提升到4 (H100可承受)
-    gradient_accumulation_steps=16,   # 从16降到4 (保持总batch size=16)
-    learning_rate=2e-5,             # 从1e-5提高到3e-5
+    per_device_train_batch_size=1,  # 保持为1
+    gradient_accumulation_steps=8,   # 降低到8
+    learning_rate=1e-5,             # 降低学习率
     num_train_epochs=3,
     logging_dir="./logs",
     logging_steps=50,
@@ -144,17 +145,17 @@ training_args = TrainingArguments(
     save_steps=500,
     fp16=True,
     gradient_checkpointing=True,
-    optim="adamw_torch_fused",
-    max_grad_norm=1.0,              # 从0.5恢复到1.0
-    warmup_ratio=0.1,               # 从0.05提高到0.1
-    load_best_model_at_end=True,
+    optim="adamw_torch",           # 改为标准adamw
+    max_grad_norm=0.3,             # 降低梯度裁剪阈值
+    warmup_ratio=0.02,             # 降低预热比例
+    load_best_model_at_end=False,
     metric_for_best_model="eval_loss",
     report_to=report_to,
     remove_unused_columns=True,
     ddp_find_unused_parameters=False,
-    torch_compile=True,            # 启用torch编译优化
-    dataloader_pin_memory=True,    # 启用内存锁页
-    dataloader_num_workers=2       # 增加数据加载线程
+    torch_compile=False,           # 禁用编译优化
+    dataloader_pin_memory=False,   # 禁用内存锁页
+    dataloader_num_workers=0       # 减少到1个worker
 )
 
 # 初始化Trainer
