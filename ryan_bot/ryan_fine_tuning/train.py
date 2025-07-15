@@ -13,6 +13,11 @@ from transformers import (
     DataCollatorForLanguageModeling
 )
 
+import torch
+torch.backends.cuda.enable_mem_efficient_sdp(True)  # 启用内存高效注意力
+torch.set_float32_matmul_precision('high')  # 设置矩阵乘法精度
+
+
 # Add this before TrainingArguments
 try:
     from transformers.integrations import TensorBoardCallback
@@ -120,25 +125,36 @@ data_collator = DataCollatorForLanguageModeling(
     mlm=False
 )
 
-# 训练参数配置 (V100优化版)
+# export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# export CUDA_LAUNCH_BLOCKING=1
+# export TOKENIZERS_PARALLELISM=false
+
+# 训练参数配置 (H100优化版)
 training_args = TrainingArguments(
     output_dir="./qwen2.5-safe",
-    per_device_train_batch_size=2,  # 从2提升到4 (V100可承受)
-    gradient_accumulation_steps=8,   # 从8降低到4 (与batch_size乘积保持16)
-    learning_rate=2e-5,             # 适当提高学习率
+    per_device_train_batch_size=1,  # 从1提升到4 (H100可承受)
+    gradient_accumulation_steps=16,   # 从16降到4 (保持总batch size=16)
+    learning_rate=2e-5,             # 从1e-5提高到3e-5
     num_train_epochs=3,
     logging_dir="./logs",
     logging_steps=50,
-    eval_strategy="epoch",  # Changed to match save_strategy
-    save_strategy="epoch",
-    fp16=True,                      # V100支持FP16加速
-    gradient_checkpointing=True,    # 新增: 启用梯度检查点节省显存
-    optim="adamw_torch_fused",      # 新增: 使用融合优化器
-    max_grad_norm=1.0,              # 新增: 梯度裁剪
-    warmup_ratio=0.1,               # 新增: 学习率预热
+    eval_strategy="steps",
+    eval_steps=500,
+    save_strategy="steps",
+    save_steps=500,
+    fp16=True,
+    gradient_checkpointing=True,
+    optim="adamw_torch_fused",
+    max_grad_norm=1.0,              # 从0.5恢复到1.0
+    warmup_ratio=0.1,               # 从0.05提高到0.1
     load_best_model_at_end=True,
     metric_for_best_model="eval_loss",
-    report_to=report_to  # Modified to handle missing tensorboard
+    report_to=report_to,
+    remove_unused_columns=True,
+    ddp_find_unused_parameters=False,
+    torch_compile=True,            # 启用torch编译优化
+    dataloader_pin_memory=True,    # 启用内存锁页
+    dataloader_num_workers=2       # 增加数据加载线程
 )
 
 # 初始化Trainer
