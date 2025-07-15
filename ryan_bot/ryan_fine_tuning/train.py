@@ -1,7 +1,7 @@
 from huggingface_hub import login
 import os
 token = os.getenv(key="HF_TOKEN", default=None)  # 从环境变量中获取Hugging Face的token
-print(f" huggingface token: {token}")
+# print(f" huggingface token: {token}")
 login(token=token)
 
 from datasets import load_dataset, concatenate_datasets
@@ -42,7 +42,7 @@ dataset_directory = "./dataset"
 # 加载多个安全数据集 (更新版)
 try:
     datasets = {
-        "aegis": load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0", cache_dir=dataset_directory, split="train[:50%]"),
+        "aegis": load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0", cache_dir=dataset_directory, split="train[:1%]"),
         # "toxic": load_dataset("allenai/real-toxicity-prompts", cache_dir=dataset_directory),
         # "safety": load_dataset("Anthropic/hh-rlhf", cache_dir=dataset_directory)  # 替代harmonization
     }
@@ -87,7 +87,7 @@ def prepare_safety_data(examples):
         inputs,
         truncation=True,
         padding="max_length",
-        max_length=256, # 最大长度降到256
+        max_length=128, # 最大长度降到256
         return_tensors="pt"
     )
 
@@ -96,7 +96,7 @@ def prepare_safety_data(examples):
         text_target=targets,
         truncation=True,
         padding="max_length",
-        max_length=256, # 最大长度降到256
+        max_length=128, # 最大长度降到256
         return_tensors="pt"
     ).input_ids
 
@@ -126,37 +126,39 @@ data_collator = DataCollatorForLanguageModeling(
     mlm=False
 )
 
-# export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# export PYTORCH_CUDA_ALLOC_CONF="max_split_size_mb:64"
 # export CUDA_LAUNCH_BLOCKING=1
-# export TOKENIZERS_PARALLELISM=false
+# export NCCL_P2P_DISABLE=1
 
 # 训练参数配置 (H100优化版)
 training_args = TrainingArguments(
     output_dir="./qwen2.5-safe",
-    per_device_train_batch_size=1,  # 保持为1
-    gradient_accumulation_steps=8,   # 降低到8
-    learning_rate=1e-5,             # 降低学习率
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=2,  # 从4降到2
+    learning_rate=2e-6,            # 进一步降低学习率
     num_train_epochs=3,
     logging_dir="./logs",
-    logging_steps=50,
-    eval_strategy="steps",
-    eval_steps=500,
+    logging_steps=10,
+    eval_strategy="no",
     save_strategy="steps",
     save_steps=500,
     fp16=True,
     gradient_checkpointing=True,
-    optim="adamw_torch",           # 改为标准adamw
-    max_grad_norm=0.3,             # 降低梯度裁剪阈值
-    warmup_ratio=0.02,             # 降低预热比例
+    optim="adamw_torch",
+    max_grad_norm=0.1,             # 进一步降低梯度裁剪阈值
+    warmup_ratio=0.005,            # 进一步减少预热比例
     load_best_model_at_end=False,
-    metric_for_best_model="eval_loss",
     report_to=report_to,
     remove_unused_columns=True,
     ddp_find_unused_parameters=False,
-    torch_compile=False,           # 禁用编译优化
-    dataloader_pin_memory=False,   # 禁用内存锁页
-    dataloader_num_workers=0       # 减少到1个worker
+    torch_compile=False,
+    dataloader_pin_memory=False,
+    dataloader_num_workers=0
 )
+
+# 在训练前添加内存清理
+import torch
+torch.cuda.empty_cache()
 
 # 初始化Trainer
 trainer = Trainer(
