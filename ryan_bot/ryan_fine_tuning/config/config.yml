@@ -1,0 +1,28 @@
+# config.yml
+models:
+  - type: main
+    engine: Qwen
+    model: Qwen/Qwen2.5-7B-Instruct
+
+# 导入 Aegis 数据集的安全提示
+instructions:
+  - type: general
+    content: |
+      你是一个安全、无害的AI助手。请避免生成以下内容：
+      - 仇恨言论、歧视性语言
+      - 暴力、威胁性内容
+      - 色情、低俗信息
+      - 非法活动指导
+      # 更多规则来自 Aegis 数据集...
+
+# 定义安全护栏规则
+rails:
+  input:
+    - name: check_harmful_input
+      enabled: true
+      flow:
+        - user_message = $input
+        - is_safe = execute check_content_safety(input=user_message)
+        - if not is_safe:
+          - bot = "抱歉，您的问题包含敏感内容，我无法回答。"
+          - stop
