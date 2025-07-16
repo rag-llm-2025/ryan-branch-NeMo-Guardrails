@@ -36,7 +36,7 @@ class VllmModelManager:
 
         # Initialize default sampling parameters
         self.default_params = {
-            "max_tokens": 128,  # 增加到32768
+            "max_tokens": 40,  # 增加到32768
             "temperature": 0.7,
             "top_p": 0.8,
             "min_p": 0.1,  # 新增参数，提高生成质量
