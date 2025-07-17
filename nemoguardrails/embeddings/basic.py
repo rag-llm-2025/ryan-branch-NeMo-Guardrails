@@ -26,7 +26,7 @@ from nemoguardrails.rails.llm.config import EmbeddingsCacheConfig
 
 log = logging.getLogger(__name__)
 
-from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
+from nemoguardrails.ryan_logger import ryan_log, log_kpi_async, log_kpi_sync
 
 
 class BasicEmbeddingsIndex(EmbeddingsIndex):
@@ -157,6 +157,9 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
         if self._model is None:
             self._init_model()
 
+        ryan_log.info(f"Computing embeddings for {len(texts)} texts")
+        ryan_log.debug(f"texts: {texts}")
+
         embeddings = await self._model.encode_async(texts)
         return embeddings
 
@@ -184,6 +187,7 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             items (List[IndexItem]): The list of items to add to the index.
         """
         self._items.extend(items)
+        ryan_log.debug(f"add_items -> items: {items}")
 
         # If the index is already built, we skip this
         if self._index is None:
