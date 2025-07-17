@@ -22,7 +22,7 @@ class QwenModelManager:
 
         # Initialize default generate parameters
         self.default_params = dict(
-            max_new_tokens=128,
+            max_new_tokens=40,
             temperature=0.7,
             top_p=0.8,
             streamer=self.streamer,  # 将streamer传入生成参数
