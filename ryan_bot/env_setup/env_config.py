@@ -11,7 +11,10 @@ from ryan_bot.utils.helper import yml_config_update
 username = os.getenv('USER') or os.getenv('USERNAME')
 env_file = f'.env.{username}' if username else '.env'
 env_path = Path(__file__).parent / env_file
+
+print(f"Terminal HOST: {os.getenv('HOST')} (before load_dotenv)")
 load_dotenv(env_path)
+print(f"Final HOST: {os.getenv('HOST')} (after load_dotenv)")
 
 class EnvConfig:
     # API认证配置
