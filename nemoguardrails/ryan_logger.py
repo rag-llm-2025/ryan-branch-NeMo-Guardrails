@@ -85,43 +85,43 @@ ryan_log = RyanLog()
 from functools import wraps
 import asyncio  # 添加这行导入
 import time
-def _log_kpi_decorator(is_async: bool):
+def _log_kpi_decorator(is_async: bool, stacklevel: int):
     def decorator(func):
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
-            ryan_log.critical("KPI", f"Enter {func.__name__}")
+            ryan_log.critical("KPI_sync", f"Enter {func.__name__}", stacklevel=stacklevel)
             try:
                 result = func(*args, **kwargs)
                 elapsed = (time.time() - start_time) * 1000
-                ryan_log.critical("KPI", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]", stacklevel = 4)
+                ryan_log.critical("KPI_sync", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]", stacklevel=stacklevel)
                 return result
             except Exception as e:
                 elapsed = (time.time() - start_time) * 1000
-                ryan_log.error("KPI", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]", stacklevel = 4)
+                ryan_log.error("KPI_sync", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]", stacklevel=stacklevel)
                 raise
 
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             start_time = time.time()
-            ryan_log.critical("KPI", f"Enter {func.__name__}", stacklevel = 4)
+            ryan_log.critical("KPI_async", f"Enter {func.__name__}", stacklevel=stacklevel)
             try:
                 result = await func(*args, **kwargs)
                 elapsed = (time.time() - start_time) * 1000
-                ryan_log.critical("KPI", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]", stacklevel = 4)
+                ryan_log.critical("KPI_async", f"Leave {func.__name__} [latency: {elapsed:.2f}ms]", stacklevel=stacklevel)
                 return result
             except Exception as e:
                 elapsed = (time.time() - start_time) * 1000
-                ryan_log.error("KPI", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]", stacklevel = 4)
+                ryan_log.error("KPI_async", f"Error in {func.__name__}: {str(e)} [latency: {elapsed:.2f}ms]", stacklevel=stacklevel)
                 raise
 
         return async_wrapper if is_async else sync_wrapper
     return decorator
 
-def log_kpi_async(func=None):
-    decorator = _log_kpi_decorator(is_async=True)
+def log_kpi_async(func=None, stacklevel=4):
+    decorator = _log_kpi_decorator(is_async=True, stacklevel=stacklevel)
     return decorator(func) if callable(func) else decorator
 
-def log_kpi_sync(func=None):
-    decorator = _log_kpi_decorator(is_async=False)
+def log_kpi_sync(func=None, stacklevel=4):
+    decorator = _log_kpi_decorator(is_async=False, stacklevel=stacklevel)
     return decorator(func) if callable(func) else decorator
