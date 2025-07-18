@@ -3,7 +3,6 @@ from nemoguardrails import LLMRails, RailsConfig
 from pathlib import Path
 import os
 import datetime
-
 from thefuzz import fuzz  # Add this import for fuzzy string matching
 
 from nemoguardrails.ryan_logger import ryan_log
@@ -93,7 +92,6 @@ async def check_output_appropriateness(text: str) -> bool:
 @action()
 async def get_product_price(product_name: str):
     # TODO: add logic to get product price from an external API or database
-    ryan_log.info(tag_name, f"==============产品价格检查: {product_name}=================")
     return "100"
 
 @action()

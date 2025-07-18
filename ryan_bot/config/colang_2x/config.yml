@@ -1,0 +1,27 @@
+colang_version: 2.x
+models:
+- type: main
+  engine: ryan_local_engine
+  model: Qwen2_BE_0.6B
+  parameters:
+    model_path: /home/ubuntu/workspace/llm/models/Qwen2_BE_0.6B
+    checkpoint_path: ''
+    device: cpu
+
+# intents:
+# - intent: ask_price
+#   examples:
+#   - how much is this
+#   - what is the price of this product
+actions:
+- name: get_product_price
+  parameters:
+    product_id: '123'
+  output:
+    price: float
+# dialog:
+# - user: how much is this
+#   flow:
+#   - intent: ask_price
+#   - action: get_product_price
+#   - bot: the price is ${price}

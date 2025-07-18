@@ -13,7 +13,7 @@ server: print_env update_yaml_config
 	nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=$(GUARDRAILS_CONFIG_ID) --host $(HOST) --port $(PORT) --verbose 2>&1 | tee $(LOG_DIR)/ryan_server_$(DATESTR).log
 
 .PHONY: client
-client: print_env update_yaml_config
+client: print_env
 	mkdir -p $(LOG_DIR)
 	rm -f $(LOG_DIR)/ryan_client_*.log
 	cd $(LLM_DIR)/src/nemo-guardrails && \
