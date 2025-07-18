@@ -51,8 +51,8 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
     async def _acall(
         self,
         prompt: str,
-        stop: Optional[List[str]] = None,  # Added required stop parameter
-        run_manager = None,  # Added callback manager parameter
+        stop: Optional[List[str]] = None,
+        run_manager = None,
         **kwargs
     ) -> str:
         """Implement asynchronous call interface compliant with Langchain specifications"""
@@ -63,16 +63,24 @@ class VllmQwenWrapper(HuggingFacePipelineCompatible):
             stop_token_ids = []
             if stop:
                 stop_token_ids = [self.vllm_model_manager.tokenizer.encode(s, add_special_tokens=False)[-1] for s in stop]
-                kwargs["stop"] = stop_token_ids  # vLLM原生支持stop参数
+                kwargs["stop"] = stop_token_ids
 
-            # Add stop parameters to generation configuration
+            # 确保返回字符串类型结果
             response = await self.vllm_model_manager.generate_async(
                 [prompt],
                 **kwargs,
-                stop_token_ids=stop_token_ids  # Pass stop tokens
+                stop_token_ids=stop_token_ids
             )
-            ryan_log.info(tag_name, f"Async generation result response: {response}")
-            return response[0]  # Return the first response's text content directly
+
+            ryan_log.debug(tag_name, f"Response type: {type(response)}, content: {response}")
+
+            # 添加类型检查和处理逻辑
+            if isinstance(response, list):
+                return str(response[0]) if response else ""
+            elif isinstance(response, (str, int, float)):
+                return str(response)
+            else:
+                raise ValueError(f"Unsupported response type: {type(response)}")
 
         except Exception as e:
             ryan_log.error(tag_name, f"Async generation error: {str(e)}")

@@ -11,7 +11,6 @@ stream_interval: 2
 custom_data:
   sensitive_words_file: ./resources/sensitive_words.txt
   profanity_words_file: ./resources/profanity_words.txt
-  level: ${LOG_LEVEL:-DEBUG}
   disabled: false
 rails:
   input:

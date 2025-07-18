@@ -73,8 +73,20 @@ class VllmModelManager:
             raise
 
     def _get_sampling_params(self, **kwargs) -> SamplingParams:
-        """Generate sampling parameters"""
+        """Generate sampling parameters with enhanced validation"""
+        # 合并默认参数和传入参数
         params = {**self.default_params, **kwargs}
+
+        # 确保参数类型正确
+        for key in ["temperature", "top_p", "min_p"]:
+            if key in params and not isinstance(params[key], (int, float)):
+                ryan_log.warning(tag_name, f"Invalid type for {key}, converting to float")
+                params[key] = float(params[key])
+
+        # 确保stop_token_ids是列表类型
+        if "stop_token_ids" in params and not isinstance(params["stop_token_ids"], list):
+            params["stop_token_ids"] = [params["stop_token_ids"]]
+
         return SamplingParams(**params)
 
     def generate(self, prompts: List[str], **kwargs) -> List[str]:
@@ -83,13 +95,27 @@ class VllmModelManager:
         self.generate_async(prompts, **kwargs)
 
     async def generate_async(self, prompts: List[str], **kwargs) -> List[str]:
-        """Asynchronous generation interface (vLLM native support)"""
-
+        """Asynchronous generation interface with enhanced error handling"""
         ryan_log.debug(tag_name, f"Async generation request | Prompts: {prompts}")
-        params = self._get_sampling_params(**kwargs)
-        ryan_log.info(tag_name, f"Async generation request Params: {params}")
-        outputs = self.model.generate(prompts, params)
-        return [self._process_output(o) for o in outputs]
+
+        try:
+            # 获取并验证采样参数
+            # params = self._get_sampling_params(**kwargs)
+            params=SamplingParams(self.default_params)
+            ryan_log.info(tag_name, f"Sampling params: {params}")
+
+            # 调用模型生成
+            outputs = await self.model.generate(prompts, params)
+
+            # 验证返回结果
+            if not isinstance(outputs, list):
+                raise TypeError(f"Expected list output, got {type(outputs)}")
+
+            return [self._process_output(o) for o in outputs]
+
+        except Exception as e:
+            ryan_log.error(tag_name, f"Generation failed: {str(e)}")
+            return ["[Error] Failed to generate response"] * len(prompts)
 
     def _process_output(self, output) -> str:
         """Unified output processing"""
