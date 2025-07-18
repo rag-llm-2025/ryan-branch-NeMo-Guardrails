@@ -24,7 +24,7 @@ cd $LLM_DIR/src/nemo-guardrails/
 # nemoguardrails server --config=./ryan_bot/config/qwen_model --verbose 2>&1 | tee $LOG_FILE
 
 # If you disable chat-ui, you can use the following command:
-nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=qwen_model --host ${HOST} --port ${PORT} --verbose 2>&1 | tee $LOG_FILE
+nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=${GUARDRAILS_CONFIG_ID} --host ${HOST} --port ${PORT} --verbose 2>&1 | tee $LOG_FILE
 
 echo "服务端退出，日志保存在: $LOG_FILE"
 
