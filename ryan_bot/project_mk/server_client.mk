@@ -10,11 +10,11 @@ server: print_env update_yaml_config
 	mkdir -p $(LOG_DIR)
 	rm -f $(LOG_DIR)/ryan_server_*.log
 	cd $(LLM_DIR)/src/nemo-guardrails && \
-	nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=qwen_model --host $(HOST) --port $(PORT) --verbose 2>&1 | tee $(LOG_DIR)/ryan_server_$(DATESTR).log
+	nemoguardrails server --config=./ryan_bot/config --disable-chat-ui --default-config-id=$(GUARDRAILS_CONFIG_ID) --host $(HOST) --port $(PORT) --verbose 2>&1 | tee $(LOG_DIR)/ryan_server_$(DATESTR).log
 
 .PHONY: client
 client: print_env update_yaml_config
 	mkdir -p $(LOG_DIR)
 	rm -f $(LOG_DIR)/ryan_client_*.log
 	cd $(LLM_DIR)/src/nemo-guardrails && \
-	python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${HOST}:${PORT} --api-key ${API_KEY} --api-secret ${API_SECRET} 2>&1 | tee $(LOG_DIR)/ryan_client_$(DATESTR).log
+	python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${HOST}:${PORT} --default-config-id=$(GUARDRAILS_CONFIG_ID) --api-key ${API_KEY} --api-secret ${API_SECRET} 2>&1 | tee $(LOG_DIR)/ryan_client_$(DATESTR).log

@@ -14,7 +14,7 @@ echo "正在启动客户端..."
 # If you want to launch client in the docker
 cd $LLM_DIR/src/nemo-guardrails
 
-python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${HOST}:${PORT} --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
+python3 ./ryan_bot/ryan-client/ryan_demo_client.py --server-url http://${HOST}:${PORT} --default-config-id=${GUARDRAILS_CONFIG_ID} --api-key $API_KEY --api-secret $API_SECRET 2>&1 | tee $LOG_FILE
 
 # If you want to launch client in the local browser with VScode
 # http://localhost:8000
