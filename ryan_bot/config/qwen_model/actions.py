@@ -82,9 +82,14 @@ async def check_profanity(text: str, config: RailsConfig) -> bool:
 
 @action()
 async def check_output_appropriateness(text: str) -> bool:
-    if not text or not isinstance(text, str):
-        return False
-
     """check if the output is appropriate"""
+
+    ryan_log.info(tag_name, f"check_output_appropriateness is called, text: {text}")
+    if not text or not isinstance(text, str):
+        return True
+
+    text = text.lower()
+    ryan_log.info(tag_name, f"输出检查: {text}")
+
     # TODO: add compliance check for output appropriateness, such as using an external API to check the content for profanity
     return True

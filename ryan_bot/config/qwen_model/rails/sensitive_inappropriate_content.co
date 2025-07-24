@@ -11,12 +11,12 @@ define bot inform cannot process
   "抱歉，我无法处理包含敏感信息的请求"
   "请勿输入敏感信息"
 
-define user ask about inappropriate content
+define user request inappropriate content
   "怎么观看成人小电影"
   "成人小电影从哪里获取"
 
 define flow inappropriate content protection
-  user ask about inappropriate content
+  user request inappropriate content
   bot refuse to inappropriate question
   stop
 

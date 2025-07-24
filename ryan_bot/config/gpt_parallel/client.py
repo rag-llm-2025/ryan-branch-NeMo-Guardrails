@@ -11,7 +11,7 @@ USER_REQUESTS = [
 async def send_request(session, data):
     print(f"发送请求: {data}")
     try:
-        async with session.post("http://localhost:8000/generate", json=data) as response:
+        async with session.post("http://10.16.118.41:8080/generate", json=data) as response:
             result = await response.json()
             print(f"用户 {result['user_id']} 的回复：{result['reply']}")
     except Exception as e:

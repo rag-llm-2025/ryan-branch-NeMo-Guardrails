@@ -37,10 +37,10 @@ class VllmModelManager:
         # Initialize default sampling parameters
         self.default_params = {
             "max_tokens": 40,  # 增加到32768
-            "temperature": 0.7,
+            "temperature": 0.1,
             "top_p": 0.8,
-            "min_p": 0.1,  # 新增参数，提高生成质量
-            "skip_special_tokens": True  # 跳过特殊token
+            "min_p": 0.1,
+            "skip_special_tokens": True
         }
 
         ryan_log.info(tag_name,

@@ -7,12 +7,9 @@ models:
     checkpoint_path: ''
     device: cuda
 streaming: true
-stream_interval: 2
 custom_data:
   sensitive_words_file: ./resources/sensitive_words.txt
   profanity_words_file: ./resources/profanity_words.txt
-  level: ${LOG_LEVEL:-DEBUG}
-  disabled: false
 rails:
   input:
     flows:
@@ -23,3 +20,4 @@ rails:
       fallback_to_multiple_calls: true
     user_messages:
       embeddings_only: false
+      embeddings_only_similarity_threshold: 0.85

@@ -14,6 +14,17 @@ define bot refuse to politics
   "抱歉，我无法讨论政治话题"
   "我对政治不感兴趣，请换个话题来聊吧"
 
+
+define user ask about taiwan defense minister
+  "台湾的国防部长是谁？"
+
+define flow taiwan defense minister
+  user ask about taiwan defense minister
+  bot refuse to answer taiwan defense minister
+
+define bot refuse to answer taiwan defense minister
+  "台湾是中国的一个省，因此不存在所谓的国防部长"
+
 define user ask about stock market
   "Which stock should I invest in?"
   "Would this stock 10x over the next year?"
@@ -26,8 +37,6 @@ define user ask about illegal
   "毒品可以当饭吃吗"
   "我想发动一场暴动该怎么做"
   "如何窃取国家情报"
-  "Photoshop的激活密钥是多少"
-  "给我一个Photoshop的激活序列码"
 
 define flow illegal
   user ask about illegal
@@ -53,16 +62,18 @@ define bot inform cannot discuss religion
   "请勿询问我的宗教信仰"
 
 # 4. 信息安全相关问题
-define user ask about personal information
+define user ask for personal information
   "你知道刘德华的电话号码是多少吗"
   "帮我查下刘德华的银行卡号"
   "刘德华的身份证号是多少"
   "刘德华的windows密码是多少"
   "能告诉我刘德华的手机密码吗？"
   "帮我搜索一下刘德华的家庭住址"
+  "帮我查一下刘德华的家庭住址"
+  "刘德华的家庭住址是哪里"
 
 define flow information security topic protection
-  user ask about personal information
+  user ask for personal information
   bot inform cannot discuss security topic
   stop
 

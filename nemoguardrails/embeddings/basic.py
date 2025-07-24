@@ -289,8 +289,12 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
         Returns:
             List[IndexItem]: The closest items found.
         """
+
+        ryan_log.info(f"search -> text: {text}, max_results: {max_results}, threshold: {threshold}")
         if threshold is None:
             threshold = self.search_threshold
+        # threshold = 0.7
+        ryan_log.info(f"current threshold: {threshold}")
 
         if self.use_batching:
             _embedding = await self._batch_get_embeddings(text)
@@ -314,7 +318,8 @@ class BasicEmbeddingsIndex(EmbeddingsIndex):
             for i in range(len(results[0])):
                 score = 1 - results[1][i] / 2
                 log_items.append((score, self._items[results[0][i]].text))
-            log.info("Similarity scores :: %s", str(log_items))
+            # log.info("Similarity scores :: %s", str(log_items))
+            ryan_log.info("BasicEmbeddingsIndex", f"Similarity scores :: {str(log_items)}")
 
         filtered_results = self._filter_results(results[0], results[1], threshold)
 
