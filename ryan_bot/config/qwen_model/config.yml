@@ -21,3 +21,35 @@ rails:
     user_messages:
       embeddings_only: false
       embeddings_only_similarity_threshold: 0.85
+core:
+  embedding_search_provider:
+    name: default
+    parameters:
+      embedding_engine: SentenceTransformers
+      embedding_model: sentence-transformers/all-MiniLM-L6-v2
+      use_batching: false
+      max_batch_size: 10
+      max_batch_hold: 0.01
+      search_threshold: 0.7
+    cache:
+      enabled: false
+      key_generator: sha256
+      store: filesystem
+      store_config:
+        cache_dir: ./cache/embeddings
+knowledge_base:
+  embedding_search_provider:
+    name: default
+    parameters:
+      embedding_engine: FastEmbed
+      embedding_model: all-MiniLM-L6-v2
+      use_batching: false
+      max_batch_size: 10
+      max_batch_hold: 0.01
+      search_threshold: 0.7
+    cache:
+      enabled: true
+      key_generator: sha256
+      store: filesystem
+      store_config:
+        cache_dir: ./cache/embeddings
