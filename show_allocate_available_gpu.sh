@@ -103,11 +103,11 @@ try_allocate() {
 
     echo "尝试在节点 $node 上申请资源..."
     echo "Debug: Trying to allocate $gpu_count GPU(s) on $node with $mem_gb GB memory"
-    echo "Debug: Full command: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i"
-    echo "执行命令: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i"
+    echo "Debug: Full command: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --cpus-per-task=8 --job-name=auto_alloc --pty bash -i"
+    echo "执行命令: srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --cpus-per-task=8 --job-name=auto_alloc --pty bash -i"
 
     # 实际执行申请命令
-    if srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc --pty bash -i; then
+    if srun --partition=$partition --gres=$gres:$gpu_count --nodelist=$node --mem=${mem_gb}G --job-name=auto_alloc -c 8 --pty bash -i; then
         echo -e "\033[1;32m资源申请成功！\033[0m"
         return 0
     else
