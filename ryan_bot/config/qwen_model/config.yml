@@ -20,7 +20,7 @@ rails:
       fallback_to_multiple_calls: true
     user_messages:
       embeddings_only: false
-      embeddings_only_similarity_threshold: 0.85
+      embeddings_only_similarity_threshold: 0.75
 core:
   embedding_search_provider:
     name: default
