@@ -20,7 +20,7 @@ import logging
 def create_logger(filename):
     """Create a logger specified by the filename"""
     logger = logging.getLogger(filename)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     # Create a file handler
     file_handler = logging.FileHandler(filename, mode="w")

@@ -36,7 +36,8 @@ app = typer.Typer()
 app.add_typer(cli.app, name="eval", short_help="Evaluation a guardrail configuration.")
 app.pretty_exceptions_enable = False
 
-logging.getLogger().setLevel(logging.WARNING)
+from ryan_bot.env_setup.env_config import EnvConfig
+logging.getLogger().setLevel(EnvConfig.CLI_LOGGER_LEVEL)
 
 
 @app.command()
@@ -110,6 +111,11 @@ def chat(
 
 @app.command()
 def server(
+    # 新增host参数
+    host: str = typer.Option(
+        default="0.0.0.0",
+        help="The host interface to bind the server to.",
+    ),
     port: int = typer.Option(
         default=8000, help="The port that the server should listen on. "
     ),
@@ -153,7 +159,8 @@ def server(
             api.app.rails_config_path = local_configs_path
 
     if verbose:
-        logging.getLogger().setLevel(logging.INFO)
+        # logging.getLogger().setLevel(logging.INFO)
+        logging.getLogger().setLevel(EnvConfig.CLI_LOGGER_LEVEL)
 
     if disable_chat_ui:
         api.app.disable_chat_ui = True
@@ -170,7 +177,7 @@ def server(
     if default_config_id:
         api.set_default_config_id(default_config_id)  # Call function
 
-    uvicorn.run(server_app, port=port, log_level="info", host="0.0.0.0")
+    uvicorn.run(server_app, port=port, log_level="info", host=host)
 
 
 _AVAILABLE_OPTIONS = ["1.0", "2.0-alpha"]

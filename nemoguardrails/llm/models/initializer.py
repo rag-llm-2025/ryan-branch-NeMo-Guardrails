@@ -22,7 +22,9 @@ from langchain_core.language_models.llms import BaseLLM
 
 from .langchain_initializer import ModelInitializationError, init_langchain_model
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
 
+@log_kpi_sync
 # later we can easily conver it to a class
 def init_llm_model(
     model_name: Optional[str],

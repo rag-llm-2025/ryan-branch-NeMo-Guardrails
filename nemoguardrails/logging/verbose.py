@@ -200,7 +200,7 @@ def set_verbose(
         # We make sure the log level for the default root console handler is set to WARNING.
         for handler in root_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
-                handler.setLevel(logging.WARNING)
+                handler.setLevel(logging.DEBUG)
 
         # In debug mode we add the RichHandler, otherwise we add the VerboseHandler.
         if debug:
@@ -221,7 +221,7 @@ def set_verbose(
             root_logger.addHandler(verbose_handler)
 
         # Also, we make sure the sentence_transformers log level is set to WARNING.
-        logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+        logging.getLogger("sentence_transformers").setLevel(logging.DEBUG)
 
         verbose_mode_enabled = True
         verbose_llm_calls = llm_calls

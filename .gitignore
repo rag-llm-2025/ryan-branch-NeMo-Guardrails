@@ -1,5 +1,10 @@
 
 ```gitignore
+
+# ryan ignored files
+model_cache
+cache/embeddings
+
 # Byte-compiled / optimized / DLL files
 *.pyc
 *.so
@@ -23,7 +28,7 @@ __pycache__
 .cache
 .venv*
 venv*
-env*
+# env*
 /releases/*
 /poetry.toml
 
@@ -64,4 +69,4 @@ docs/**/config
 firebase.json
 scratch.py
 
-.env
+# .env

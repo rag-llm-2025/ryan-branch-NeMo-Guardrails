@@ -26,7 +26,7 @@ from nemoguardrails.logging.verbose import set_verbose
 
 app = typer.Typer()
 
-logging.getLogger().setLevel(logging.WARNING)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 @app.command()

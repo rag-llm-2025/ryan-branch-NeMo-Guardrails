@@ -1,0 +1,12 @@
+define flow input rails
+  $input_text = $user_message
+
+  $has_sensitive = execute check_sensitive_words(text=$input_text)
+  if $has_sensitive
+    bot inform cannot process
+    stop
+
+  $has_profanity = execute check_profanity(text=$input_text)
+  if $has_profanity
+    bot warn inappropriate language
+    stop

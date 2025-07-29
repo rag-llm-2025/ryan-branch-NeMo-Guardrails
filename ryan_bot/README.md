@@ -1,0 +1,41 @@
+# How to Run the Ryan Bot Example
+
+## 1. clone nemoguardrails repository
+```
+git clone https://github.com/NVIDIA/NeMo-Guardrails.git -b ryan-qwen-demo
+cd nemo-guardrails
+```
+## 2. setup running environment
+```
+cd nemo-guardrails
+source ./ryan_bot/run_setup_env_ryan_bot.sh
+```
+
+## 3. run the server in python virtual environment
+```
+cd nemo-guardrails
+./ryan_bot/run_server_ryan_bot.sh
+```
+
+## 4. run the client in python virtual environment
+```
+cd nemo-guardrails
+./ryan_bot/run_client_ryan_bot.sh
+```
+
+## 5. launch nemoguardrails server
+- If you enable chat-ui, you can use the following command:
+```
+cd ./ryan_bot
+nemoguardrails server --config=./config --default-config-id=qwen_model
+```
+
+- If you disable chat-ui, you can use the following command:
+```
+# launch server without chat-ui (please check the path of the config file)
+nemoguardrails server --config=./config --disable-chat-ui --default-config-id=qwen_model
+
+# launch client
+cd ryan_bot/ryan-client
+python ryan_dmeo_client.py
+```

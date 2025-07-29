@@ -787,6 +787,17 @@ def merge_two_dicts(dict_1: dict, dict_2: dict, ignore_keys: Set[str]) -> None:
 
 def _join_config(dest_config: dict, additional_config: dict):
     """Helper to join two configuration."""
+    # print("DEBUG: additional_config =", additional_config)  # 添加调试代码
+
+    # 如果 additional_config 是列表，尝试转换为字典
+    if isinstance(additional_config, list):
+        log.warning("additional_config is a list, attempting to merge first element.")
+        # print("DEBUG: additional_config =", additional_config)  # 添加调试代码
+        additional_config = additional_config[0] if additional_config else {}
+
+    # 确保 additional_config 是字典
+    if not isinstance(additional_config, dict):
+        raise ValueError("additional_config must be a dictionary.")
 
     dest_config["user_messages"] = {
         **dest_config.get("user_messages", {}),

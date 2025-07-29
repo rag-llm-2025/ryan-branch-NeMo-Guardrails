@@ -1,73 +1,94 @@
+sample_conversation: |
+  user "Hello there!"
+    express greeting
+  bot express greeting
+    "Hello! How can I assist you today?"
+  user "What can you do for me?"
+    ask about capabilities
+  bot respond about capabilities
+    "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your preferences."
+  user "Tell me a bit about the history of Cerence."
+    ask general question
+  bot response for general question
+    "Cerence is a technology company that specializes in LLM (large language model) and AI-driven solutions for the automotive industry. The company was formed in 2019 as a spin-off from Nuance Communications, which had a long history of developing voice recognition and natural language understanding technologies. Cerence focuses on creating intelligent virtual assistants and conversational AI systems that enhance the in-car experience for drivers and passengers."
+  user "tell me more"
+    request more information
+  bot provide more information
+    "Initially, the company was focused on developing voice recognition and natural language understanding technologies. However, as the industry evolved, the company expanded its offerings to include a range of AI-driven solutions, including language translation, voice synthesis, and customer service."
+  user "thanks"
+    express appreciation
+  bot express appreciation and offer additional help
+    "You're welcome. If you have any more questions or if there's anything else I can help you with, please don't hesitate to ask."
+
+instructions:
+  - type: "general"
+    content:
+      Below is a conversation between a helpful AI assistant and a user.
+      The bot is designed to generate human-like text based on the input that it receives.
+      The bot is talkative and provides lots of specific details.
+      If the bot does not know the answer to a question, it truthfully says it does not know.
+      Please use Chinese to answer in the chat.
+
+prompting_mode: "standard"
+
+
 # Collection of all the prompts
 prompts:
     # GENERAL PROMPTS
 
     - task: general
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           {{ general_instructions }}
-
-          {% if relevant_chunks != None and relevant_chunks != '' %}
-            This is some relevant context:
-            ```markdown
-            {{ relevant_chunks }}
-            ```
-          {% endif %}
 
           {{ history | user_assistant_sequence }}
           Assistant:
 
     # Prompt for detecting the user message canonical form.
     - task: generate_user_intent
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
           """
 
           # This is how a conversation between a user and the bot can go:
-          {{ sample_conversation }}
+          {{ sample_conversation | verbose_v1 }}
 
           # This is how the user talks:
-          {{ examples }}
+          {{ examples | verbose_v1 }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
           # Choose intent from this list: {{ potential_user_intents }}
-          {{ sample_conversation | first_turns(2) }}
-          {{ history | colang }}
+          {{ sample_conversation | first_turns(2) | verbose_v1 }}
+          {{ history | colang | verbose_v1 }}
+      output_parser: "verbose_v1"
 
     # Prompt for generating the next steps.
     - task: generate_next_steps
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
           """
 
           # This is how a conversation between a user and the bot can go:
-          {{ sample_conversation | remove_text_messages }}
+          {{ sample_conversation | remove_text_messages | verbose_v1 }}
 
           # This is how the bot thinks:
-          {{ examples | remove_text_messages}}
+          {{ examples | remove_text_messages | verbose_v1 }}
 
-          # This is the current conversation between the user and the bot:
-          {{ sample_conversation | first_turns(2) | remove_text_messages}}
-          {{ history | colang | remove_text_messages}}
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
+          {{ sample_conversation | first_turns(2) | remove_text_messages | verbose_v1 }}
+          {{ history | colang | remove_text_messages | verbose_v1 }}
+      output_parser: "verbose_v1"
 
     # Prompt for generating the bot message from a canonical form.
     - task: generate_bot_message
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
           """
 
           # This is how a conversation between a user and the bot can go:
-          {{ sample_conversation }}
+          {{ sample_conversation | verbose_v1 }}
 
           {% if relevant_chunks %}
           # This is some additional context:
@@ -77,16 +98,16 @@ prompts:
           {% endif %}
 
           # This is how the bot talks:
-          {{ examples }}
+          {{ examples | verbose_v1 }}
 
-          # This is the current conversation between the user and the bot:
-          {{ sample_conversation | first_turns(2) }}
-          {{ history | colang }}
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
+          {{ sample_conversation | first_turns(2) | verbose_v1 }}
+          {{ history | colang | verbose_v1 }}
+
+      output_parser: "verbose_v1"
 
     # Prompt for generating the user intent, next steps and bot message in a single call.
     - task: generate_intent_steps_message
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
@@ -99,37 +120,34 @@ prompts:
           # These are some examples how the bot thinks:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
           {{ sample_conversation | first_turns(2) }}
           {{ history | colang }}
 
     # Prompt for generating the value of a context variable.
     - task: generate_value
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
           """
 
           # This is how a conversation between a user and the bot can go:
-          {{ sample_conversation }}
+          {{ sample_conversation | verbose_v1 }}
 
           # This is how the bot thinks:
-          {{ examples }}
+          {{ examples | verbose_v1 }}
 
-          # This is the current conversation between the user and the bot:
-          {{ sample_conversation | first_turns(2) }}
-          {{ history | colang }}
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
+          {{ sample_conversation | first_turns(2) | verbose_v1 }}
+          {{ history | colang | verbose_v1 }}
           # {{ instructions }}
           ${{ var_name }} =
+      output_parser: "verbose_v1"
 
     # Colang 2.x prompts below.
 
     # Prompt for detecting the user message canonical form.
     - task: generate_user_intent_from_user_action
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
@@ -141,7 +159,7 @@ prompts:
           # These are the most likely user intents:
           {{ examples }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
           {{ history | colang }}
 
           # Continuation of interaction using only specified user intents from the section 'These are the most likely user intents:':
@@ -151,8 +169,6 @@ prompts:
           - "\n"
 
     - task: generate_user_intent_and_bot_action_from_user_action
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
@@ -164,7 +180,6 @@ prompts:
           # These are the most likely user intents:
           {{ examples }}
 
-
           {% if context.relevant_chunks %}
           # This is some additional context:
           ```markdown
@@ -172,7 +187,7 @@ prompts:
           ```
           {% endif %}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
           {{ history | colang }}
 
           # Continuation of interaction using only specified user intents from the section 'These are the most likely user intents:':
@@ -183,8 +198,6 @@ prompts:
 
     # Prompt for generating the value of a context variable.
     - task: generate_value_from_instruction
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
@@ -193,7 +206,7 @@ prompts:
           # This is how a conversation between a user and the bot can go:
           {{ sample_conversation }}
 
-          # This is the current conversation between the user and the bot:
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
           {{ history | colang }}
 
           # {{ instructions }}
@@ -203,8 +216,6 @@ prompts:
 
     # Prompt for generating a flow from instructions.
     - task: generate_flow_from_instructions
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           # Example flows:
           {{ examples }}
@@ -212,24 +223,20 @@ prompts:
           # Complete the following flow based on its instruction:
           flow {{ flow_name }}
             """{{ instructions }}"""
+      stop:
+          - "\nflow"
 
     # Prompt for generating a flow from name.
     - task: generate_flow_from_name
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           # Example flows:
           {{ examples }}
 
           # Complete the following flow based on its name:
           flow {{ flow_name }}
-      stop:
-          - "\nflow"
 
       # Prompt for generating the continuation for the current conversation.
     - task: generate_flow_continuation
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           """
           {{ general_instructions }}
@@ -238,6 +245,9 @@ prompts:
           # This is how a conversation between a user and the bot can go:
           {{ sample_conversation }}
 
+          # ryan-test(qwen.yml): This is the current conversation between the user and the bot:
+          {{ history | colang }}
+
           {% if context.relevant_chunks %}
           # This is some additional context:
           ```markdown
@@ -245,14 +255,9 @@ prompts:
           ```
           {% endif %}
 
-          # This is the current conversation between the user and the bot:
-          {{ history | colang }}
-
 
           bot intent:
 
     - task: generate_flow_continuation_from_flow_nld
-      models:
-          - openai/gpt-3.5-turbo-instruct
       content: |-
           {{ flow_nld }}

@@ -35,6 +35,7 @@ from nemoguardrails.actions.llm.utils import (
     flow_to_colang,
     get_first_nonempty_line,
     get_last_bot_intent_event,
+    get_user_input_bot_utterance_event,
     get_last_user_intent_event,
     get_last_user_utterance_event,
     get_multiline_response,
@@ -73,6 +74,9 @@ from nemoguardrails.utils import (
 
 log = logging.getLogger(__name__)
 
+import re
+from nemoguardrails.ryan_logger import ryan_log, log_kpi_sync, log_kpi_async
+from ryan_bot.env_setup.env_config import EnvConfig
 
 local_streaming_handlers = {}
 
@@ -131,11 +135,12 @@ class LLMGenerationActions:
         if self.config.colang_version == "2.x":
             self._process_flows()
 
-        await asyncio.gather(
-            self._init_user_message_index(),
-            self._init_bot_message_index(),
-            self._init_flows_index(),
-        )
+        if EnvConfig.ENABLE_TEXT_EMBEDDING:
+            await asyncio.gather(
+                self._init_user_message_index(),
+                self._init_bot_message_index(),
+                self._init_flows_index(),
+            )
 
     def _extract_user_message_example(self, flow: Flow):
         """Heuristic to extract user message examples from a flow."""
@@ -338,6 +343,93 @@ class LLMGenerationActions:
 
         return sample_conversation
 
+    @log_kpi_sync
+    def extract_intent_and_message(self, text: str) -> tuple:
+        """从LLM输出中提取用户意图和机器人消息
+
+        Args:
+            text: LLM生成的原始文本
+
+        Returns:
+            包含(user_intent, bot_message)的元组
+        """
+        ryan_log.debug(f"extract_intent_and_message input: \n{text}")
+
+        if not isinstance(text, str) or not text.strip():
+            return None, None
+
+        # 统一日志格式
+        def log_result(user_intent, bot_message, case_type="standard"):
+            ryan_log.info(f"extracted({case_type}) - user_intent: {user_intent}, bot_message: {bot_message}")
+            return user_intent, bot_message
+
+        # 合并后的正则模式，处理带引号和不带引号的情况
+        combined_pattern = (
+            r'User intent:\s*(.*?)\s*'
+            r'Bot intent:\s*(.*?)\s*'
+            r'Bot message:\s*(?:"([^"]*)"|([^"\n]+))'  # 匹配带引号或不带引号
+            r'(?:\s*#.*?|\s*execute|\s*$|\s*User message)'
+        )
+
+        # 优先查找第一个完整匹配
+        first_match = re.search(combined_pattern, text, re.DOTALL)
+        if first_match:
+            user_intent = (first_match.group(1) or "").strip()
+            bot_message = (first_match.group(3) or first_match.group(4) or "").strip()
+            if bot_message:
+                return log_result(user_intent, bot_message, "combined")
+
+        # 处理只有前引号的情况
+        partial_match = re.search(
+            r'User intent:\s*(.*?)\s*'
+            r'Bot intent:\s*(.*?)\s*'
+            r'Bot message:\s*"([^"]*)',  # 只匹配前引号
+            text, re.DOTALL
+        )
+        if partial_match:
+            user_intent = (partial_match.group(1) or "").strip()
+            bot_message = (partial_match.group(3) or "").strip()
+            if bot_message:
+                # 清理可能的后续指令
+                bot_message = re.split(r'\s*(?:execute|User message)', bot_message)[0].strip()
+                return log_result(user_intent, bot_message, "partial")
+
+        # 处理只有intent没有message的情况
+        intent_only_match = re.search(
+            r'User intent:\s*(.*?)\s*'
+            r'Bot intent:\s*(.*?)(?:\s*$|\s*#|\s*Bot message)',
+            text, re.DOTALL
+        )
+        if intent_only_match:
+            return log_result(
+                (intent_only_match.group(1) or "").strip(),
+                "没获取到大模型的回答，异常case",
+                "intent_only"
+            )
+
+        # 非标准格式处理
+        lines = [line.strip() for line in text.split('\n') if line.strip()]
+        user_intent = None
+        bot_message = None
+
+        for line in lines:
+            if not user_intent and line.startswith("user "):
+                user_intent = line[5:].strip()
+            elif not user_intent and ":" in line:
+                parts = line.split(":", 1)
+                if parts[0].strip().lower() == "user intent":
+                    user_intent = parts[1].strip()
+            elif line.startswith('"') and line.endswith('"'):
+                bot_message = line[1:-1].strip()
+
+        return log_result(
+            user_intent or None,
+            bot_message or "非标准格式，bot message为空，占位符",
+            "non-standard"
+        )
+
+
+    @log_kpi_async
     @action(is_system_action=True)
     async def generate_user_intent(
         self,
@@ -355,6 +447,8 @@ class LLMGenerationActions:
             )
         # The last event should be the "StartInternalSystemAction" and the one before it the "UtteranceUserActionFinished".
         event = get_last_user_utterance_event(events)
+        ryan_log.info(f"get_last_user_utterance_event: {event}")
+
         assert event["type"] == "UserMessage"
 
         # Use action specific llm if registered else fallback to main llm
@@ -369,7 +463,8 @@ class LLMGenerationActions:
             #  or use the LLM to detect the canonical form. The below implementation
             #  is for the latter.
 
-            log.info("Phase 1 :: Generating user intent")
+            # log.info("Phase 1 :: Generating user intent")
+            ryan_log.info("Phase 1 :: Generating user intent")
 
             # We search for the most relevant similar user utterance
             examples = ""
@@ -380,6 +475,8 @@ class LLMGenerationActions:
                 )
             else:
                 text = event["text"]
+
+            ryan_log.info(f"user utterance: {text}")
 
             if self.user_message_index is not None:
                 threshold = None
@@ -414,14 +511,18 @@ class LLMGenerationActions:
                         events=[new_event_dict("UserIntent", intent=intent)]
                     )
                 else:
-                    results = await self.user_message_index.search(
-                        text=text, max_results=5
-                    )
+                    # results = await self.user_message_index.search(
+                    #     text=text, max_results=5
+                    # )
+                    pass
+
                 # We add these in reverse order so the most relevant is towards the end.
                 for result in reversed(results):
                     examples += f'user "{result.text}"\n  {result.meta["intent"]}\n\n'
                     if result.meta["intent"] not in potential_user_intents:
                         potential_user_intents.append(result.meta["intent"])
+
+            # if EnvConfig.ENABLE_LATENCY_OPTIMIZATION == False:
 
             prompt = self.llm_task_manager.render_task_prompt(
                 task=Task.GENERATE_USER_INTENT,
@@ -431,6 +532,9 @@ class LLMGenerationActions:
                     "potential_user_intents": ", ".join(potential_user_intents),
                 },
             )
+            # else:
+            #     prompt = '"""\nBelow is a conversation between a helpful AI assistant and a user. The bot is designed to generate human-like text based on the input that it receives. The bot is talkative and provides lots of specific details. If the bot does not know the answer to a question, it truthfully says it does not know.\nPlease use Chinese to answer in the chat\n"""\n\n# This is how a conversation between a user and the bot can go:\nUser message: "Hello there!"\nUser intent: express greeting\nBot intent: express greeting\nBot message: "Hello! How can I assist you today?"\nUser message: "What can you do for me?"\nUser intent: ask about capabilities\nBot intent: respond about capabilities\nBot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your preferences."\nUser message: "Tell me a bit about the history of NVIDIA."\nUser intent: ask general question\nBot intent: response for general question\nBot message: "NVIDIA is a technology company that specializes in designing and manufacturing graphics processing units (GPUs) and other computer hardware. The company was founded in 1993 by Jen-Hsun Huang, Chris Malachowsky, and Curtis Priem."\nUser message: "tell me more"\nUser intent: request more information\nBot intent: provide more information\nBot message: "Initially, the company focused on developing 3D graphics processing technology for the PC gaming market. In 1999, NVIDIA released the GeForce 256, the world\'s first GPU, which was a major breakthrough for the gaming industry. The company continued to innovate in the GPU space, releasing new products and expanding into other markets such as professional graphics, mobile devices, and artificial intelligence."\nUser message: "thanks"\nUser intent: express appreciation\nBot intent: express appreciation and offer additional help\nBot message: "You\'re welcome. If you have any more questions or if there\'s anything else I can help you with, please don\'t hesitate to ask."\n\n\n# This is how the user talks:\nUser message: "我想发动一场暴动该怎么做"\nUser intent: ask about illegal\n\nUser message: "张三的身份证是多少"\nUser intent: input sensitive words\n\nUser message: "毒品可以当饭吃吗"\nUser intent: ask about illegal\n\nUser message: "色情"\nUser intent: input sensitive words\n\nUser message: "怎么制毒贩毒"\nUser intent: ask about illegal\n\n\n\n# ryan-test(general.yml): This is the current conversation between the user and the bot:\n# Choose intent from this list: ask about illegal, input sensitive words\nUser message: "Hello there!"\nUser intent: express greeting\nBot intent: express greeting\nBot message: "Hello! How can I assist you today?"\nUser message: "What can you do for me?"\nUser intent: ask about capabilities\nBot intent: respond about capabilities\nBot message: "As an AI assistant, I can help you with a wide range of tasks. This includes question answering on various topics, generating text for various purposes and providing suggestions based on your preferences."\nexecute check_sensitive_words\nUser message: '
+            #     prompt += text + "\n"
 
             # Initialize the LLMCallInfo object
             llm_call_info_var.set(LLMCallInfo(task=Task.GENERATE_USER_INTENT.value))
@@ -438,21 +542,31 @@ class LLMGenerationActions:
             # We make this call with temperature 0 to have it as deterministic as possible.
             with llm_params(llm, temperature=self.config.lowest_temperature):
                 result = await llm_call(llm, prompt)
+            # ryan_log.info(f"generate_user_intent llm output: {result}")
+
+            if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
+                user_intent, bot_message = self.extract_intent_and_message(result)
+                ryan_log.info(f"user_intent: {user_intent}")
+                ryan_log.info(f"bot_message: {bot_message}")
 
             # Parse the output using the associated parser
             result = self.llm_task_manager.parse_task_output(
                 Task.GENERATE_USER_INTENT, output=result
             )
+
+            # ryan_log.info(f"generate_user_intent parse_task_output: {result}")
             result = result.text
 
             user_intent = get_first_nonempty_line(result)
+            ryan_log.debug(f"get_first_nonempty_line user_intent: {user_intent}")
+
             if user_intent is None:
                 user_intent = "unknown message"
 
             if user_intent and user_intent.startswith("user "):
                 user_intent = user_intent[5:]
 
-            log.info(
+            ryan_log.debug(
                 "Canonical form for user intent: "
                 + (user_intent if user_intent else "None")
             )
@@ -462,9 +576,14 @@ class LLMGenerationActions:
                     events=[new_event_dict("UserIntent", intent="unknown message")]
                 )
             else:
-                return ActionResult(
-                    events=[new_event_dict("UserIntent", intent=user_intent)]
-                )
+                if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
+                    return ActionResult(
+                        events=[new_event_dict("UserIntent", intent=user_intent), new_event_dict("BotMessage", message=bot_message)]
+                    )
+                else:
+                    return ActionResult(
+                        events=[new_event_dict("UserIntent", intent=user_intent)]
+                    )
         else:
             output_events = []
 
@@ -602,6 +721,7 @@ class LLMGenerationActions:
 
         return final_results[0:max_results]
 
+    @log_kpi_async("generate_next_step")
     @action(is_system_action=True)
     async def generate_next_step(
         self, events: List[dict], llm: Optional[BaseLLM] = None
@@ -610,13 +730,21 @@ class LLMGenerationActions:
 
         Currently, only generates a next step after a user intent.
         """
-        log.info("Phase 2 :: Generating next step ...")
+        # log.info("Phase 2 :: Generating next step ...")
+        ryan_log.info("Phase 2 :: Generating next step ...")
 
         # Use action specific llm if registered else fallback to main llm
         llm = llm or self.llm
 
         # The last event should be the "StartInternalSystemAction" and the one before it the "UserIntent".
         event = get_last_user_intent_event(events)
+
+        assert event["type"] == "UserIntent"
+
+        if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
+            bot_intent = event.get("intent", "general response")
+            ryan_log.info(f"get_last_user_intent_event: {event}, bot_intent: {bot_intent}")
+            return ActionResult(events=[new_event_dict("BotIntent", intent=bot_intent)])
 
         # Currently, we only predict next step after a user intent using LLM
         if event["type"] == "UserIntent":
@@ -660,6 +788,7 @@ class LLMGenerationActions:
             # If we don't have multi-step generation enabled, we only look at the first line.
             if not self.config.enable_multi_step_generation:
                 result = get_first_nonempty_line(result)
+                ryan_log.info(f"get_first_nonempty_line: {result}")
 
                 if result and result.startswith("bot "):
                     bot_intent = result[4:]
@@ -765,12 +894,14 @@ class LLMGenerationActions:
 
         return template.render(render_context)
 
+    @log_kpi_async
     @action(is_system_action=True)
     async def generate_bot_message(
         self, events: List[dict], context: dict, llm: Optional[BaseLLM] = None
     ):
         """Generate a bot message based on the desired bot intent."""
-        log.info("Phase 3 :: Generating bot message ...")
+        # log.info("Phase 3 :: Generating bot message ...")
+        ryan_log.info("Phase 3 :: Generating bot message ...")
 
         # Use action specific llm if registered else fallback to main llm
         llm = llm or self.llm
@@ -793,6 +924,17 @@ class LLMGenerationActions:
         if streaming_handler and self.config.rails.output.streaming.enabled:
             context_updates["skip_output_rails"] = True
 
+        ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
+        ryan_log.debug(f"get_last_bot_intent_event: {event}")
+
+        if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
+            user_input_bot_utterance_event = get_user_input_bot_utterance_event(events)
+            if user_input_bot_utterance_event:
+                bot_utterance = user_input_bot_utterance_event.get("message", "大模型未给出response，报错")
+                ryan_log.info(f"bot_utterance: {bot_utterance}")
+
+        ryan_log.info(f"bot_intent: {bot_intent}")
+
         if bot_intent in self.config.bot_messages:
             # Choose a message randomly from self.config.bot_messages[bot_message]
             # However, in test mode, we always choose the first one, to keep it predictable.
@@ -802,12 +944,17 @@ class LLMGenerationActions:
                 bot_utterance = random.choice(self.bot_messages[bot_intent])
 
             log.info("Found existing bot message: " + bot_utterance)
+            ryan_log.info(f"Found existing bot message: {bot_utterance}")
 
             # We also need to render
             bot_utterance = self._render_string(bot_utterance, context)
 
             # We skip output rails for predefined messages.
             context_updates["skip_output_rails"] = True
+
+        elif EnvConfig.ENABLE_LATENCY_OPTIMIZATION and user_input_bot_utterance_event:
+            bot_utterance = user_input_bot_utterance_event.get("message", "大模型未给出response，报错")
+            ryan_log.info(f"bot_utterance from llm response: {bot_utterance}")
 
         # Check if the output is supposed to be the content of a context variable
         elif bot_intent and bot_intent[0] == "$" and bot_intent[1:] in context:
