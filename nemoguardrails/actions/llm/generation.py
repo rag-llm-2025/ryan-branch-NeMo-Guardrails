@@ -360,15 +360,17 @@ class LLMGenerationActions:
 
         # 统一日志格式
         def log_result(user_intent, bot_message, case_type="standard"):
-            ryan_log.info(f"extracted({case_type}) - user_intent: {user_intent}, bot_message: {bot_message}")
+            ryan_log.info(
+                f"extracted({case_type}) - user_intent: {user_intent}, bot_message: {bot_message}"
+            )
             return user_intent, bot_message
 
         # 合并后的正则模式，处理带引号和不带引号的情况
         combined_pattern = (
-            r'User intent:\s*(.*?)\s*'
-            r'Bot intent:\s*(.*?)\s*'
+            r"User intent:\s*(.*?)\s*"
+            r"Bot intent:\s*(.*?)\s*"
             r'Bot message:\s*(?:"([^"]*)"|([^"\n]+))'  # 匹配带引号或不带引号
-            r'(?:\s*#.*?|\s*execute|\s*$|\s*User message)'
+            r"(?:\s*#.*?|\s*execute|\s*$|\s*User message)"
         )
 
         # 优先查找第一个完整匹配
@@ -381,34 +383,38 @@ class LLMGenerationActions:
 
         # 处理只有前引号的情况
         partial_match = re.search(
-            r'User intent:\s*(.*?)\s*'
-            r'Bot intent:\s*(.*?)\s*'
+            r"User intent:\s*(.*?)\s*"
+            r"Bot intent:\s*(.*?)\s*"
             r'Bot message:\s*"([^"]*)',  # 只匹配前引号
-            text, re.DOTALL
+            text,
+            re.DOTALL,
         )
         if partial_match:
             user_intent = (partial_match.group(1) or "").strip()
             bot_message = (partial_match.group(3) or "").strip()
             if bot_message:
                 # 清理可能的后续指令
-                bot_message = re.split(r'\s*(?:execute|User message)', bot_message)[0].strip()
+                bot_message = re.split(r"\s*(?:execute|User message)", bot_message)[
+                    0
+                ].strip()
                 return log_result(user_intent, bot_message, "partial")
 
         # 处理只有intent没有message的情况
         intent_only_match = re.search(
-            r'User intent:\s*(.*?)\s*'
-            r'Bot intent:\s*(.*?)(?:\s*$|\s*#|\s*Bot message)',
-            text, re.DOTALL
+            r"User intent:\s*(.*?)\s*"
+            r"Bot intent:\s*(.*?)(?:\s*$|\s*#|\s*Bot message)",
+            text,
+            re.DOTALL,
         )
         if intent_only_match:
             return log_result(
                 (intent_only_match.group(1) or "").strip(),
                 "没获取到大模型的回答，异常case",
-                "intent_only"
+                "intent_only",
             )
 
         # 非标准格式处理
-        lines = [line.strip() for line in text.split('\n') if line.strip()]
+        lines = [line.strip() for line in text.split("\n") if line.strip()]
         user_intent = None
         bot_message = None
 
@@ -425,9 +431,8 @@ class LLMGenerationActions:
         return log_result(
             user_intent or None,
             bot_message or "非标准格式，bot message为空，占位符",
-            "non-standard"
+            "non-standard",
         )
-
 
     @log_kpi_async
     @action(is_system_action=True)
@@ -578,7 +583,10 @@ class LLMGenerationActions:
             else:
                 if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
                     return ActionResult(
-                        events=[new_event_dict("UserIntent", intent=user_intent), new_event_dict("BotMessage", message=bot_message)]
+                        events=[
+                            new_event_dict("UserIntent", intent=user_intent),
+                            new_event_dict("BotMessage", message=bot_message),
+                        ]
                     )
                 else:
                     return ActionResult(
@@ -743,7 +751,9 @@ class LLMGenerationActions:
 
         if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
             bot_intent = event.get("intent", "general response")
-            ryan_log.info(f"get_last_user_intent_event: {event}, bot_intent: {bot_intent}")
+            ryan_log.info(
+                f"get_last_user_intent_event: {event}, bot_intent: {bot_intent}"
+            )
             return ActionResult(events=[new_event_dict("BotIntent", intent=bot_intent)])
 
         # Currently, we only predict next step after a user intent using LLM
@@ -924,16 +934,14 @@ class LLMGenerationActions:
         if streaming_handler and self.config.rails.output.streaming.enabled:
             context_updates["skip_output_rails"] = True
 
+        ryan_log.info(f"bot_intent: {bot_intent}")
         ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
         ryan_log.debug(f"get_last_bot_intent_event: {event}")
 
+        decision = "pass"  # pass or block, pending
+
         if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
             user_input_bot_utterance_event = get_user_input_bot_utterance_event(events)
-            if user_input_bot_utterance_event:
-                bot_utterance = user_input_bot_utterance_event.get("message", "大模型未给出response，报错")
-                ryan_log.info(f"bot_utterance: {bot_utterance}")
-
-        ryan_log.info(f"bot_intent: {bot_intent}")
 
         if bot_intent in self.config.bot_messages:
             # Choose a message randomly from self.config.bot_messages[bot_message]
@@ -948,12 +956,19 @@ class LLMGenerationActions:
 
             # We also need to render
             bot_utterance = self._render_string(bot_utterance, context)
+            decision = "block"
+
+            ryan_log.info(
+                f"after _render_string - bot_utterance: {bot_utterance}, context: {context}"
+            )
 
             # We skip output rails for predefined messages.
             context_updates["skip_output_rails"] = True
 
         elif EnvConfig.ENABLE_LATENCY_OPTIMIZATION and user_input_bot_utterance_event:
-            bot_utterance = user_input_bot_utterance_event.get("message", "大模型未给出response，报错")
+            bot_utterance = user_input_bot_utterance_event.get(
+                "message", "大模型未给出response，报错"
+            )
             ryan_log.info(f"bot_utterance from llm response: {bot_utterance}")
 
         # Check if the output is supposed to be the content of a context variable
@@ -1142,22 +1157,26 @@ class LLMGenerationActions:
 
         if bot_utterance:
             bot_utterance = clean_utterance_content(bot_utterance)
+            result = {"decision": decision, "response": bot_utterance}
+
             # In streaming mode, we also push this.
             if streaming_handler:
                 await streaming_handler.push_chunk(bot_utterance)
 
             return ActionResult(
-                events=[new_event_dict("BotMessage", text=bot_utterance)],
+                events=[new_event_dict("BotMessage", text=result)],
                 context_updates=context_updates,
             )
         else:
             # In streaming mode, we also push this.
             bot_utterance = "I'm not sure what to say."
+            result = {"decision": decision, "response": bot_utterance}
+
             if streaming_handler:
                 await streaming_handler.push_chunk(bot_utterance)
 
             return ActionResult(
-                events=[new_event_dict("BotMessage", text=bot_utterance)],
+                events=[new_event_dict("BotMessage", text=result)],
                 context_updates=context_updates,
             )
 
