@@ -585,7 +585,7 @@ class LLMGenerationActions:
                     return ActionResult(
                         events=[
                             new_event_dict("UserIntent", intent=user_intent),
-                            new_event_dict("BotMessage", message=bot_message),
+                            new_event_dict("CustomMessage", message=bot_message),
                         ]
                     )
                 else:

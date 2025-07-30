@@ -2,12 +2,14 @@ from nemoguardrails.actions import action
 from nemoguardrails import LLMRails, RailsConfig
 from pathlib import Path
 import os
+from typing import Optional
 
 from thefuzz import fuzz  # Add this import for fuzzy string matching
 
 from nemoguardrails.ryan_logger import ryan_log
 
-tag_name="qwen_model.actions.py"
+tag_name = "qwen_model.actions.py"
+
 
 async def load_input_output_rails_words(config: RailsConfig, rail_words_file: str):
     try:
@@ -27,22 +29,36 @@ async def load_input_output_rails_words(config: RailsConfig, rail_words_file: st
 
         sensitive_content = []
         if os.path.exists(abs_path):
-            with open(abs_path, 'r', encoding='utf-8') as f:
+            with open(abs_path, "r", encoding="utf-8") as f:
                 sensitive_content = [line.strip() for line in f if line.strip()]
-                ryan_log.debug(tag_name, f"rail_words_file loaded successfully. contents: {sensitive_content}")
+                ryan_log.debug(
+                    tag_name,
+                    f"rail_words_file loaded successfully. contents: {sensitive_content}",
+                )
         return sensitive_content
     except Exception as e:
         ryan_log.error(tag_name, f"Failed to load rail_words_file: {str(e)}")
         return []
 
+
 @action()
-async def check_sensitive_words(text: str, config: RailsConfig) -> bool:
+async def check_sensitive_words(
+    rails_type: str, config: RailsConfig, context: Optional[dict] = None
+) -> bool:
+    # ryan_log.info(tag_name, f"context: {context}")
+    if rails_type == "input_rails":
+        text = context.get("user_message")
+    else:
+        text = context.get("bot_message").get("response")
+
     if not text or not isinstance(text, str):
         return False
 
     # add sensitive words cache
     if not hasattr(check_sensitive_words, "_word_cache"):
-        check_sensitive_words._word_cache = await load_input_output_rails_words(config, "sensitive_words_file")
+        check_sensitive_words._word_cache = await load_input_output_rails_words(
+            config, "sensitive_words_file"
+        )
 
     # add fuzzy matching and check for sensitive words
     text = text.lower()
@@ -61,6 +77,7 @@ async def check_sensitive_words(text: str, config: RailsConfig) -> bool:
     ryan_log.info(tag_name, f"敏感词检查结果: {has_sensitive_word}")
     return has_sensitive_word
 
+
 @action()
 async def check_profanity(text: str, config: RailsConfig) -> bool:
     if not text or not isinstance(text, str):
@@ -68,7 +85,9 @@ async def check_profanity(text: str, config: RailsConfig) -> bool:
 
     # add profanity words cache
     if not hasattr(check_profanity, "_word_cache"):
-        check_profanity._word_cache = await load_input_output_rails_words(config, "profanity_words_file")
+        check_profanity._word_cache = await load_input_output_rails_words(
+            config, "profanity_words_file"
+        )
 
     # convert to lower case for profanity words check
     text = text.lower()
@@ -80,9 +99,13 @@ async def check_profanity(text: str, config: RailsConfig) -> bool:
 
     return has_profanity
 
-@action()
-async def check_output_appropriateness(text: str) -> bool:
+
+@action(is_system_action=True)
+async def check_output_inappropriateness(context: Optional[dict] = None) -> bool:
     """check if the output is appropriate"""
+    has_inappropriateness = False
+    # ryan_log.info(tag_name, f"context: {context}")
+    text = context.get("bot_message")
 
     ryan_log.info(tag_name, f"check_output_appropriateness is called, text: {text}")
     if not text or not isinstance(text, str):
@@ -92,4 +115,4 @@ async def check_output_appropriateness(text: str) -> bool:
     ryan_log.info(tag_name, f"输出检查: {text}")
 
     # TODO: add compliance check for output appropriateness, such as using an external API to check the content for profanity
-    return True
+    return has_inappropriateness

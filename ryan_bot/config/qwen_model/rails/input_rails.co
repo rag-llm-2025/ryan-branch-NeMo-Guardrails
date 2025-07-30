@@ -1,7 +1,7 @@
 define flow input rails
   $input_text = $user_message
 
-  $has_sensitive = execute check_sensitive_words(text=$input_text)
+  $has_sensitive = execute check_sensitive_words(rails_type="input_rails")
   if $has_sensitive
     bot inform cannot process
     stop

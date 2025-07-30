@@ -13,7 +13,10 @@ custom_data:
 rails:
   input:
     flows:
-    - input rails
+      - input rails
+  output:
+    flows:
+      - output rails
   dialog:
     single_call:
       enabled: false

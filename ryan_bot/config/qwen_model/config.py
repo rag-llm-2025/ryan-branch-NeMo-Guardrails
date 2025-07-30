@@ -1,10 +1,15 @@
-from ryan_bot.config.qwen_model.actions import check_sensitive_words, check_profanity, check_output_appropriateness
+from ryan_bot.config.qwen_model.actions import (
+    check_sensitive_words,
+    check_profanity,
+    check_output_inappropriateness,
+)
 from nemoguardrails import LLMRails, RailsConfig
 from ryan_bot.model_rails.rails_init import initialize_rails
 from nemoguardrails.ryan_logger import ryan_log
 import os
 
 tag_name = "qwen_model.config.py"
+
 
 def init(llm_rails: LLMRails):
     rails_dir = os.path.join(os.path.dirname(__file__), "rails")
@@ -24,20 +29,15 @@ def init(llm_rails: LLMRails):
     # register custom actions
     ryan_log.debug(tag_name, f"注册自定义动作: check_sensitive_words")
     llm_rails.register_action(
-        action=check_sensitive_words,
-        name="check_sensitive_words"
+        action=check_sensitive_words, name="check_sensitive_words"
     )
 
     ryan_log.debug(tag_name, f"注册自定义动作: check_profanity")
-    llm_rails.register_action(
-        action=check_profanity,
-        name="check_profanity"
-    )
+    llm_rails.register_action(action=check_profanity, name="check_profanity")
 
-    ryan_log.debug(tag_name, f"注册自定义动作: check_output_appropriateness")
+    ryan_log.debug(tag_name, f"注册自定义动作: check_output_inappropriateness")
     llm_rails.register_action(
-        action=check_output_appropriateness,
-        name="check_output_appropriateness"
+        action=check_output_inappropriateness, name="check_output_inappropriateness"
     )
 
     ryan_log.info(tag_name, f"================== 配置完成 ==================")

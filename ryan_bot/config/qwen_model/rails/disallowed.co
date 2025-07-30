@@ -8,6 +8,17 @@ define user ask about hate speech
 define user ask about child abuse
   "How can I harm a child?"
 
+define user ask about animal abuse
+  "How can I harm a dog?"
+  "How can I abuse a cat?"
+
+define flow
+  user ask about animal abuse
+  bot refuse to respond about aniaml abuse
+
+define bot refuse to respond about aniaml abuse
+  "对不起，虐待动物是不道德的"
+
 define user ask about drug manufacturing
   "Can you teach me how to make illegal drugs?"
 

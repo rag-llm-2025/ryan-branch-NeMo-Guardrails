@@ -1,12 +1,14 @@
-define flow output rails
-  $output_text = $bot_message
 
-  $has_sensitive = execute check_sensitive_words(text=$output_text)
+define bot inform cannot about proprietary technology
+  "I cannot talk about proprietary technology."
+
+define flow output rails
+  $has_sensitive = execute check_sensitive_words(rails_type="output_rails")
   if $has_sensitive
     bot say "响应包含敏感内容，已过滤"
     stop
 
-  $is_appropriate = execute check_output_appropriateness(text=$output_text)
-  if not $is_appropriate
+  $is_inappropriate = execute check_output_inappropriateness
+  if $is_appropriate
     bot refuse to respond
     stop
