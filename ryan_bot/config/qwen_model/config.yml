@@ -6,18 +6,16 @@ models:
     model_path: /home/ryan_niu/ryan/llm/models/Qwen2.5-7B-Instruct
     checkpoint_path: ''
     device: cuda
-streaming: true
+
 custom_data:
   sensitive_words_file: ./resources/sensitive_words.txt
   profanity_words_file: ./resources/profanity_words.txt
+
 rails:
   input:
     flows:
     - input rails
   dialog:
-    single_call:
-      enabled: false
-      fallback_to_multiple_calls: true
     user_messages:
       embeddings_only: false
-      embeddings_only_similarity_threshold: 0.75
+      embeddings_only_similarity_threshold: 0.70

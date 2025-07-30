@@ -5,6 +5,7 @@
 
 # set -ex
 
+INSTALL=true
 
 # 打印示例目录结构
 echo "示例目录结构："
@@ -19,7 +20,6 @@ echo "            └── qwen_model"
 echo "                └── config.yml"
 
 install_dependencies() {
-    # Step 4: 在虚拟环境安装依赖
     cd $LLM_DIR/src/nemo-guardrails/ && pip install -e .
     cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && pip install -r requirements.txt
 }
@@ -30,9 +30,7 @@ else
 fi
 
 
-# Step 2: 检查CUDA可用性并更新device
 check_cuda_and_run() {
-    # 检查CUDA驱动和运行时是否可用
     if command -v nvidia-smi &> /dev/null && \
        command -v nvcc &> /dev/null && \
        python3 -c "import torch; print(torch.cuda.is_available())" | grep -q 'True'; then
@@ -47,9 +45,8 @@ check_cuda_and_run() {
 }
 check_cuda_and_run
 
-# Step 5:更新yml配置文件
 update_yaml() {
-    export YML_CONFIG_PATH="./config/qwen_model/config.yml" # 注意修改的是QWen模型的yml文件
+    export YML_CONFIG_PATH="./config/qwen_model/config.yml"
     cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && python3 -c "from utils.helper import yml_config_update; yml_config_update('$YML_CONFIG_PATH', '$ENGINE_NAME', '$MODEL_NAME', '$MODEL_PATH', '$DEVICE', '$CHECKPOINT_PATH')"
 }
 
@@ -59,6 +56,5 @@ else
     echo "skip update yml config in shell script"
 fi
 
-# Step 6: 在虚拟环境测试运行环境
 cd $LLM_DIR/src/nemo-guardrails/ryan_bot/ && python3 -c "import nemoguardrails; print(nemoguardrails.__version__)"
 cd $LLM_DIR/src/nemo-guardrails

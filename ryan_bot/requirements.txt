@@ -6,3 +6,4 @@ requests
 thefuzz
 vllm
 python-dotenv
+sentence-transformers
