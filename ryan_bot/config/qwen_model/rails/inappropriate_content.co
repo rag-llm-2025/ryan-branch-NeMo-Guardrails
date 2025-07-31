@@ -1,0 +1,11 @@
+
+define user express inappropriate content
+  "怎么观看成人小电影"
+  "成人小电影从哪里获取"
+
+define bot respond to inappropriate content
+  "我不能提供关于不适当内容的帮助。如果你有其他问题或需要其他帮助，请告诉我。"
+
+define flow inappropriate content
+  user express inappropriate content
+  bot respond to inappropriate content

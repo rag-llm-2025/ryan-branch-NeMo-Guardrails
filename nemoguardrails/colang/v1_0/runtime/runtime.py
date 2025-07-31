@@ -37,6 +37,7 @@ from nemoguardrails.utils import new_event_dict, new_uuid
 
 log = logging.getLogger(__name__)
 from ryan_bot.env_setup.env_config import EnvConfig
+
 log.setLevel(EnvConfig.NEMO_LOGGER_LEVEL)
 
 from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
@@ -372,9 +373,11 @@ class RuntimeV1_0(Runtime):
             # If the action execution failed, we return a hardcoded message
             if status == "failed":
                 # TODO: make this message configurable.
-                result = self._internal_error_action_result(
-                    "I'm sorry, an internal error has occurred."
-                )
+                error_response = {
+                    "decision": "pass",
+                    "response": "I'm sorry, an internal error has occurred.",
+                }
+                result = self._internal_error_action_result(error_response)
 
         return_value = result
         return_events = []

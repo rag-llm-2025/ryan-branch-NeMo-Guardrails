@@ -1,14 +1,11 @@
 
-define bot inform cannot about proprietary technology
-  "I cannot talk about proprietary technology."
-
 define flow output rails
   $has_sensitive = execute check_sensitive_words(rails_type="output_rails")
   if $has_sensitive
-    bot say "响应包含敏感内容，已过滤"
+    bot respond to sensitive content
     stop
 
   $is_inappropriate = execute check_output_inappropriateness
   if $is_appropriate
-    bot refuse to respond
+    bot respond to inappropriate content
     stop

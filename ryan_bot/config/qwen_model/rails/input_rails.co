@@ -3,10 +3,10 @@ define flow input rails
 
   $has_sensitive = execute check_sensitive_words(rails_type="input_rails")
   if $has_sensitive
-    bot inform cannot process
+    bot respond to sensitive content
     stop
 
   $has_profanity = execute check_profanity(text=$input_text)
   if $has_profanity
-    bot warn inappropriate language
+    bot respond to profanity
     stop

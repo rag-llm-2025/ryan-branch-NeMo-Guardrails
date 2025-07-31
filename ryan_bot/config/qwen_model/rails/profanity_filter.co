@@ -3,9 +3,11 @@ define user express profanity
 
 define flow profanity filter
   user express profanity
-  bot warn inappropriate language
+  bot respond to profanity
   stop
 
-define bot warn inappropriate language
-  "请注意文明用语"
+define bot respond to profanity
+  "请使用文明用语"
   "请勿使用不雅语言"
+  "我不能接受不尊重的语言。请使用礼貌的语言进行交流"
+  "我很抱歉，我不能接受这样的语言。请使用礼貌的语言进行交流。"

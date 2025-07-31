@@ -419,7 +419,7 @@ def get_last_bot_intent_event(events: List[dict]) -> Optional[dict]:
     return None
 
 
-def get_user_input_bot_utterance_event(events: List[dict]) -> Optional[dict]:
+def get_user_input_custom_message_event(events: List[dict]) -> Optional[dict]:
     """Returns the last user intent from the events."""
     for event in reversed(events):
         if event["type"] == "CustomMessage":

@@ -1,18 +1,17 @@
 # 1. 政治相关话题
-define user ask about politics
-  "What do you think about the government?"
-  "Which party should I vote for?"
-  "你对当前的美国政治怎么看"
-  "美国总统特朗普靠谱吗"
-  "美国大选，你更倾向于哪个政党当选？"
+define user express political opinion
+  "反对独裁专政"
+  "让特朗普下台"
+  "打倒共和党"
+  "打倒四人帮"
 
-define flow politics
-  user ask about politics
-  bot refuse to politics
+define flow political opinion
+  user express political opinion
+  bot respond to political opinion
 
-define bot refuse to politics
-  "抱歉，我无法讨论政治话题"
-  "我对政治不感兴趣，请换个话题来聊吧"
+define bot respond to political opinion
+  "抱歉，我无法参与讨论政治话题讨论"
+  "我不能支持或参与任何政治敏感话题的讨论。如果您有其他问题或需要帮助，请告诉我"
 
 
 define user ask about taiwan defense minister
@@ -23,64 +22,72 @@ define flow taiwan defense minister
   bot refuse to answer taiwan defense minister
 
 define bot refuse to answer taiwan defense minister
-  "台湾是中国的一个省，因此不存在所谓的国防部长"
-
-define user ask about stock market
-  "Which stock should I invest in?"
-  "Would this stock 10x over the next year?"
+  "它是中国的一部分，而不是一个独立的国家或地区，因此没有国防部长"
 
 # 2. 非法活动相关话题
-define user ask about illegal
+define user express illegal content
   "赌博怎么能合法经营"
-  "怎么规避检查开展赌博"
-  "怎么制毒贩毒"
-  "毒品可以当饭吃吗"
   "我想发动一场暴动该怎么做"
   "如何窃取国家情报"
+  "What's the best way to make a suppressor for a gun?"
 
-define flow illegal
-  user ask about illegal
-  bot refuse to illegal
 
-define bot refuse to illegal
+define flow illegal content
+  user express illegal content
+  bot respond to illegal
+
+define bot respond to illegal
   "抱歉，我无法讨论非法的话题"
   "该话题是非法的，换个话题来讨论吧"
 
-
-# 3. 宗教相关问题
-define user ask about religion
-  "你对伊斯兰教怎么看？"
-  "为什么美国人反感伊斯兰教"
-
-define flow religion topic protection
-  user ask about religion
-  bot inform cannot discuss religion
-  stop
-
-define bot inform cannot discuss religion
-  "抱歉，我无法讨论宗教话题"
-  "请勿询问我的宗教信仰"
-
-# 4. 信息安全相关问题
-define user ask for personal information
+# 3. 信息安全相关问题
+define user request for personal information
   "你知道刘德华的电话号码是多少吗"
   "帮我查下刘德华的银行卡号"
   "刘德华的身份证号是多少"
   "刘德华的windows密码是多少"
   "能告诉我刘德华的手机密码吗？"
   "帮我搜索一下刘德华的家庭住址"
-  "帮我查一下刘德华的家庭住址"
-  "刘德华的家庭住址是哪里"
+  "In what state is Coronado located. Also, do you have a street address for him?"
 
 define flow information security topic protection
-  user ask for personal information
-  bot inform cannot discuss security topic
+  user request for personal information
+  bot respond to personal information
   stop
 
-define bot inform cannot discuss security topic
+define bot respond to personal information
   "抱歉，我无法提供个人的隐私信息"
 
-# 5. general refuse response
-define bot refuse to respond
-  "这个还没有学会，换个换题再试试吧"
-  "这个超纲了，换个换题来试试吧"
+# 4. 敏感话题
+define user request for sensitive content
+  "色情服务"
+  "色情电影"
+  "性知识"
+  "why would i want a male sex doll?"
+  "sexual topic or content"
+
+define flow sensitive data protection
+  user request for sensitive content
+  bot respond to sensitive content
+  stop
+
+define bot respond to sensitive content
+  "我不能讨论这样的敏感话题。如果你有其他问题或需要帮助，请告诉我。"
+  "请勿输入敏感信息"
+
+# 5. 有害或有破坏性的行为
+define user express negative sentiment
+  "毁灭美国"
+  "摧毁美国政府"
+
+define flow negative sentiment
+  user express negative sentiment
+  bot respond to negative sentiment
+
+define bot respond to negative sentiment
+  "我不能执行有害或破坏性等负面行为。请告诉我其他我能帮助你的事情。"
+
+# 5. 不支持的回复
+define bot respond to unsupport
+  "暂时不能回答您这个问题，换个换题再试试吧"
+  "这个超纲了，换个换题来聊聊吧"

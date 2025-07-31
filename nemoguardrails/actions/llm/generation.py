@@ -35,7 +35,7 @@ from nemoguardrails.actions.llm.utils import (
     flow_to_colang,
     get_first_nonempty_line,
     get_last_bot_intent_event,
-    get_user_input_bot_utterance_event,
+    get_user_input_custom_message_event,
     get_last_user_intent_event,
     get_last_user_utterance_event,
     get_multiline_response,
@@ -351,7 +351,7 @@ class LLMGenerationActions:
             text: LLM生成的原始文本
 
         Returns:
-            包含(user_intent, bot_message)的元组
+            包含(user_intent, bot_intent, bot_message)的元组
         """
         ryan_log.debug(f"extract_intent_and_message input: \n{text}")
 
@@ -359,11 +359,11 @@ class LLMGenerationActions:
             return None, None
 
         # 统一日志格式
-        def log_result(user_intent, bot_message, case_type="standard"):
+        def log_result(user_intent, bot_intent, bot_message, case_type="standard"):
             ryan_log.info(
                 f"extracted({case_type}) - user_intent: {user_intent}, bot_message: {bot_message}"
             )
-            return user_intent, bot_message
+            return user_intent, bot_intent, bot_message
 
         # 合并后的正则模式，处理带引号和不带引号的情况
         combined_pattern = (
@@ -377,9 +377,10 @@ class LLMGenerationActions:
         first_match = re.search(combined_pattern, text, re.DOTALL)
         if first_match:
             user_intent = (first_match.group(1) or "").strip()
+            bot_intent = (first_match.group(2) or "").strip()
             bot_message = (first_match.group(3) or first_match.group(4) or "").strip()
             if bot_message:
-                return log_result(user_intent, bot_message, "combined")
+                return log_result(user_intent, bot_intent, bot_message, "combined")
 
         # 处理只有前引号的情况
         partial_match = re.search(
@@ -391,13 +392,14 @@ class LLMGenerationActions:
         )
         if partial_match:
             user_intent = (partial_match.group(1) or "").strip()
+            bot_intent = (partial_match.group(2) or "").strip()
             bot_message = (partial_match.group(3) or "").strip()
             if bot_message:
                 # 清理可能的后续指令
                 bot_message = re.split(r"\s*(?:execute|User message)", bot_message)[
                     0
                 ].strip()
-                return log_result(user_intent, bot_message, "partial")
+                return log_result(user_intent, bot_intent, bot_message, "partial")
 
         # 处理只有intent没有message的情况
         intent_only_match = re.search(
@@ -407,11 +409,11 @@ class LLMGenerationActions:
             re.DOTALL,
         )
         if intent_only_match:
-            return log_result(
-                (intent_only_match.group(1) or "").strip(),
-                "没获取到大模型的回答，异常case",
-                "intent_only",
-            )
+            user_intent = (intent_only_match.group(1) or "").strip()
+            bot_intent = None
+            bot_message = "没获取到大模型的回答，异常case"
+
+            return log_result(user_intent, bot_intent, bot_message, "intent_only")
 
         # 非标准格式处理
         lines = [line.strip() for line in text.split("\n") if line.strip()]
@@ -430,6 +432,7 @@ class LLMGenerationActions:
 
         return log_result(
             user_intent or None,
+            bot_intent or None,
             bot_message or "非标准格式，bot message为空，占位符",
             "non-standard",
         )
@@ -550,8 +553,11 @@ class LLMGenerationActions:
             # ryan_log.info(f"generate_user_intent llm output: {result}")
 
             if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
-                user_intent, bot_message = self.extract_intent_and_message(result)
+                user_intent, bot_intent, bot_message = self.extract_intent_and_message(
+                    result
+                )
                 ryan_log.info(f"user_intent: {user_intent}")
+                ryan_log.info(f"bot_intent:  {bot_intent}")
                 ryan_log.info(f"bot_message: {bot_message}")
 
             # Parse the output using the associated parser
@@ -585,7 +591,12 @@ class LLMGenerationActions:
                     return ActionResult(
                         events=[
                             new_event_dict("UserIntent", intent=user_intent),
-                            new_event_dict("CustomMessage", message=bot_message),
+                            new_event_dict(
+                                "CustomMessage",
+                                message=bot_message,
+                                user_intent=user_intent,
+                                bot_intent=bot_intent,
+                            ),
                         ]
                     )
                 else:
@@ -729,6 +740,73 @@ class LLMGenerationActions:
 
         return final_results[0:max_results]
 
+    def _rewrite_bot_intent(self, events: List[dict]) -> str:
+        """根据用户意图或机器人意图确定机器人响应意图"""
+
+        # 获取自定义消息事件中的机器人意图
+        custom_message_event = get_user_input_custom_message_event(events)
+        user_intent = custom_message_event.get("user_intent", "response to general")
+        bot_intent = custom_message_event.get("bot_intent", "response to general")
+        ryan_log.info(f"user_intent={user_intent}, 改写前: bot_intent={bot_intent}")
+
+        # 定义各类敏感词集合
+        intent_mappings = {
+            "inappropriate content": {
+                "inappropriate content",
+                "inappropriate topic",
+                "inappropriate question",
+            },
+            "sensitive content": {
+                "sensitive content",
+                "sensitive topic",
+                "sexual",
+                "sensitive information",
+            },
+            "illegal": {
+                "illegal",
+                "illegality",
+                "illegal content",
+                "illegal topic",
+                "illegal sentiment",
+                "illegal activity",
+            },
+            "negative sentiment": {
+                "violence",
+                "violent intention",
+                "harmful intent",
+                "negative topic",
+                "negative sentiment",
+            },
+            "profanity": {
+                "insult",
+                "swear",
+                "profanity",
+                "offensive language",
+                "offensive content",
+                "offensive topic",
+            },
+            "political opinion": {
+                "political opinion",
+                "political stance",
+                "political stand",
+                "political state",
+            },
+            "unsupport": {"refuse to provide", "cannot provide"},
+        }
+
+        # 检查用户意图或机器人意图并映射到对应的机器人响应意图
+        for intent_type, terms in intent_mappings.items():
+            if any(term in user_intent for term in terms) or any(
+                term in bot_intent for term in terms
+            ):
+                bot_intent = f"respond to {intent_type}"
+                ryan_log.info(
+                    f"user_intent={user_intent}, 改写后: bot_intent={bot_intent}"
+                )
+                return bot_intent
+
+        return None
+
     @log_kpi_async("generate_next_step")
     @action(is_system_action=True)
     async def generate_next_step(
@@ -746,14 +824,16 @@ class LLMGenerationActions:
 
         # The last event should be the "StartInternalSystemAction" and the one before it the "UserIntent".
         event = get_last_user_intent_event(events)
+        # ryan_log.info(f"events: {events}")
 
         assert event["type"] == "UserIntent"
 
         if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
-            bot_intent = event.get("intent", "general response")
-            ryan_log.info(
-                f"get_last_user_intent_event: {event}, bot_intent: {bot_intent}"
-            )
+            user_intent = event.get("intent", "general response")
+            ryan_log.info(f"user_intent: {user_intent}, event: {event}")
+
+            custom_message_event = get_user_input_custom_message_event(events)
+            bot_intent = custom_message_event.get("bot_intent", "response to general")
             return ActionResult(events=[new_event_dict("BotIntent", intent=bot_intent)])
 
         # Currently, we only predict next step after a user intent using LLM
@@ -935,17 +1015,21 @@ class LLMGenerationActions:
             context_updates["skip_output_rails"] = True
 
         ryan_log.info(f"bot_intent: {bot_intent}")
-        ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
-        ryan_log.debug(f"get_last_bot_intent_event: {event}")
+        # ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
+        # ryan_log.debug(f"get_last_bot_intent_event: {event}")
 
         decision = "pass"  # pass or block, pending
 
         if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
-            user_input_bot_utterance_event = get_user_input_bot_utterance_event(events)
+            custom_message_event = get_user_input_custom_message_event(events)
+            rewrite_bot_intent = self._rewrite_bot_intent(events)
+            if rewrite_bot_intent:
+                bot_intent = rewrite_bot_intent
 
         if bot_intent in self.config.bot_messages:
             # Choose a message randomly from self.config.bot_messages[bot_message]
             # However, in test mode, we always choose the first one, to keep it predictable.
+
             if "pytest" in sys.modules:
                 bot_utterance = self.bot_messages[bot_intent][0]
             else:
@@ -965,8 +1049,8 @@ class LLMGenerationActions:
             # We skip output rails for predefined messages.
             context_updates["skip_output_rails"] = True
 
-        elif EnvConfig.ENABLE_LATENCY_OPTIMIZATION and user_input_bot_utterance_event:
-            bot_utterance = user_input_bot_utterance_event.get(
+        elif EnvConfig.ENABLE_LATENCY_OPTIMIZATION and custom_message_event:
+            bot_utterance = custom_message_event.get(
                 "message", "大模型未给出response，报错"
             )
             ryan_log.info(f"bot_utterance from llm response: {bot_utterance}")
