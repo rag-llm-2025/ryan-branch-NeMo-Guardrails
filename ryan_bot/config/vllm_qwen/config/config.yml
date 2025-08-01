@@ -1,0 +1,57 @@
+# models:
+#   - type: main
+#     engine: nvidia_ai_endpoints
+#     model: meta/llama-3.3-70b-instruct
+
+#   - type: content_safety
+#     engine: nvidia_ai_endpoints
+#     model: nvidia/llama-3.1-nemoguard-8b-content-safety
+
+models:
+  - type: main
+    engine: openai
+    model: Qwen/Qwen2.5-7B-Instruct
+    base_url: http://10.16.118.42:8010/v1
+    api_key: sk-xxx   # 随便写一个字符串即可
+  - type: content_safety
+    engine: openai
+    model: Qwen/Qwen2.5-7B-Instruct
+    base_url: http://10.16.118.42:8010/v1
+    api_key: sk-xxx   # 随便写一个字符串即可
+
+streaming: True
+
+rails:
+  input:
+    flows:
+      - content safety check input $model=content_safety
+  output:
+    flows:
+      - content safety check output $model=content_safety
+    streaming:
+      enabled: True
+      chunk_size: 200
+      context_size: 50
+  dialog:
+    single_call:
+      enabled: false
+      fallback_to_multiple_calls: true
+    user_messages:
+      embeddings_only: false
+      embeddings_only_similarity_threshold: 0.70
+core:
+  embedding_search_provider:
+    name: default
+    parameters:
+      embedding_engine: SentenceTransformers
+      embedding_model: sentence-transformers/all-MiniLM-L6-v2
+      use_batching: false
+      max_batch_size: 10
+      max_batch_hold: 0.01
+      search_threshold: 0.7
+    cache:
+      enabled: false
+      key_generator: sha256
+      store: filesystem
+      store_config:
+        cache_dir: ./cache/embeddings
