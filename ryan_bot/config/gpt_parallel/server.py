@@ -1,26 +1,26 @@
 from fastapi import FastAPI, Request
 from nemoguardrails import LLMRails, RailsConfig
+import os
+import time
+from nemoguardrails.ryan_logger import ryan_log
 
-# 初始化Guardrails配置（假设已定义规则）
-config = RailsConfig.from_path("./")  # 包含guardrails规则的文件夹
+config_path = os.getenv("GUARDRAILS_CONFIG_ID", "./")
+config = RailsConfig.from_path(config_path)
 rails = LLMRails(config)
 
 app = FastAPI()
 
 @app.post("/generate")
 async def generate(request: Request):
-    # 接收客户端请求，包含user_id和用户指令
+
+    start_time = time.time()
     data = await request.json()
-    user_id = data.get("user_id")  # 用户唯一标识
-    user_query = data.get("query")  # 用户指令
+    ryan_log.critical(f"received request: {data}")
+    user_id = data.get("user_id")
+    user_query = data.get("query")
 
-    # 调用Nemo Guardrails处理请求（异步处理，支持并发）
     response = await rails.generate_async(prompt=user_query)
+    time_cost = (time.time() - start_time) * 1000
+    ryan_log.critical(f"time cost: {time_cost}ms")
 
-    # 返回结果时携带user_id，供客户端匹配
-    return {
-        "user_id": user_id,
-        "reply": response
-    }
-
-# 启动服务：uvicorn main:app --host 0.0.0.0 --port 8000
+    return {"user_id": user_id, "reply": response}

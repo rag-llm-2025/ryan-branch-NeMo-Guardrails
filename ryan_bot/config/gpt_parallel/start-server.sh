@@ -1,3 +1,6 @@
 #!/bin/bash
 
-uvicorn server:app --host 10.16.118.41 --port 8080
+HOST=${HOST:-localhost}
+PORT=${PORT:-8080}
+
+uvicorn server:app --host $HOST --port $PORT

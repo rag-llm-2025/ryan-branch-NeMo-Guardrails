@@ -1,36 +1,52 @@
 import asyncio
 import aiohttp
+import os
+import random
+import time
+from nemoguardrails.ryan_logger import ryan_log
 
-# 模拟2个用户的请求
 USER_REQUESTS = [
     {"user_id": "user_a", "query": "hi"},
-    {"user_id": "user_b", "query": "hello"}
-    # {"user_id": "user_b", "query": "推荐一部科幻电影"}
+    {"user_id": "user_b", "query": "hello"},
+    # {"user_id": "user_c", "query": "推荐一部科幻电影"}
 ]
 
 async def send_request(session, data):
-    print(f"发送请求: {data}")
+    ryan_log.debug(f"User: {data['query']}")
+    start_time = time.time()
     try:
-        async with session.post("http://10.16.118.41:8080/generate", json=data) as response:
+        host = os.getenv("HOST", "localhost")
+        port = os.getenv("PORT", "8080")
+        base_url = "http://" + host + ":" + port
+        async with session.post(base_url + "/generate", json=data) as response:
             result = await response.json()
-            print(f"用户 {result['user_id']} 的回复：{result['reply']}")
+            time_cost = (time.time() - start_time) * 1000
+            ryan_log.info(f"Bot({result['user_id']}): {result['reply']} (latency: {time_cost}ms)")
     except Exception as e:
-        print(f"请求失败: {str(e)}")
+        ryan_log.error(f"Request failed: {str(e)}")
+
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        # 1. 并发发送两个请求
-        tasks = [send_request(session, data) for data in USER_REQUESTS]
-        await asyncio.gather(*tasks)
+        semaphore = asyncio.Semaphore(100)
 
-        # 2. 进入交互模式
+        async def limited_send_request(session, data):
+            async with semaphore:
+                await asyncio.sleep(random.random())
+                return await send_request(session, data)
+
+        for i in range(10):
+            tasks = [limited_send_request(session, data) for data in USER_REQUESTS]
+            await asyncio.gather(*tasks)
+
         while True:
-            user_input = input("You: ")
-            if user_input.lower() == 'quit':
+            user_input = input("User: ")
+            if user_input.lower() == "quit":
                 break
 
             data = {"user_id": "user_input", "query": user_input}
             await send_request(session, data)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
