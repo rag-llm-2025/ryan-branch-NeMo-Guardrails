@@ -26,6 +26,7 @@ export HOST=10.16.118.41
 export PORT=8010
 export OPENAI_API_KEY=sk-xxx
 export OPENAI_BASE_URL=http://${HOST}:${PORT}/v1
+export OPENAI_URL_AUTH=6e-xxxxy-Av
 ```
 
 # 启动服务
