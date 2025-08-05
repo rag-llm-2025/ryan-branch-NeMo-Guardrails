@@ -4,6 +4,7 @@
 # ryan ignored files
 model_cache
 cache/embeddings
+hf_model_cache
 
 # Byte-compiled / optimized / DLL files
 *.pyc

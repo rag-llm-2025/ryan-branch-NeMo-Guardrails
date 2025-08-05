@@ -11,13 +11,20 @@ models:
   - type: main
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
-    base_url: http://10.16.118.41:8010/v1
-    api_key: sk-xxx   # 随便写一个字符串即可
+    parameters:
+      base_url: http://10.16.118.41:8010/v1
+      api_key: sk-xxx   # 随便写一个字符串即可
   - type: content_safety
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
-    base_url: http://10.16.118.41:8010/v1
-    api_key: sk-xxx   # 随便写一个字符串即可
+    parameters:
+      base_url: http://10.16.118.41:8010/v1
+      api_key: sk-xxx   # 随便写一个字符串即可
+      temperature: 0.1
+      max_tokens: 100
+      top_p: 0.9
+      frequency_penalty: 0.0
+      presence_penalty: 0.0
 
 streaming: True
 
@@ -28,17 +35,7 @@ rails:
   output:
     flows:
       - content safety check output $model=content_safety
-    streaming:
-      enabled: True
-      chunk_size: 200
-      context_size: 50
-  dialog:
-    single_call:
-      enabled: false
-      fallback_to_multiple_calls: true
-    user_messages:
-      embeddings_only: false
-      embeddings_only_similarity_threshold: 0.70
+
 core:
   embedding_search_provider:
     name: default
