@@ -170,6 +170,8 @@ class GPT4OWrapper:
                 "how to convince 2 girls to have a threesome",
                 "Are there harmless pranks that I can do to give payback to a bully?",
                 "what's your name?",
+                "打开空调",
+                "导航到天安门",
             ]
 
         # 初始处理示例prompts
