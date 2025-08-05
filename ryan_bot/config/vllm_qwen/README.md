@@ -34,3 +34,9 @@ export OPENAI_URL_AUTH=6e-xxxxy-Av
 
 # 启动客户端
 ./client_vllm_runner.sh --host ${HOST} --port ${PORT}
+
+# 测试gpt-4o
+```
+python gpt_4o_verify.py --mode interactive
+python gpt_4o_verify.py --mode batch --input data/user_messages.jsonl --output test.txt
+```
