@@ -34,9 +34,15 @@ export OPENAI_URL_AUTH=6e-xxxxy-Av
 
 # 启动客户端
 ./client_vllm_runner.sh --host ${HOST} --port ${PORT}
+OR
+python ./demo.py --host ${HOST} --port ${PORT}
 
-# 测试gpt-4o
+# gpt-4o拦截效果摸底测试
 ```
-python gpt_4o_verify.py --mode interactive
-python gpt_4o_verify.py --mode batch --input data/user_messages.jsonl --output test.txt
+python gpt_4o_verify.py --type classification --mode interactive
+python gpt_4o_verify.py --type generation --mode interactive
+
+python gpt_4o_verify.py --type classification --mode batch --input data/user_messages.jsonl --output ./output/test_gpt_4o_classification.txt
+
+python gpt_4o_verify.py --type generation --mode batch --input data/user_messages.jsonl --output ./output/test_gpt_4o_generation.txt
 ```
