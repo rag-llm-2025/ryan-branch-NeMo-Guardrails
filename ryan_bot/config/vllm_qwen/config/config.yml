@@ -11,12 +11,12 @@ models:
   - type: main
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
-    base_url: http://10.16.118.42:8010/v1
+    base_url: http://10.16.118.41:8010/v1
     api_key: sk-xxx   # 随便写一个字符串即可
   - type: content_safety
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
-    base_url: http://10.16.118.42:8010/v1
+    base_url: http://10.16.118.41:8010/v1
     api_key: sk-xxx   # 随便写一个字符串即可
 
 streaming: True

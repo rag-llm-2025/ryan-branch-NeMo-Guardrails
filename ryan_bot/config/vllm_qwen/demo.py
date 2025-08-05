@@ -157,6 +157,8 @@ class DemoRunner:
 
 def test_vllm_connection(host, port):
     print("==================== TEST VLLM CONNECTION ================\n")
+    print(f"host: {host}, port: {port}")
+
     client = httpx.Client()
     try:
         response = client.get(f"http://{host}:{port}/v1/models")
