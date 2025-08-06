@@ -4,6 +4,11 @@
 *.pyc
 *.so
 
+# test
+model_cache/
+project_mk/
+hf_model_cache
+
 # Distribution / packaging
 *.egg
 *.egg-info
@@ -21,9 +26,6 @@ temp
 __pycache__
 *.pyc
 .cache
-.venv*
-venv*
-env*
 /releases/*
 /poetry.toml
 

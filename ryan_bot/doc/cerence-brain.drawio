@@ -1,0 +1,99 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0" version="28.0.4">
+  <diagram name="Page-1" id="aAOqyJ5CdgRfK3dZfsAk">
+    <mxGraphModel dx="983" dy="518" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="yUZjLsUjzappjO9u_xOs-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="110" y="255" width="610" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-2" value="&lt;div&gt;Task-Planner /&lt;/div&gt;&lt;div&gt;Multi-Intent Splitter&lt;/div&gt;&lt;div&gt;(task planning loop)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="273.96" y="300" width="120" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-11" value="ASR dictation literal" style="endArrow=classic;html=1;rounded=0;entryX=0.011;entryY=0.153;entryDx=0;entryDy=0;entryPerimeter=0;labelBackgroundColor=none;" edge="1" parent="1" target="yUZjLsUjzappjO9u_xOs-2">
+          <mxGeometry x="-0.5503" y="19" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="10" y="340" as="sourcePoint" />
+            <mxPoint x="290" y="337" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-35" value="Cerence Brain" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="410" y="255" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-36" value="" style="group;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="510" y="280" width="180" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-34" value="Arbitrator" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="yUZjLsUjzappjO9u_xOs-36">
+          <mxGeometry x="62.30769230769231" width="41.53846153846153" height="22.105263157894736" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-38" value="Input Guardrail" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="yUZjLsUjzappjO9u_xOs-36">
+          <mxGeometry x="34.29" y="29.47" width="115.71" height="29.47" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-39" value="&lt;div&gt;LLM Router&lt;/div&gt;&lt;div&gt;(Top-N soft routing)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="yUZjLsUjzappjO9u_xOs-36">
+          <mxGeometry x="34.29" y="77.37" width="115.71" height="42.63" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-45" value="ASR dictation literal" style="endArrow=classic;html=1;rounded=0;exitX=0.992;exitY=0.163;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=none;" edge="1" parent="yUZjLsUjzappjO9u_xOs-36" source="yUZjLsUjzappjO9u_xOs-2">
+          <mxGeometry x="-0.025" y="19" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-48.46153846153846" y="58.89655172413793" as="sourcePoint" />
+            <mxPoint y="58.89655172413793" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-41" value="Route to agent(s)" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=none;" edge="1" parent="1">
+          <mxGeometry x="0.1111" y="20" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="690" y="360" as="sourcePoint" />
+            <mxPoint x="840" y="360" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-42" value="&lt;div&gt;Agent(s)&amp;nbsp;Response&lt;/div&gt;" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=none;" edge="1" parent="1" target="yUZjLsUjzappjO9u_xOs-44">
+          <mxGeometry x="-0.3333" y="-20" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="510" as="sourcePoint" />
+            <mxPoint x="930" y="480" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-44" value="&lt;div&gt;Selector&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-46" value="Each task reponse" style="endArrow=classic;html=1;rounded=0;dashed=1;entryX=0.994;entryY=0.87;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=none;" edge="1" parent="1" source="yUZjLsUjzappjO9u_xOs-44" target="yUZjLsUjzappjO9u_xOs-2">
+          <mxGeometry x="-0.0439" y="-19" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="489.71" as="sourcePoint" />
+            <mxPoint x="570" y="489.71" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-48" value="&lt;div&gt;If fail to pass the&lt;/div&gt;&lt;div&gt;input guardrail&lt;/div&gt;" style="endArrow=classic;html=1;rounded=0;dashed=1;entryX=0.991;entryY=0.658;entryDx=0;entryDy=0;entryPerimeter=0;labelBackgroundColor=none;" edge="1" parent="1" target="yUZjLsUjzappjO9u_xOs-2">
+          <mxGeometry x="0.0909" y="-20" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="601.4" y="420" as="sourcePoint" />
+            <mxPoint x="410" y="458" as="targetPoint" />
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="601.4" y="457.76" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-50" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="10" y="480" width="263.96" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-3" value="Verbalizer" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="yUZjLsUjzappjO9u_xOs-50">
+          <mxGeometry x="123.96000000000001" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-8" value="Cerence Brain output" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;dashed=1;labelBackgroundColor=none;" edge="1" parent="yUZjLsUjzappjO9u_xOs-50" source="yUZjLsUjzappjO9u_xOs-3">
+          <mxGeometry x="-0.0392" y="-19" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="153.96000000000004" y="19.730000000000075" as="sourcePoint" />
+            <mxPoint y="19.70999999999998" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yUZjLsUjzappjO9u_xOs-10" value="Response(s)" style="endArrow=classic;html=1;rounded=0;dashed=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=-0.001;exitY=0.829;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=none;" edge="1" parent="1" source="yUZjLsUjzappjO9u_xOs-2" target="yUZjLsUjzappjO9u_xOs-3">
+          <mxGeometry x="-0.0398" y="-19" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="293.96" y="500" as="sourcePoint" />
+            <mxPoint x="253.96" y="499.71" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

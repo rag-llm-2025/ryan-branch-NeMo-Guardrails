@@ -36,7 +36,8 @@ app = typer.Typer()
 app.add_typer(cli.app, name="eval", short_help="Evaluation a guardrail configuration.")
 app.pretty_exceptions_enable = False
 
-logging.getLogger().setLevel(logging.WARNING)
+from ryan_bot.env_setup.env_config import EnvConfig
+logging.getLogger().setLevel(EnvConfig.CLI_LOGGER_LEVEL)
 
 
 @app.command()

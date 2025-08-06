@@ -30,6 +30,8 @@ from nemoguardrails.actions.llm.utils import LLMCallException
 from nemoguardrails.logging.callbacks import logging_callbacks
 
 log = logging.getLogger(__name__)
+from ryan_bot.env_setup.env_config import EnvConfig
+log.setLevel(EnvConfig.NEMO_LOGGER_LEVEL)
 
 
 class ActionDispatcher:

@@ -79,6 +79,8 @@ async def content_safety_check_input(
     with llm_params(llm, temperature=1e-20, max_tokens=max_tokens):
         result = await llm_call(llm, check_input_prompt, stop=stop)
 
+    return result
+
     result = llm_task_manager.parse_task_output(task, output=result)
     result = result.text
 

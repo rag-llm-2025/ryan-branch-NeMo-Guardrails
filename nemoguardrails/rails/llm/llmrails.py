@@ -82,6 +82,12 @@ from nemoguardrails.utils import (
 )
 
 log = logging.getLogger(__name__)
+from ryan_bot.env_setup.env_config import EnvConfig
+log.setLevel(EnvConfig.NEMO_LOGGER_LEVEL)
+from nemoguardrails.ryan_logger import ryan_log
+tag_name="LLMRails"
+
+from ryan_bot.env_setup.env_config import EnvConfig
 
 process_events_semaphore = asyncio.Semaphore(1)
 
@@ -118,7 +124,7 @@ class LLMRails:
         # an index of them.
         self.embedding_search_providers = {}
 
-        # The default embeddings model is using FastEmbed
+        # The default embeddings model is all-MiniLM-L6-v2, engine is FastEmbed, cache_dir is model_cache under the current work directory.
         self.default_embedding_model = "all-MiniLM-L6-v2"
         self.default_embedding_engine = "FastEmbed"
         self.default_embedding_params = {}
@@ -900,10 +906,12 @@ class LLMRails:
             )
 
         total_time = time.time() - t0
-        log.info(
-            "--- :: Total processing took %.2f seconds. LLM Stats: %s"
-            % (total_time, llm_stats)
-        )
+        # log.info(
+        #     "--- :: Total processing took %.2f seconds. LLM Stats: %s"
+        #     % (total_time, llm_stats)
+        # )
+        ryan_log.info(f"Total processing took {total_time:.2f} seconds. LLM Stats: {llm_stats}")
+        ryan_log.critical("KPI", "Dialog is over")
 
         # If there is a streaming handler, we make sure we close it now
         streaming_handler = streaming_handler_var.get()
