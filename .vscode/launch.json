@@ -102,6 +102,24 @@
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Debug VLLM Qwen Runner",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/ryan_bot/config/vllm_qwen/demo.py",
+            // "args": ["--host", "${env:HOST}", "--port", "${env:PORT}"],
+            "args": ["--host", "gn401.crg.cerence.net", "--port", "8010"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "HOST": "gn401.crg.cerence.net",
+                "PORT": "8010",
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}",
+                "OPENAI_API_KEY": "${env:OPENAI_API_KEY}",
+                "OPENAI_BASE_URL": "${env:OPENAI_BASE_URL}",
+                "OPENAI_URL_AUTH": "${env:OPENAI_URL_AUTH}"
+            }
+        },
     ]
 }

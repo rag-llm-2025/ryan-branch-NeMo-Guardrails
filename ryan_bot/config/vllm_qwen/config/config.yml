@@ -12,19 +12,20 @@ models:
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
     parameters:
-      base_url: http://10.16.118.41:8010/v1
+      base_url: http://gn401.crg.cerence.net:8010/v1
       api_key: sk-xxx   # 随便写一个字符串即可
+      temperature: 0.1
+      # max_tokens: 100
+      top_p: 0.9
   - type: content_safety
     engine: openai
     model: Qwen/Qwen2.5-7B-Instruct
     parameters:
-      base_url: http://10.16.118.41:8010/v1
+      base_url: http://gn401.crg.cerence.net:8010/v1
       api_key: sk-xxx   # 随便写一个字符串即可
       temperature: 0.1
       max_tokens: 100
       top_p: 0.9
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
 
 streaming: True
 
@@ -35,20 +36,3 @@ rails:
   output:
     flows:
       - content safety check output $model=content_safety
-
-core:
-  embedding_search_provider:
-    name: default
-    parameters:
-      embedding_engine: SentenceTransformers
-      embedding_model: sentence-transformers/all-MiniLM-L6-v2
-      use_batching: false
-      max_batch_size: 10
-      max_batch_hold: 0.01
-      search_threshold: 0.7
-    cache:
-      enabled: false
-      key_generator: sha256
-      store: filesystem
-      store_config:
-        cache_dir: ./cache/embeddings
