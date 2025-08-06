@@ -36,7 +36,8 @@ from nemoguardrails.logging.processing_log import processing_log_var
 from nemoguardrails.utils import new_event_dict, new_uuid
 
 log = logging.getLogger(__name__)
-
+from ryan_bot.env_setup.env_config import EnvConfig
+log.setLevel(EnvConfig.NEMO_LOGGER_LEVEL)
 
 class RuntimeV1_0(Runtime):
     """Runtime for executing the guardrails."""

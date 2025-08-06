@@ -28,6 +28,8 @@ from nemoguardrails.context import llm_call_info_var, reasoning_trace_var
 from nemoguardrails.logging.callbacks import logging_callbacks
 from nemoguardrails.logging.explain import LLMCallInfo
 
+from nemoguardrails.ryan_logger import log_kpi_async, log_kpi_sync
+
 
 class LLMCallException(Exception):
     """A wrapper around the LLM call invocation exception.
@@ -63,6 +65,7 @@ def _infer_model_name(llm: BaseLanguageModel):
     return "unknown"
 
 
+@log_kpi_async
 async def llm_call(
     llm: BaseLanguageModel,
     prompt: Union[str, List[dict]],
@@ -411,6 +414,15 @@ def get_last_bot_intent_event(events: List[dict]) -> Optional[dict]:
     """Returns the last user intent from the events."""
     for event in reversed(events):
         if event["type"] == "BotIntent":
+            return event
+
+    return None
+
+
+def get_user_input_custom_message_event(events: List[dict]) -> Optional[dict]:
+    """Returns the last user intent from the events."""
+    for event in reversed(events):
+        if event["type"] == "CustomMessage":
             return event
 
     return None
