@@ -10,12 +10,12 @@ define flow content safety check input
 
 define flow content safety check output
   $response = execute content_safety_check_output
-  $allowed = $response["allowed"]
-  $policy_violations = $response["policy_violations"]
+    $allowed = $response["allowed"]
+    $policy_violations = $response["policy_violations"]
 
-  if not $allowed
-    if $config.enable_rails_exceptions
-      create event ContentSafetyCheckOuputException(message="Output not allowed. The output was blocked by the 'content safety check output $model='{$model}'' flow.")
-    else
-      bot refuse to respond
-    stop
+    if not $allowed
+      if $config.enable_rails_exceptions
+        create event ContentSafetyCheckOuputException(message="Output not allowed. The output was blocked by the 'content safety check output $model='{$model}'' flow.")
+      else
+        bot refuse to respond
+      stop
