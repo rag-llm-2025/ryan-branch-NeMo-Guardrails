@@ -1,9 +1,9 @@
 #!/bin/bash
 
-HOST=${HOST:-localhost}
+VLLM_HOST=${VLLM_HOST:-localhost}
 PORT=${PORT:-8010}
 
-echo "HOST: ${HOST}"
+echo "VLLM_HOST: ${VLLM_HOST}"
 echo "PORT: ${PORT}"
 
-python ./demo.py --host ${HOST} --port ${PORT}
+python ./demo.py --host ${VLLM_HOST} --port ${PORT}

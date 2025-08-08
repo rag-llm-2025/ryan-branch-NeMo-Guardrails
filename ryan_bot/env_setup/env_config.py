@@ -8,9 +8,8 @@ import torch
 username = os.getenv('USER') or os.getenv('USERNAME')
 env_file = f'.env.{username}' if username else '.env'
 env_path = Path(__file__).parent / env_file
-print(f"env_path: {env_path}")
+# print(f"env_path: {env_path}")
 load_dotenv(env_path)
-
 
 class EnvConfig:
     # API认证配置
@@ -118,4 +117,4 @@ def print_env_config():
 EnvConfig.init_logger_levels()
 
 # 打印配置信息
-print_env_config()
+# print_env_config()

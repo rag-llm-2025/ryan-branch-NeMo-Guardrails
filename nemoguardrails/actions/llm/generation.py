@@ -80,6 +80,8 @@ from ryan_bot.env_setup.env_config import EnvConfig
 
 local_streaming_handlers = {}
 
+from ryan_bot.vllm_qwen.generate_prompt import generate_response_prompt
+
 
 class LLMGenerationActions:
     """A container objects for multiple related actions."""
@@ -679,6 +681,8 @@ class LLMGenerationActions:
                 # Initialize the LLMCallInfo object
                 llm_call_info_var.set(LLMCallInfo(task=Task.GENERAL.value))
 
+                ryan_log.info(f"context: {context}")
+
                 if kb:
                     chunks = await kb.search_relevant_chunks(event["text"])
                     relevant_chunks = "\n".join([chunk["body"] for chunk in chunks])
@@ -688,12 +692,33 @@ class LLMGenerationActions:
                         events, skip_user_message=True
                     )
 
-                # Otherwise, we still create an altered prompt.
-                prompt = self.llm_task_manager.render_task_prompt(
-                    task=Task.GENERAL,
-                    events=events,
-                    context={"relevant_chunks": relevant_chunks},
-                )
+                if (
+                    context["model"] == "content_safety"
+                    and context["response"] is not None
+                    and context["user_message"] is not None
+                ):
+                    # generate prompt template
+                    response = context["response"]
+                    ryan_log.info(f"response: {response}")
+                    import json
+
+                    safety_info = json.loads(response)
+                    user_safety = safety_info["User Safety"]
+                    safety_categories = safety_info["Response Safety"]
+
+                    # If the context has a user message, we use it to generate the prompt.
+                    prompt = generate_response_prompt(
+                        user_input=context["user_message"],
+                        user_safety=user_safety,
+                        safety_categories=safety_categories,
+                    )
+                else:
+                    # Otherwise, we still create an altered prompt.
+                    prompt = self.llm_task_manager.render_task_prompt(
+                        task=Task.GENERAL,
+                        events=events,
+                        context={"relevant_chunks": relevant_chunks},
+                    )
 
                 generation_options: GenerationOptions = generation_options_var.get()
                 with llm_params(
@@ -1018,7 +1043,7 @@ class LLMGenerationActions:
         # ryan_log.debug(f"self.config.bot_messagese: {self.config.bot_messages}")
         # ryan_log.debug(f"get_last_bot_intent_event: {event}")
 
-        decision = "pass"  # pass or block, pending
+        # decision = "pass"  # pass or block, pending
 
         if EnvConfig.ENABLE_LATENCY_OPTIMIZATION:
             custom_message_event = get_user_input_custom_message_event(events)
@@ -1040,7 +1065,7 @@ class LLMGenerationActions:
 
             # We also need to render
             bot_utterance = self._render_string(bot_utterance, context)
-            decision = "block"
+            # decision = "block"
 
             ryan_log.info(
                 f"after _render_string - bot_utterance: {bot_utterance}, context: {context}"
