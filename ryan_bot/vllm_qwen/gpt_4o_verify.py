@@ -45,7 +45,7 @@ class GPT4OWrapper:
     def chat_completion(
         self,
         messages: List[Dict],
-        max_tokens: int = 4096,
+        max_tokens: int = 1024,
         temperature: float = 0.7,
         top_p: float = 0.9,
     ) -> Tuple[Optional[Dict], float]:
