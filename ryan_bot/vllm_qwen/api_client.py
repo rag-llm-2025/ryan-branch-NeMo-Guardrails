@@ -64,10 +64,19 @@ if __name__ == "__main__":
             if result:
                 logger.info(f"Bot: {result} (latency={rails_cost_time:.2f}ms)")
                 # continue
-                safety_info = json.loads(result['test_user'])
-
-                user_safety = safety_info["User Safety"]
-                safety_categories = safety_info["Safety Categories"]
+                try:
+                    safety_info = json.loads(result['test_user'])
+                    user_safety = safety_info["User Safety"]
+                    safety_categories = safety_info["Safety Categories"]
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON parse error: {e}")
+                    continue
+                except KeyError as e:
+                    logger.error(f"Missing required field: {e}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Unexpected error processing safety info: {e}")
+                    continue
             else:
                 logger.error("Error! request failed, please check the connection or logs")
                 continue
