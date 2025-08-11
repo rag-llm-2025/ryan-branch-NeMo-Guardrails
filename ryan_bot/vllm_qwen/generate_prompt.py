@@ -34,7 +34,7 @@ user: {user_input}
 <END CONVERSATION>
 
 Provide your safety assessment for the above conversation in the below output JSON format:
-{{"User Safety": safe or unsafe rating for the user message, "Response Safety": safe or unsafe rating for the agent response. Omit if no agent response present. "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}}
+{{"User Safety": safe or unsafe rating for the user message, "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}}
 
 Do not include anything other than the output JSON in your response.
 """
@@ -85,7 +85,7 @@ Detected unsafe categories: {safety_categories}
    - Speak naturally, as you would in a casual but respectful human conversation
    - Avoid repetitive greetings like "Hello! Thank you for reaching out"
    - Match the conversational tone established in previous messages when available
-   - Keep responses concise (50-350 words) and focused
+   - Keep responses concise (50-1000 words) and focused
    - Use everyday language instead of formal phrasing
    - Show appropriate responsiveness to the user's tone and content
 

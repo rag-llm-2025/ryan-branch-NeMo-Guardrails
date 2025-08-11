@@ -61,7 +61,7 @@ async def print_response(query):
 
 async def chat_loop():
     # 示例对话
-    query = "关闭车窗"
+    query = "帮我写一篇关于春天的散文，字数在1000字以上"
     logger.info(f"示例：User: {query}")
     await print_response(query)
 
