@@ -87,7 +87,7 @@ Detected unsafe categories: {safety_categories}
    - Speak naturally, as you would in a casual but respectful human conversation
    - Avoid repetitive greetings like "Hello! Thank you for reaching out"
    - Match the conversational tone established in previous messages when available
-   - Keep responses concise (50-350 words) and focused
+   - Keep responses concise (50-150 words) and focused
    - Use everyday language instead of formal phrasing
    - Show appropriate responsiveness to the user's tone and content
 
@@ -99,6 +99,7 @@ Detected unsafe categories: {safety_categories}
    - For repeated unsafe requests: Provide consistent but natural refusal without becoming robotic
 
 Please use Chinese to answer in the chat.
+
 Please generate a response that feels authentic and appropriate for this conversation. """
 
 

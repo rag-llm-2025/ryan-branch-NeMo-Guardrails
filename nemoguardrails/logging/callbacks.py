@@ -62,14 +62,18 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
             explain_info.llm_calls.append(llm_call_info)
 
         # log.info("Invocation Params :: %s", kwargs.get("invocation_params", {}))
-        ryan_log.info(f"Invocation Params(on_llm_start) :: {llm_call_info.task}, id: {llm_call_info.id},\n {kwargs.get("invocation_params", {})}")
+        ryan_log.info(
+            f"Invocation Params(on_llm_start) :: {llm_call_info.task}, id: {llm_call_info.id},\n {kwargs.get("invocation_params", {})}"
+        )
 
         # log.info(
         #     "Prompt :: %s",
         #     prompts[0],
         #     extra={"id": llm_call_info.id, "task": llm_call_info.task},
         # )
-        ryan_log.debug(f"Prompt(on_llm_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{prompts[0]}")
+        ryan_log.debug(
+            f"Prompt(on_llm_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{prompts[0]}"
+        )
         llm_call_info.prompt = prompts[0]
 
         llm_call_info.started_at = time()
@@ -111,9 +115,7 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
                 + (
                     "User"
                     if msg.type == "human"
-                    else "Bot"
-                    if msg.type == "ai"
-                    else "System"
+                    else "Bot" if msg.type == "ai" else "System"
                 )
                 + "[/]"
                 + "\n"
@@ -123,14 +125,18 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         )
 
         # log.info("Invocation Params :: %s", kwargs.get("invocation_params", {}))
-        ryan_log.info(f"Invocation Params(on_chat_model_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{kwargs.get("invocation_params", {})}")
+        ryan_log.info(
+            f"Invocation Params(on_chat_model_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{kwargs.get("invocation_params", {})}"
+        )
 
         # log.info(
         #     "Prompt Messages :: %s",
         #     prompt,
         #     extra={"id": llm_call_info.id, "task": llm_call_info.task},
         # )
-        ryan_log.info(f"Prompt Messages(on_chat_model_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{prompt}")
+        ryan_log.info(
+            f"Prompt Messages(on_chat_model_start) :: {llm_call_info.task}, id: {llm_call_info.id}, \n{prompt}"
+        )
 
         llm_call_info.prompt = prompt
         llm_call_info.started_at = time()
@@ -176,7 +182,9 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         #     response.generations[0][0].text,
         #     extra={"id": llm_call_info.id, "task": llm_call_info.task},
         # )
-        ryan_log.info(f"LLM Completion :: task: {llm_call_info.task}, id: {llm_call_info.id},\n {response.generations[0][0].text}")
+        ryan_log.info(
+            f"LLM Completion :: task: {llm_call_info.task}, id: {llm_call_info.id},\n {response.generations[0][0].text}"
+        )
 
         llm_stats = llm_stats_var.get()
         if llm_stats is None:
@@ -194,7 +202,9 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
                 #     generation.text,
                 #     extra={"id": llm_call_info.id, "task": llm_call_info.task},
                 # )
-                ryan_log.info(f"Completion :: task: {llm_call_info.task}, id: {llm_call_info.id}, \n{generation.text}")
+                ryan_log.info(
+                    f"Completion :: task: {llm_call_info.task}, id: {llm_call_info.id}, \n{generation.text}"
+                )
 
         # log.info("Output Stats :: %s", response.llm_output)
         ryan_log.debug(f"Output Stats :: {response.llm_output}")
@@ -202,6 +212,7 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         took = llm_call_info.finished_at - llm_call_info.started_at
         # log.info("--- :: LLM call took %.2f seconds", took)
         ryan_log.info(f"--- :: LLM call took {took} seconds")
+        ryan_log.info(f"--- :: LLM call response.generations: {response.generations}")
 
         llm_stats.inc("total_time", took)
         llm_call_info.duration = took
@@ -266,7 +277,9 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
             # log.info(
             #     "Token stats in LLM call info cannot be computed for current model!"
             # )
-            ryan_log.warning("Token stats in LLM call info cannot be computed for current model!")
+            ryan_log.warning(
+                "Token stats in LLM call info cannot be computed for current model!"
+            )
 
         # Finally, we append the LLM call log to the processing log
         processing_log = processing_log_var.get()

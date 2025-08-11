@@ -14,7 +14,7 @@ models:
     parameters:
       base_url: http://gn101.crg.cerence.net:8010/v1
       api_key: sk-xxx   # 随便写一个字符串即可
-      temperature: 0.1
+      temperature: 0.7
       # max_tokens: 100
       top_p: 0.9
   - type: content_safety
