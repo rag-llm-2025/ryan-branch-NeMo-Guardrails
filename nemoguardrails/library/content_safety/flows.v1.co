@@ -6,7 +6,6 @@ define bot refuse to respond
 define flow content safety check input
   $response = execute content_safety_check_input
 
-  bot content_safety_check_input "$response"
 
 define flow content safety check output
   $response = execute content_safety_check_output
