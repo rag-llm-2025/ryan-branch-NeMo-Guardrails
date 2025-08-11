@@ -7,3 +7,6 @@ thefuzz
 vllm
 python-dotenv
 sentence-transformers
+presidio-analyzer
+presidio-anonymizer
+spacy
