@@ -46,6 +46,7 @@ def export_filtered_corpus(dataset, output_dir="./output/filtered_corpus"):
             ),
         }
 
+        label_set = set()
         for example in dataset:
             text = example.get("text", "")
             text_type = example.get("text_type", "")
@@ -59,6 +60,12 @@ def export_filtered_corpus(dataset, output_dir="./output/filtered_corpus"):
             if isinstance(label, str) and label.lower() == "safe":
                 continue
 
+            if isinstance(label, str):
+                for sub_label in label.split(','):
+                    sub_label = sub_label.strip()
+                    if sub_label:
+                        label_set.add(sub_label)
+
             if text_type in output_files and text:
                 record = {"text": text, "text_type": text_type, "label": label}
                 output_files[text_type].write(
@@ -70,6 +77,7 @@ def export_filtered_corpus(dataset, output_dir="./output/filtered_corpus"):
 
         print(f"\n生成路径： {output_dir}")
         print(f"生成文件: {', '.join(output_files.keys())}")
+        print(f"标签组: size={len(label_set)}, {sorted(label_set)}")
 
     except Exception as e:
         print(f"导出语料时出错: {e}")

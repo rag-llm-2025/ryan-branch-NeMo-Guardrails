@@ -1,36 +1,12 @@
 import json
 import requests
-from typing import List, Dict, Optional, Union, Tuple
+from typing import List, Dict, Optional, Union, Tuple, Generator
 import os
 import time
 import argparse
-import logging
 from generate_prompt import generate_response_prompt, generate_guardrail_prompt
-
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("ryan_test")
-
-
-class RyanLogger:
-    @staticmethod
-    def info(msg):
-        print(f"\033[93m{msg}\033[0m")
-
-    @staticmethod
-    def debug(msg):
-        print(f"{msg}")
-
-    @staticmethod
-    def error(msg):
-        print(f"\033[31m{msg}\033[0m")
-
-
-RyanLogger.info("这是一条info信息")
-RyanLogger.debug("这是一条debug信息")
-RyanLogger.error("这是一条fatal信息")
-
-
+from simple_logger import RyanLogger as logger
+from nemoguardrails.ryan_logger import ryan_log
 class GPT4OWrapper:
     def __init__(
         self, api_key: str, api_version: str = "2025-01-01-preview", timeout=60
@@ -70,16 +46,79 @@ class GPT4OWrapper:
                 url, headers=headers, json=data, timeout=self.timeout
             )
             cost_time = (time.time() - start_time) * 1000
-            RyanLogger.debug(
+            logger.debug(
                 f"LLM Response: {response.json()} (latency={cost_time:.2f}ms)\n"
             )
             response.raise_for_status()
             return response.json(), cost_time
         except requests.exceptions.RequestException as e:
             cost_time = (time.time() - start_time) * 1000
-            RyanLogger.error(f"请求错误: {e}")
+            logger.error(f"请求错误: {e}")
             # return None
             return response.json(), cost_time
+
+    def stream_chat_completion(
+        self,
+        messages: List[Dict],
+        max_tokens: int = 1024,
+        temperature: float = 0.7,
+        top_p: float = 0.9,
+    ) -> Generator[str, None, None]:
+        """流式聊天完成"""
+        start_time = time.time()
+        cost_time = 0.0
+        ryan_log.debug(f"Received start streaming request: messages: {messages}")
+
+        url = f"{self.base_url}/openai/deployments/{self.deployment}/chat/completions?api-version={self.api_version}"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+        data = {
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "top_p": top_p,
+            "model": self.deployment,
+            "stream": True  # 启用流式
+        }
+
+        response_json = {}
+        try:
+            first_chunk = True
+            with requests.post(url, headers=headers, json=data, stream=True) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    # ryan_log.info(f"\nStream line chunk: {line}")
+                    if first_chunk:
+                        first_chunk_time = time.time()
+                        first_chunk = False
+                    if line:
+                        chunk = line.decode("utf-8")
+                        if chunk.startswith("data:"):
+                            chunk = chunk[5:].strip()
+                            if chunk != "[DONE]":
+                                try:
+                                    data = json.loads(chunk)
+                                    if not data.get("choices"):
+                                        ryan_log.error(f"Cautions! Empty choices in response: {data}")
+                                        yield data
+                                        continue
+                                    content = data.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                                    if content:
+                                        # ryan_log.debug(f"Stream content chunk: {content}")
+                                        yield content
+                                except json.JSONDecodeError:
+                                    pass
+                            else:
+                                final_chunk_time = time.time()
+                                cost_time = (final_chunk_time - start_time) * 1000
+                                first_response_time = (first_chunk_time - start_time) * 1000
+                                ryan_log.info(f"GPT Response latency: {cost_time:.2f}ms, First response latency: {first_response_time:.2f}ms")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"流式请求错误: {e}")
+            error_data = {"error": str(e), "status_code": response.status_code}
+            yield error_data
 
     def batch_process(
         self,
@@ -96,7 +135,7 @@ class GPT4OWrapper:
                 data = json.loads(line)
                 text = data.get("text", "")
                 label = data.get("label", "")
-                RyanLogger.info(f"{index}. User: {text}\n")
+                logger.info(f"{index}. User: {text}\n")
                 # logger.info(f"Processing {index}: {text[:50]}...")
 
                 # use LLM classification or generation
@@ -109,10 +148,10 @@ class GPT4OWrapper:
                     [{"role": "user", "content": prompt}]
                 )
                 content = self._process_response(response)
-                RyanLogger.info(
+                logger.info(
                     f"\n{index}. Bot: {content} (latency={cost_time:.2f}ms)"
                 )
-                RyanLogger.debug(
+                logger.debug(
                     "----------------------------------------------------------------\n"
                 )
                 # logger.info(f"response: {content} (latency={cost_time})")
@@ -178,7 +217,7 @@ class GPT4OWrapper:
         # 初始处理示例prompts
         index = 1
         for prompt in prompts:
-            RyanLogger.info(f"{index}. User: {prompt}")
+            logger.info(f"{index}. User: {prompt}")
 
             # use LLM classification or generation
             if type == "classification":
@@ -193,10 +232,10 @@ class GPT4OWrapper:
                 [{"role": "user", "content": prompt}]
             )
             content = self._process_response(response)
-            RyanLogger.info(
+            logger.info(
                 f"{index}. Bot(示例): {content} (latency={cost_time:.2f}ms)"
             )
-            RyanLogger.debug(
+            logger.debug(
                 "-----------------------------------------------------------------\n"
             )
             index += 1
@@ -208,7 +247,7 @@ class GPT4OWrapper:
             if user_input.lower() in ["quit", "exit"]:
                 break
 
-            RyanLogger.info(f"{index}. User: {user_input}")
+            logger.info(f"{index}. User: {user_input}")
             # use LLM classification or generation
             if type == "classification":
                 user_input = generate_guardrail_prompt(user_input)
@@ -216,8 +255,8 @@ class GPT4OWrapper:
                 [{"role": "user", "content": user_input}]
             )
             content = self._process_response(response)
-            RyanLogger.info(f"{index}. Bot: {content} (latency={cost_time:.2f}ms)")
-            RyanLogger.debug(
+            logger.info(f"{index}. Bot: {content} (latency={cost_time:.2f}ms)")
+            logger.debug(
                 "-----------------------------------------------------------------\n"
             )
             index += 1

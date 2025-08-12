@@ -37,15 +37,14 @@ prompts:
       <END CONVERSATION>
 
       Provide your safety assessment for the above conversation in the below output JSON format:
-      {"User Safety": safe or unsafe rating for the user message, "Response Safety": safe or unsafe rating for the agent response. Omit if no agent response present. "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}
+      {"User Safety": safe or unsafe rating for the user message, "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}
 
       Output JSON Rules:
       1. "User Safety" must be exactly one of: "safe", "unsafe", or "none". Defaults to "none".
-      2. "Response Safety" must be exactly one of: "safe", "unsafe", or "none". Defaults to "none" (since there's no agent response here).
-      3. "Safety Categories":
+      2. "Safety Categories":
          - If user input is unsafe: must contain only comma-separated values from the provided categories (e.g., "S1,S3,S8")
          - If user input is safe or none: must be an empty string ""
-      4. All three fields must always be present in the output.
+      3. All three fields must always be present in the output.
 
       Do not include anything other than the output JSON in your response.
       Output JSON:
