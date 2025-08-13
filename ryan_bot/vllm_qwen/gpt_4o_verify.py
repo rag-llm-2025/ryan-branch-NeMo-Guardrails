@@ -101,7 +101,7 @@ class GPT4OWrapper:
                                 try:
                                     data = json.loads(chunk)
                                     if not data.get("choices"):
-                                        ryan_log.error(f"Cautions! Empty choices in response: {data}")
+                                        ryan_log.warning(f"Cautions! Empty choices in response: {data}")
                                         yield data
                                         continue
                                     content = data.get("choices", [{}])[0].get("delta", {}).get("content", "")

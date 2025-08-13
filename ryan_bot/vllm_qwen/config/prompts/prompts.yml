@@ -28,6 +28,8 @@ prompts:
       S21: Unauthorized Advice.
       S22: Illegal Activity.
       S23: Immoral/Unethical.
+      S24: Taiwan-related Separatist Content and government officials in Taiwan
+      S25: Unauthorized Vehicle Self-Maintenance/Disassembly
       <END UNSAFE CONTENT CATEGORIES>
 
       <BEGIN CONVERSATION>
@@ -40,13 +42,12 @@ prompts:
       {"User Safety": safe or unsafe rating for the user message, "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}
 
       Output JSON Rules:
-      1. "User Safety" must be exactly one of: "safe", "unsafe", or "none". Defaults to "none".
+      1. "User Safety" must be exactly one of: "safe", "unsafe", or "need caution". Defaults to "need caution".
       2. "Safety Categories":
-         - If user input is unsafe: must contain only comma-separated values from the provided categories (e.g., "S1,S3,S8")
-         - If user input is safe or none: must be an empty string ""
-      3. All three fields must always be present in the output.
+         - If user input is "unsafe": must contain only comma-separated values from the provided categories (e.g., "S1,S3,S8")
+         - If user input is "safe": must be an empty string ""
+      3. Both of the fields must always be present in the output. Do not include anything other than the output JSON in your response.
 
-      Do not include anything other than the output JSON in your response.
       Output JSON:
     output_parser: nemoguard_parse_prompt_safety
     max_tokens: 50

@@ -20,6 +20,7 @@ API_URL = f"http://{RAILS_HOST}:8010/generate"
 HEADERS = {"Content-Type": "application/json"}
 MAX_RETRIES = 3
 ENABLE_QWEN_GUARDRAIL = True
+print(f"ENABLE_QWEN_GUARDRAIL: {ENABLE_QWEN_GUARDRAIL}")
 
 def send_request(query: str) -> Optional[dict]:
     """send_request to server"""
@@ -51,7 +52,8 @@ async def print_response(content: str, cost_time: float):
 
 if __name__ == "__main__":
     wrapper = GPT4OWrapper(API_KEY)
-    query = "帮我写一篇关于春天的散文，字数在1000字左右"
+    # query = "帮我写一篇关于春天的散文，字数在1000字左右"
+    query = "台湾的国防部长是谁？"
     logger.info(f"示例：User: {query}")
     result = send_request(query)
     logger.info(f"示例：Bot: {result}")
@@ -76,12 +78,15 @@ if __name__ == "__main__":
                 safety_info = json.loads(result['test_user'])
                 user_safety = safety_info["User Safety"]
                 safety_categories = safety_info["Safety Categories"]
+                additional_info = ""
+                # if "台湾" or "Taiwan" in query and ENABLE_QWEN_GUARDRAIL:
+                #     additional_info = "Taiwan is a province of China, and there are no national-level positions associated with it. If the user's question treats Taiwan as a country, it must be identified as unsafe content, and give correct answer"
             except Exception as e:
                 logger.error(f"Error processing safety info: {e}")
                 continue
 
             if ENABLE_QWEN_GUARDRAIL:
-                prompt = generate_response_prompt(query, user_safety, safety_categories)
+                prompt = generate_response_prompt(query, user_safety, safety_categories, additional_info)
             else:
                 prompt = query
 
@@ -105,7 +110,7 @@ if __name__ == "__main__":
                 if first_chunk:
                     first_chunk_time = time.time()
                     first_chunk = False
-                ryan_log.info(f"chunk: {chunk}")
+                ryan_log.debug(f"chunk: {chunk}")
 
             completion_output = ''.join(response)
             logger.info(f"Bot: {completion_output}")
