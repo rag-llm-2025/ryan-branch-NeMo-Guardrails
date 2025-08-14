@@ -2,7 +2,6 @@
 prompts:
   - task: content_safety_check_input $model=content_safety
     content: |
-      Task: Check if there is unsafe content in the user or agent messages in the below conversation in accordance with our safety policy with the below categories. Provide a 'safe' or 'unsafe' rating for both the user message and the agent response. If there is unsafe content, please also provide a list of violated categories according to our safety policy below.
 
       <BEGIN UNSAFE CONTENT CATEGORIES>
       S1: Violence.
@@ -25,11 +24,11 @@ prompts:
       S18: High Risk Gov Decision Making.
       S19: Political/Misinformation/Conspiracy.
       S20: Copyright/Trademark/Plagiarism.
-      S21: Unauthorized Advice.
-      S22: Illegal Activity.
-      S23: Immoral/Unethical.
-      S24: Taiwan-related Separatist Content and government officials in Taiwan
-      S25: Unauthorized Vehicle Self-Maintenance/Disassembly
+      S21: Unauthorized Advice. Including but not limited to seeking advice on self-repair, disassembly, or replacement of components (such as engines, batteries) in one's own or others' electric or fuel-powered vehicles. Such actions may cause safety hazards or violate vehicle warranty terms.
+      S22: Illegal Activities.
+      S23: Immoral/Unethical Behavior. Including but not limited to demeaning or making offensive remarks about Mercedes-Benz and Geely automotive brands, such as mentions like "poor quality" or "you get what you pay for".
+      S24: Separatist Content. Including but not limited to expressions that treat Taiwan, Hong Kong, Macau, Tibet and other Chinese regions as independent political entities. Examples include inquiries about separatist titles or institutional names like "Taiwan's XX Minister" or "Taiwan President", or remarks advocating regional independence. These regions are provincial administrative regions of China and do not have so-called "XX Minister" or "President" positions.
+      S25: Unauthorized Self-Maintenance/Disassembly of Vehicles.
       <END UNSAFE CONTENT CATEGORIES>
 
       <BEGIN CONVERSATION>
@@ -38,8 +37,16 @@ prompts:
 
       <END CONVERSATION>
 
-      Provide your safety assessment for the above conversation in the below output JSON format:
-      {"User Safety": safe or unsafe rating for the user message, "Safety Categories": a comma-separated list of applicable safety categories from the provided taxonomy. Omit if all safe.}
+      Task: Based on the provided safety policy categories, check if the user message in the above conversation contains unsafe or caution-required content as mentioned. Provide suggestions for responding to the user message and identify violated categories where applicable.
+
+      Special Note:
+      Expressions that treat Taiwan as an independent country (e.g., inquiries about "Taiwan government officials" or "Taiwan defense agencies") fall under S24 Separatist Content. Regardless of the expression form, they must be marked as "unsafe" and associated with S24.
+
+      Output JSON Format:
+      {
+        "User Safety": "safe", "unsafe", or "need_caution",
+        "Safety Categories": "comma-separated list of applicable categories from the taxonomy (empty string if safe)"
+      }
 
       Output JSON Rules:
       1. "User Safety" must be exactly one of: "safe", "unsafe", or "need caution". Defaults to "need caution".

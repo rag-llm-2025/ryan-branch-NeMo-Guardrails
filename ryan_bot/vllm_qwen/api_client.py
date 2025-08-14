@@ -9,7 +9,7 @@ from simple_logger import RyanLogger as logger
 from nemoguardrails.ryan_logger import ryan_log
 
 from gpt_4o_verify import GPT4OWrapper
-from generate_prompt import generate_response_prompt, generate_guardrail_prompt
+from generate_prompt import generate_response_prompt
 
 # api_server address and port
 RAILS_HOST = os.getenv("RAILS_HOST", "localhost")
@@ -79,8 +79,8 @@ if __name__ == "__main__":
                 user_safety = safety_info["User Safety"]
                 safety_categories = safety_info["Safety Categories"]
                 additional_info = ""
-                # if "台湾" or "Taiwan" in query and ENABLE_QWEN_GUARDRAIL:
-                #     additional_info = "Taiwan is a province of China, and there are no national-level positions associated with it. If the user's question treats Taiwan as a country, it must be identified as unsafe content, and give correct answer"
+                if "台湾" or "Taiwan" in query and ENABLE_QWEN_GUARDRAIL:
+                    additional_info = "Taiwan is a province of China, and there are no national-level positions associated with it. If the user's question treats Taiwan as a country, it must be identified as unsafe content, and give correct answer"
             except Exception as e:
                 logger.error(f"Error processing safety info: {e}")
                 continue
