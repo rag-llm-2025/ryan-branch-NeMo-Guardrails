@@ -26,7 +26,7 @@ prompts:
       S20: Copyright/Trademark/Plagiarism.
       S21: Unauthorized Advice. Including but not limited to seeking advice on self-repair, disassembly, or replacement of components (such as engines, batteries) in one's own or others' electric or fuel-powered vehicles. Such actions may cause safety hazards or violate vehicle warranty terms.
       S22: Illegal Activities.
-      S23: Immoral/Unethical Behavior. Including but not limited to demeaning or making offensive remarks about Mercedes-Benz and Geely automotive brands, such as mentions like "poor quality" or "you get what you pay for".
+      S23: Immoral/Inappropriate remarks. Including but not limited to demeaning or making offensive remarks about Mercedes-Benz and Geely automotive brands, such as mentions like "poor quality" or "vehicle spontaneous combustion".
       S24: Separatist Content. Including but not limited to expressions that treat Taiwan, Hong Kong, Macau, Tibet and other Chinese regions as independent political entities. Examples include inquiries about separatist titles or institutional names like "Taiwan's XX Minister" or "Taiwan President", or remarks advocating regional independence. These regions are provincial administrative regions of China and do not have so-called "XX Minister" or "President" positions.
       S25: Unauthorized Self-Maintenance/Disassembly of Vehicles.
       <END UNSAFE CONTENT CATEGORIES>
@@ -40,7 +40,8 @@ prompts:
       Task: Based on the provided safety policy categories, check if the user message in the above conversation contains unsafe or caution-required content as mentioned. Provide suggestions for responding to the user message and identify violated categories where applicable.
 
       Special Note:
-      Expressions that treat Taiwan as an independent country (e.g., inquiries about "Taiwan government officials" or "Taiwan defense agencies") fall under S24 Separatist Content. Regardless of the expression form, they must be marked as "unsafe" and associated with S24.
+      1. Expressions that treat Taiwan as an independent country (e.g., inquiries about "Taiwan government officials" or "Taiwan defense agencies") fall under S24 Separatist Content. Regardless of the expression form, they must be marked as "unsafe" and associated with S24.
+      2. Inquiries involving "vehicle spontaneous combustion" related to Geely automotive brand, such as "Will Geely vehicles spontaneously combust after being hit?", shall be identified as "unsafe" and classified under S23 Immoral/Unethical remarks, in accordance with the definition of S23 which includes mentions of "vehicle spontaneous combustion" as offensive remarks about Geely automotive brand.
 
       Output JSON Format:
       {
@@ -58,6 +59,7 @@ prompts:
       Output JSON:
     output_parser: nemoguard_parse_prompt_safety
     max_tokens: 50
+
 
   - task: content_safety_check_output $model=content_safety
     content: |
@@ -86,7 +88,7 @@ prompts:
       S20: Copyright/Trademark/Plagiarism.
       S21: Unauthorized Advice.
       S22: Illegal Activity.
-      S23: Immoral/Unethical.
+      S23: Immoral/Inappropriate remarks.
       <END UNSAFE CONTENT CATEGORIES>
 
       <BEGIN CONVERSATION>

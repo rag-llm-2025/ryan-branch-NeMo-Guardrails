@@ -17,6 +17,7 @@ from config import (
     get_latency_color,
     format_safety_categories
 )
+from callm_wrapper import CallmWrapper
 
 # 类型定义
 ProcessResult = Dict[str, Any]
@@ -34,6 +35,11 @@ st.set_page_config(
 def get_gpt_wrapper() -> GPT4OWrapper:
     """初始化并缓存GPT包装器"""
     return GPT4OWrapper(os.getenv("OPENAI_URL_AUTH"))
+
+@st.cache_resource
+def get_callm_wrapper() -> CallmWrapper:
+    """初始化并缓存GPT包装器"""
+    return CallmWrapper()
 
 class UIComponents:
     """可复用的UI组件工厂"""
@@ -119,18 +125,15 @@ class SafetyHandler:
         """
 
     @staticmethod
-    def format_callm_info(safety_info: SafetyInfo) -> str:
+    def format_callm_info(domain_key: str) -> str:
         """格式化安全检测结果"""
-        if not safety_info:
-            return "无安全信息"
+        if not domain_key:
+            return "无路由信息"
 
-        user_safety = safety_info.get("User Safety", "unknown")
-        safety_color = COLORS["unsafe"] if user_safety == "unsafe" else COLORS["safe"]
-        categories = format_safety_categories(safety_info.get("Safety Categories"))
+        router_color = COLORS["info"]
 
         return f"""
-        {safety_color} **CaLLM安全评级**: {user_safety}
-        **检测类别**: {categories}
+        {router_color} **CaLLM路由结果**: {domain_key}
         """
 
     @classmethod
@@ -139,18 +142,23 @@ class SafetyHandler:
         start_time = time.time()
         result = send_request(user_input)
 
+        callmWrapper = get_callm_wrapper()
+        domain_key = callmWrapper.chat_completion(user_input)
+        if not domain_key:
+            domain_key = "unknow"
+
         if not result:
-            return None, None
+            return None, None, domain_key
 
         try:
             safety_info = json.loads(result['test_user'])
             if 'User Safety' not in safety_info:
                 raise ValueError("响应缺少必要字段'User Safety'")
             latency = (time.time() - start_time) * 1000
-            return safety_info, latency
+            return safety_info, latency, domain_key
         except Exception as e:
             st.error(f"🔍 安全检测响应解析失败: {str(e)}\n原始响应: {result}")
-            return None, None
+            return None, None, domain_key
 
 class ResponseHandler:
     """响应处理基类"""
@@ -240,7 +248,7 @@ class GuardrailMode(ProcessMode):
 
         # 阶段1: 安全检测
         self.update_progress(25, "进行安全检测...")
-        safety_info, guardrail_latency = SafetyHandler.check_safety(user_input)
+        safety_info, guardrail_latency, domain_key = SafetyHandler.check_safety(user_input)
 
         if not safety_info:
             self.save_result('guardrail_result', {
@@ -253,7 +261,8 @@ class GuardrailMode(ProcessMode):
         # 显示安全信息
         # st.markdown("### 安全检测结果")
         st.markdown(SafetyHandler.format_safety_info(safety_info))
-        st.markdown("CaLLM安全评级: OOD")
+
+        st.markdown(SafetyHandler.format_callm_info(domain_key))
 
         # 阶段2: 生成响应
         # self.update_progress(50, "生成响应...")
@@ -272,27 +281,35 @@ class GuardrailMode(ProcessMode):
             response,
             guardrail_latency,
             gpt_latency,
-            safety_info
+            safety_info,
+            domain_key
         )
 
     def generate_prompt(self, user_input: str, safety_info: SafetyInfo) -> str:
         """生成最终提示"""
-        if safety_info.get("User Safety") == "safe":
-            return user_input
+        # if safety_info.get("User Safety") == "safe":
+        #     return user_input
+        prompt = generate_response_prompt(
+            user_input,
+            safety_info["User Safety"],
+            safety_info["Safety Categories"]
+        )
+        print(f"promt: {prompt}")
         return generate_response_prompt(
             user_input,
             safety_info["User Safety"],
             safety_info["Safety Categories"]
         )
 
-    def finalize_process(self, user_input, response, guardrail_latency, gpt_latency, safety_info):
+    def finalize_process(self, user_input, response, guardrail_latency, gpt_latency, safety_info, domain_key):
+
         """完成处理流程"""
         # st.info(f"⏱️ 响应延时: {guardrail_latency:.2f}ms")
         if not response:
             self.save_result('guardrail_result', {
                 'input': user_input,
                 'error': True,
-                'message': 'GPT响应失败'
+                'message': 'GPT抛出异常，响应失败'
             })
             return
         self.save_result('guardrail_result', {
@@ -304,6 +321,7 @@ class GuardrailMode(ProcessMode):
                 'total': guardrail_latency + gpt_latency
             },
             'safety_info': safety_info,
+            'domain_key': domain_key,
             'error': False
         })
 
@@ -328,12 +346,13 @@ class DirectMode(ProcessMode):
 
     def finalize_process(self, user_input, response, latency):
         """完成处理流程"""
-        # st.info(f"⏱️ 响应延迟: {latency:.2f}ms")
+        st.info(f"⏱️ 响应延迟: {latency:.2f}ms")
         if not response:
             self.save_result('direct_result', {
                 'input': user_input,
+                'latency': latency,
                 'error': True,
-                'message': 'GPT响应失败'
+                'message': 'GPT抛出异常，响应失败'
             })
             return
         self.save_result('direct_result', {
@@ -385,6 +404,7 @@ def main():
     # 初始化全局组件
     UIComponents.show_header()
     wrapper = get_gpt_wrapper()
+    callmWrapper = get_callm_wrapper();
     main_sidebar(wrapper)
 
     # 主内容容器
@@ -422,9 +442,9 @@ def main():
                     st.subheader("🚫 无Guardrail模式结果")
                     result = st.session_state.direct_result
                     if result['error']:
+                        st.info(f"⏱️ GPT延迟: {result['latency']:.2f}ms")
                         st.error(result['message'])
                     else:
-                        # st.info(f"⏱️ GPT延迟: {result['latency']:.2f}ms")
                         st.success(result['response'])
 
                     if st.session_state.get('has_rerun', False):
@@ -452,7 +472,7 @@ def main():
                         st.error(result['message'])
                     else:
                         st.markdown(SafetyHandler.format_safety_info(result['safety_info']))
-                        st.markdown(SafetyHandler.format_callm_info(result['safety_info']))
+                        st.markdown(SafetyHandler.format_callm_info(result["domain_key"]))
                         st.info(f"⏱️ Guardrails延迟: {result['latencies']['guardrail']:.2f}ms")
                         # st.info(f"⏱️ GPT延迟: {result['latencies']['gpt']:.2f}ms")
                         # col_a, col_b, col_c = st.columns(3)

@@ -54,6 +54,7 @@ if __name__ == "__main__":
     wrapper = GPT4OWrapper(API_KEY)
     # query = "帮我写一篇关于春天的散文，字数在1000字左右"
     query = "台湾的国防部长是谁？"
+    query = "吉利的车被撞后会自燃吗？"
     logger.info(f"示例：User: {query}")
     result = send_request(query)
     logger.info(f"示例：Bot: {result}")
